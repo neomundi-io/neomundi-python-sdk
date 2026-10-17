@@ -1,14 +1,29 @@
 # NeoMundi Python SDK
 
-**Status: v0.1.0 — locally validated prototype; live API compatibility validation pending.**
+**Status: v0.1.0 — Experimental / Pilot Evaluation**
 
 Python client for the NeoMundi measurement API.
 
+> ### Read this before anything else
+>
+> **📋 [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) — known backend
+> limitations, verified functionality, and developer guidance.**
+> **🚀 [`PILOT_INTEGRATION_GUIDE.md`](PILOT_INTEGRATION_GUIDE.md) — setup
+> and first integration for pilot developers.**
+>
+> Three backend defects are open and documented: **BL-001** (a trial key is
+> suspended on its first call), **BL-002** (a streaming decision depends on
+> network fragmentation), **BL-003** (`delta_g` is published while the
+> aggregate is withheld). None is worked around by this SDK — all three are
+> surfaced.
+
 > **Not published on PyPI.** Install from source only — see
-> [Installation](#installation). This SDK has never been exercised against a
-> running NeoMundi instance: its fixtures are derived from reading the
-> backend contract, not captured from a server. See
-> [Known limitations](#known-limitations).
+> [Installation](#installation).
+>
+> **Compatibility verified against a local instance** built from backend
+> commit `68d6057`, measurement version `3.3.0` — and **against no hosted
+> deployment**. Verify compatibility with your own deployment before relying
+> on results: see [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6.
 
 ---
 
@@ -286,18 +301,31 @@ server-side. A *received* `503`, by contrast, proves it was not.
 
 ## Known limitations
 
-Read before communicating any figure produced by this SDK. Full detail in
-[`docs/LIMITES.md`](docs/LIMITES.md).
+Read before communicating any figure produced by this SDK. The complete
+register is [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md); methodological
+detail is in [`docs/LIMITES.md`](docs/LIMITES.md).
 
-### Live compatibility is not validated
+### Live compatibility: verified locally, not against any deployment
 
-This SDK has **never been exercised against a running NeoMundi
-instance**. Its fixtures are **derived from reading** the backend contract
-at commit `68d6057cf620e430e6488da3cfcec9c471c75ed6`, not captured from a
-server. A discrepancy between what the backend's response model declares
-and what a deployed server actually emits would currently be invisible.
+The SDK **has** been exercised against a running NeoMundi instance — a
+local one, built from backend commit
+`68d6057cf620e430e6488da3cfcec9c471c75ed6`. Ten REST calls at tier
+`TIER_02` with all three evaluators live, plus a fully degraded run, were
+captured and replayed through the test suite: **zero type discrepancies,
+zero unmodelled fields**, measurement version `3.3.0` as declared.
 
-Closing this is the next step — see [Next step](#next-step).
+What that establishes: the modelled contract matches what an instance
+built from the reference commit actually emits.
+
+What it does **not** establish: behaviour against any hosted or shared
+deployment, under load, or on another backend version. No frozen OpenAPI
+specification exists server-side, so verification against your own
+deployment remains necessary — [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6
+gives the minimum check.
+
+**Three backend defects were observed during that campaign** and are
+documented as BL-001, BL-002 and BL-003. The SDK surfaces them; it does
+not work around them.
 
 ### The scores do not use the whole `[0, 1]` range
 
@@ -409,11 +437,28 @@ python -m pytest tests
 `test_examples.py` | the three examples run and exit 0 |
 
 Every fixture declares its origin: `derived_from_code` (structure and
-values taken from the backend contract) or `synthetic` (a payload the
-backend does not emit, built to exercise SDK robustness).
+values taken from the backend contract), `synthetic` (a payload the
+backend does not emit, built to exercise SDK robustness), or `captured`
+(a real response recorded from a running instance).
 
-**A pass on simulated transport does not validate production behaviour.**
-See [Known limitations](#known-limitations).
+**Two suite scopes, deliberately distinguished:**
+
+| Scope | Fixtures | Result |
+|---|---|---|
+| Repository / CI | `derived_from_code` + `synthetic` | **206 passed, 12 skipped** |
+| Local, with captures | the above + 11 `captured` | **328 passed** |
+
+The 12 skipped tests are `test_captured_fixtures.py`, which replays real
+recorded payloads. `tests/fixtures/captured/` is excluded from the
+repository — recorded responses are execution data, not source — so those
+tests skip with a stated reason wherever the directory is absent, CI
+included. They are not a weaker part of the suite; they are the only part
+that can observe a divergence between the contract as read and the
+contract as served.
+
+**A pass on simulated transport does not validate production behaviour**,
+and a pass on captured fixtures validates one instance at one commit, not
+a deployment. See [Known limitations](#known-limitations).
 
 ### Examples
 
@@ -442,8 +487,10 @@ neomundi.API_CONTRACT
 **`openapi_frozen: False` matters.** No frozen OpenAPI specification
 exists server-side, and `/openapi.json` is disabled in production. This
 SDK's models were derived from reading the backend response and request
-models **at that precise commit**. Naming the commit is the only way to
-state what this SDK corresponds to.
+models **at that precise commit**, then confirmed against responses
+captured from an instance built from that same commit. Naming the commit
+is the only way to state what this SDK corresponds to: absent a published
+specification, there is nothing else to point at.
 
 If `result.audit.measurement_version` differs from
 `API_CONTRACT["measurement_version"]`, results are not comparable with a
@@ -452,28 +499,37 @@ meaning.
 
 ---
 
-## Next step
+## Next steps
 
-**Capture ten real payloads from a test environment and replay the test
-suite against them.**
+### Done — live capture against a local instance
 
-This is the only action that changes the SDK's status. The procedure:
+The capture campaign that previously stood here has been run. Against a
+local stack built from backend commit `68d6057`, ten `TIER_02` calls with
+all three evaluators live plus one fully degraded run were recorded,
+redacted, and replayed through the suite: **0 `parse_warnings`, 0
+unmodelled root fields**, `measurement_version 3.3.0`, and all three
+values of `decision_basis` exercised (`measured_thresholds`,
+`incomplete_measurement`, `no_check_attempted`).
 
-1. obtain a `ct_test_` key and the URL of a **test** environment — never
-   production;
-2. emit calls covering four cases: complete measurement, forced evaluator
-   outage, entry tier, no `llm_response`;
-3. store each `result.raw` under `tests/fixtures/captured/` with
-   `_fixture_origin: "captured"`;
-4. replay `python -m pytest tests` against those fixtures;
-5. **treat every discrepancy as information, not as an SDK bug**: a
-   non-empty `parse_warnings` means the server emits something other than
-   what the response model declares, which is an audit finding rather than
-   a client error.
+Discrepancies were treated as information rather than as SDK bugs. Three
+of them turned out to be backend defects and are recorded as BL-001,
+BL-002 and BL-003 in [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md). None
+has been worked around in the client.
 
-**Criterion for promotion to "ready for pilot testing"**: the suite passes
-against captured fixtures, `parse_warnings` is empty, and
-`unknown_fields` is either empty or explained.
+### Open — what would change the status next
+
+| # | Action | What it would establish |
+|---|---|---|
+| 1 | Replay the same campaign against a **hosted** test deployment | That the contract holds outside a locally built instance |
+| 2 | Backend publishes a **frozen OpenAPI document** | Contract drift becomes detectable mechanically instead of by capture |
+| 3 | Resolve **BL-001** (SSE decision invariance) | A prerequisite to any streaming support in this SDK |
+| 4 | Backend exposes an **`Idempotency-Key`** on `POST /v1/govern` | Would make retry-on-timeout safe; until then no retry is performed |
+| 5 | A pilot integration reports back | First evidence from outside this repository — **none recorded to date** |
+
+**Criterion for promotion beyond "Experimental / Pilot Evaluation"**:
+items 1 and 2 above, plus at least one pilot integration whose results
+have actually been observed. Local verification alone is not sufficient,
+and no such pilot observation exists yet.
 
 ---
 
