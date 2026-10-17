@@ -85,6 +85,7 @@ validation/
 # pour l'un d'eux, le prefixe d'une cle de PRODUCTION reelle.
 RAPPORT_VALIDATION.md
 RAPPORT_VALIDATION_02_ENVIRONNEMENT.md
+RAPPORT_PUBLICATION_GITHUB.md
 
 # ---------------------------------------------------------------------
 # Fichiers temporaires, journaux, systeme
