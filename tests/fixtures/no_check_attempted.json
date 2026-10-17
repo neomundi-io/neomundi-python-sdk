@@ -1,0 +1,110 @@
+{
+  "_fixture_origin": "derived_from_code",
+  "_fixture_note": "Aucun llm_response fourni : aucun controle serveur lance. decision_basis = no_check_attempted (responses.py:30-37). measurement.status = not_attempted ET coverage = 1.0 : a lire ENSEMBLE, jamais coverage seule. Les agregats SONT publies, parce qu'un controle jamais lance n'est pas une mesure manquante (measurement_coverage.py:14-20). Note : quality.coherence_score vaut 1.0 par convention interne du moteur alors qu'aucun embedding n'a ete calcule, et ce signal n'apparait ni dans measured_signals ni dans unmeasured_signals -- c'est le reliquat declare de l'audit 02 §6.1.",
+  "request_id": "99999999-8888-7777-6666-555555555555",
+  "timestamp": "2026-10-17T10:02:44.118900",
+  "system_id": "controltower-api",
+  "mode": "OBS",
+  "g_score": 0.6,
+  "g_final": 1.0,
+  "v_score": null,
+  "delta_g": null,
+  "checks_emitted": 0,
+  "trajectory_points": null,
+  "measured_signals": ["stability_score"],
+  "unmeasured_signals": null,
+  "measurement": {
+    "status": "not_attempted",
+    "checks_attempted": 0,
+    "checks_succeeded": 0,
+    "coverage": 1.0,
+    "confidence_basis": "no_server_check",
+    "degraded_g_inputs": [],
+    "failed_checks": {},
+    "missing_required_signals": [],
+    "aggregates_publishable": true
+  },
+  "processing_time_ms": 14.22,
+  "latency_ms": 310.0,
+  "model": "unknown",
+  "provider": null,
+  "evaluators": {
+    "stability_score": {
+      "evaluator": "runtime_engine.process",
+      "model_used": null,
+      "status": "measured",
+      "reason": null
+    },
+    "coherence_score": {
+      "evaluator": "embedding_detector.compute_coherence",
+      "model_used": null,
+      "status": "not_attempted",
+      "reason": null
+    },
+    "semantic_risk": {
+      "evaluator": "semantic_risk.moderate",
+      "model_used": null,
+      "status": "not_attempted",
+      "reason": null
+    },
+    "factual_hallucination_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": null,
+      "status": "not_attempted",
+      "reason": null
+    },
+    "semantic_instability_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": null,
+      "status": "not_attempted",
+      "reason": null
+    }
+  },
+  "governance": {
+    "decision": "ALLOW",
+    "decision_basis": "no_check_attempted",
+    "confidence": 1.0,
+    "reasons": ["stability_score=1.000, regime=STABLE -- all metrics within bounds"]
+  },
+  "quality": {
+    "g_score": 0.6,
+    "stability_score": 1.0,
+    "confidence": 1.0,
+    "coherence_score": 1.0,
+    "semantic_risk": 0.0,
+    "factual_hallucination_score": null,
+    "semantic_instability_score": null,
+    "information_density": null,
+    "suspect_phrases": null
+  },
+  "runtime": {
+    "r_score": 0.32,
+    "latency_score": 0.062,
+    "cost_score": 0.0,
+    "e_token": 0.0,
+    "energy_score": 0.0
+  },
+  "metrics": {
+    "energy_score": 0.0,
+    "e_token": 0.0,
+    "cost_proxy": 0.0,
+    "latency_proxy": 0.062,
+    "stability_score": 0.0
+  },
+  "baseline": {
+    "reference_energy": 0.05,
+    "observed_energy": 0.0186,
+    "delta_E": 0.0314,
+    "calibration_status": null,
+    "esi_q": 1.0,
+    "esi_bootstrap": true
+  },
+  "audit": {
+    "measurement_version": "3.3.0",
+    "normalizer_version": "1.0.0",
+    "trace_id": "trace-99999999"
+  },
+  "density": null,
+  "esi": null,
+  "rag_grounding": null
+}

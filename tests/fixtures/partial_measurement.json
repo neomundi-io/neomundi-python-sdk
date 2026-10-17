@@ -1,0 +1,175 @@
+{
+  "_fixture_origin": "derived_from_code",
+  "_fixture_note": "Juge de factualite injoignable. Reproduit governance.py:1360-1364 (agregats null via _agg), runtime_engine.py:352-368 (FLAG force, raison d'incompletude en PREMIERE position) et measurement_coverage.py (couverture 2/3, cause nommee). Les signaux REELLEMENT mesures gardent leur valeur : c'est l'invariant central du produit.",
+  "request_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "timestamp": "2026-10-17T09:31:07.002119",
+  "system_id": "controltower-api",
+  "mode": "OBS",
+  "g_score": null,
+  "g_final": null,
+  "v_score": null,
+  "delta_g": -0.4821,
+  "checks_emitted": 2,
+  "trajectory_points": null,
+  "measured_signals": ["coherence_score", "semantic_risk"],
+  "unmeasured_signals": {
+    "factual_hallucination_score": "hallucination_judge_unavailable",
+    "semantic_instability_score": "hallucination_judge_unavailable"
+  },
+  "measurement": {
+    "status": "partial",
+    "checks_attempted": 3,
+    "checks_succeeded": 2,
+    "coverage": 0.666667,
+    "confidence_basis": "measurement_coverage",
+    "degraded_g_inputs": ["hallucination_score"],
+    "failed_checks": {"hallucination": "hallucination_judge_unavailable"},
+    "missing_required_signals": ["hallucination_score"],
+    "aggregates_publishable": false
+  },
+  "processing_time_ms": 31402.18,
+  "latency_ms": 915.0,
+  "model": "gpt-4o-mini",
+  "provider": null,
+  "evaluators": {
+    "stability_score": {
+      "evaluator": "runtime_engine.process",
+      "model_used": null,
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": null,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "coherence_score": {
+      "evaluator": "embedding_detector.compute_coherence",
+      "model_used": "nomic-embed-text",
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": null,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "semantic_risk": {
+      "evaluator": "semantic_risk.moderate",
+      "model_used": "llama-guard3:1b",
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": null,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "factual_hallucination_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": null,
+      "status": "not_measured",
+      "reason": "hallucination_judge_unavailable",
+      "model_configured": "llama3.2:3b",
+      "served_by": null,
+      "attempts": 1,
+      "latency_ms": null,
+      "evaluator_runtime": "ollama",
+      "prompt_template_hash": "9f2c41ab77d0e513",
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "semantic_instability_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": null,
+      "status": "not_measured",
+      "reason": "hallucination_judge_unavailable",
+      "model_configured": "llama3.2:3b",
+      "served_by": null,
+      "attempts": 1,
+      "latency_ms": null,
+      "evaluator_runtime": "ollama",
+      "prompt_template_hash": "9f2c41ab77d0e513",
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    }
+  },
+  "governance": {
+    "decision": "FLAG",
+    "decision_basis": "incomplete_measurement",
+    "confidence": 0.6667,
+    "reasons": [
+      "Measurement incomplete: required signal(s) not measured (hallucination_score). The aggregate is not derivable from measurements alone, so it is published null and this request is flagged for review rather than allowed on a partial basis.",
+      "stability_score=0.722, regime=STABLE -- all metrics within bounds"
+    ]
+  },
+  "quality": {
+    "g_score": null,
+    "stability_score": null,
+    "confidence": 0.6667,
+    "coherence_score": 0.81,
+    "semantic_risk": 0.0,
+    "factual_hallucination_score": null,
+    "semantic_instability_score": null,
+    "information_density": 0.5903,
+    "suspect_phrases": null
+  },
+  "runtime": {
+    "r_score": 0.407,
+    "latency_score": 0.183,
+    "cost_score": 0.028,
+    "e_token": 0.00051,
+    "energy_score": 0.004
+  },
+  "metrics": {
+    "energy_score": null,
+    "e_token": 0.00051,
+    "cost_proxy": 0.028,
+    "latency_proxy": 0.183,
+    "stability_score": null
+  },
+  "baseline": {
+    "reference_energy": 0.05,
+    "observed_energy": 0.06938,
+    "delta_E": -0.01938,
+    "calibration_status": null,
+    "esi_q": 0.8871,
+    "esi_bootstrap": false
+  },
+  "audit": {
+    "measurement_version": "3.3.0",
+    "normalizer_version": "1.0.0",
+    "trace_id": "trace-aaaaaaaa"
+  },
+  "density": {
+    "volumetric_density": 0.291667,
+    "volumetric_density_basis": "response_tokens_per_prompt_character",
+    "informational_energy": 140.0,
+    "informational_density": 1.0,
+    "risk_coefficient": 3,
+    "factual_input_measured": false,
+    "unmeasured_reason": "hallucination_judge_unavailable"
+  },
+  "esi": {
+    "g_final": null,
+    "s_component": null,
+    "p_component": null,
+    "q_component": null,
+    "c_component": null,
+    "s_value": null,
+    "p_value": null,
+    "q_value": null,
+    "c_value": null,
+    "betas": {"beta_s": 0.4, "beta_p": 0.25, "beta_q": 0.15, "beta_c": 0.2}
+  },
+  "rag_grounding": null
+}

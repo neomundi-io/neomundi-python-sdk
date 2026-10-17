@@ -1,0 +1,1 @@
+{"_fixture_origin":"derived_from_code","error":"validation_error","detail":[{"field":"body.raw_metrics.token_count","message":"Input should be greater than or equal to 0","type":"greater_than_equal"},{"field":"body.raw_metrics.latency_ms","message":"Field required","type":"missing"}],"request_id":"err-422-0000","timestamp":"2026-10-17T10:12:00.000000"}

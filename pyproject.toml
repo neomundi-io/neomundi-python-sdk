@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neomundi-sdk"
+version = "0.1.0"
+description = "Client Python de l'API de mesure NeoMundi (POST /v1/govern)"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["neomundi", "ai-governance", "llm-measurement", "observability"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+    "Private :: Do Not Upload",
+]
+
+# httpx est la SEULE dépendance de production.
+#
+# pydantic est volontairement écarté : il convertirait "0.5" en 0.5 et
+# masquerait ainsi une dérive de contrat que ce SDK doit rendre visible.
+# Voir PLAN_IMPLEMENTATION.md §4.2.
+dependencies = [
+    "httpx>=0.24,<1.0",
+]
+
+[project.optional-dependencies]
+# respx n'est pas utilisé : httpx.MockTransport (intégré) suffit, ce qui
+# garde la suite exécutable sans installation supplémentaire.
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+neomundi = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"
+# `pythonpath` rend la suite executable par un simple `pytest`, sans
+# installation prealable ni variable d'environnement -- et sans dependre
+# du separateur de chemin de la plateforme. Requiert pytest >= 7.
+pythonpath = ["src", "tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# API_CONTRACT est défini avant les ré-exports, délibérément : c'est la
+# première chose qu'un lecteur du module doit voir.
+"src/neomundi/__init__.py" = ["E402"]

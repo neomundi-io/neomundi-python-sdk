@@ -1,0 +1,66 @@
+{
+  "_fixture_origin": "synthetic",
+  "_fixture_note": "SYNTHETIQUE. Le backend n'emet PAS cette charge. Elle existe pour verifier deux proprietes du SDK : (1) un champ racine inconnu est conserve et signale sans faire echouer l'appel ; (2) un type inattendu produit un ParseWarning, le champ typé vaut None, et la valeur brute reste accessible dans raw -- le SDK ne convertit jamais une chaine en nombre, parce qu'une conversion masquerait une derive de contrat.",
+  "request_id": "deadbeef-0000-1111-2222-333344445555",
+  "timestamp": "pas-une-date",
+  "system_id": "controltower-api",
+  "mode": "OBS",
+  "g_score": "0.492",
+  "g_final": true,
+  "v_score": null,
+  "delta_g": null,
+  "checks_emitted": "3",
+  "trajectory_points": null,
+  "measured_signals": ["coherence_score", 42],
+  "unmeasured_signals": null,
+  "measurement": {
+    "status": "complete",
+    "checks_attempted": 3,
+    "checks_succeeded": 3,
+    "coverage": 1.0,
+    "confidence_basis": "measurement_coverage",
+    "degraded_g_inputs": [],
+    "failed_checks": {},
+    "missing_required_signals": [],
+    "aggregates_publishable": true
+  },
+  "governance": {
+    "decision": "ALLOW",
+    "decision_basis": "measured_thresholds",
+    "confidence": 1.0,
+    "reasons": []
+  },
+  "quality": {
+    "g_score": "0.492",
+    "stability_score": 0.82,
+    "confidence": 1.0,
+    "coherence_score": 0.72,
+    "semantic_risk": false,
+    "factual_hallucination_score": 0.12,
+    "semantic_instability_score": 0.0,
+    "information_density": null,
+    "suspect_phrases": null
+  },
+  "metrics": {
+    "energy_score": 0.18,
+    "e_token": 0.00042,
+    "cost_proxy": 0.03,
+    "latency_proxy": 0.1684,
+    "stability_score": 0.18
+  },
+  "baseline": {
+    "reference_energy": 0.05,
+    "observed_energy": 0.065012,
+    "delta_E": -0.015012,
+    "calibration_status": null,
+    "esi_q": null,
+    "esi_bootstrap": null
+  },
+  "audit": {
+    "measurement_version": "3.3.0",
+    "normalizer_version": "1.0.0",
+    "trace_id": "trace-deadbeef"
+  },
+  "un_champ_que_le_sdk_ignore": {"ajoute": "par une version future du backend"},
+  "autre_champ_inconnu": 123
+}

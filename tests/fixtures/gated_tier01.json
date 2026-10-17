@@ -1,0 +1,104 @@
+{
+  "_fixture_origin": "derived_from_code",
+  "_fixture_note": "Sortie de _apply_tier_filter pour tier_01 (governance.py:1978-2050). Un champ non vendu vaut NULL, jamais 0.0 (correction_v4_10_11, sonde probe_tier_filter.py). runtime/density/esi passent a null ; measured_signals est reduit a stability_score ; g_final est masque mais g_score reste visible ; metrics.stability_score reprend quality.stability_score et n'est donc PAS inverse dans ce cas de palier.",
+  "request_id": "cccccccc-dddd-eeee-ffff-000000000000",
+  "timestamp": "2026-10-17T09:45:11.730004",
+  "system_id": "controltower-api",
+  "mode": "OBS",
+  "g_score": 0.492,
+  "g_final": null,
+  "v_score": 0.88,
+  "delta_g": null,
+  "checks_emitted": 3,
+  "trajectory_points": null,
+  "measured_signals": ["stability_score"],
+  "unmeasured_signals": null,
+  "measurement": {
+    "status": "complete",
+    "checks_attempted": 3,
+    "checks_succeeded": 3,
+    "coverage": 1.0,
+    "confidence_basis": "measurement_coverage",
+    "degraded_g_inputs": [],
+    "failed_checks": {},
+    "missing_required_signals": [],
+    "aggregates_publishable": true
+  },
+  "processing_time_ms": 2733.5,
+  "latency_ms": 842.0,
+  "model": "gpt-4o-mini",
+  "provider": null,
+  "evaluators": {
+    "stability_score": {
+      "evaluator": "runtime_engine.process",
+      "model_used": null,
+      "status": "measured",
+      "reason": null
+    },
+    "coherence_score": {
+      "evaluator": "embedding_detector.compute_coherence",
+      "model_used": "nomic-embed-text",
+      "status": "measured",
+      "reason": null
+    },
+    "semantic_risk": {
+      "evaluator": "semantic_risk.moderate",
+      "model_used": "llama-guard3:1b",
+      "status": "measured",
+      "reason": null
+    },
+    "factual_hallucination_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": "llama3.2:3b",
+      "status": "measured",
+      "reason": null
+    },
+    "semantic_instability_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": "llama3.2:3b",
+      "status": "measured",
+      "reason": null
+    }
+  },
+  "governance": {
+    "decision": "ALLOW",
+    "decision_basis": "measured_thresholds",
+    "confidence": 1.0,
+    "reasons": ["stability_score=0.820, regime=STABLE -- all metrics within bounds"]
+  },
+  "quality": {
+    "g_score": 0.492,
+    "stability_score": 0.82,
+    "confidence": 1.0,
+    "coherence_score": null,
+    "semantic_risk": null,
+    "factual_hallucination_score": null,
+    "semantic_instability_score": null,
+    "information_density": null,
+    "suspect_phrases": null
+  },
+  "runtime": null,
+  "metrics": {
+    "energy_score": null,
+    "e_token": null,
+    "cost_proxy": null,
+    "latency_proxy": null,
+    "stability_score": 0.82
+  },
+  "baseline": {
+    "reference_energy": null,
+    "observed_energy": null,
+    "delta_E": null,
+    "calibration_status": null,
+    "esi_q": null,
+    "esi_bootstrap": null
+  },
+  "audit": {
+    "measurement_version": "3.3.0",
+    "normalizer_version": "1.0.0",
+    "trace_id": "trace-cccccccc"
+  },
+  "density": null,
+  "esi": null,
+  "rag_grounding": null
+}

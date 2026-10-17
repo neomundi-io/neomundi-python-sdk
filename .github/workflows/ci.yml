@@ -1,0 +1,155 @@
+name: CI
+
+# Aucun secret GitHub n'est necessaire, et aucun n'est reference.
+# Aucun appel vers une API NeoMundi : tous les tests passent par
+# httpx.MockTransport et les exemples pointent sur example.invalid
+# (domaine reserve RFC 2606, dont la resolution DNS echoue toujours).
+# Aucune publication PyPI : le classificateur `Private :: Do Not Upload`
+# de pyproject.toml fait refuser tout envoi par l'index.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # pyproject.toml declare requires-python >= 3.9. La matrice verifie
+        # les bornes et un point intermediaire, plutot que de l'affirmer.
+        python-version: ["3.9", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install the package and its dev extras
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run the test suite
+        run: python -m pytest tests -v
+
+      - name: Run the offline examples
+        # Les trois exemples sont deja executes par tests/test_examples.py.
+        # Les relancer ici rend leur sortie lisible dans le journal de CI.
+        run: |
+          python examples/01_premiere_mesure.py
+          python examples/02_mesure_partielle.py
+          python examples/03_gestion_erreurs.py
+
+  build:
+    name: Build and packaging checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build the sdist and the wheel
+        run: python -m build
+
+      - name: Check the distribution metadata
+        # `twine check` valide les metadonnees et le rendu du README.
+        # Il ne publie rien : aucun `twine upload` n'existe dans ce workflow.
+        run: python -m twine check dist/*
+
+      - name: Install the built wheel in a clean environment
+        run: |
+          python -m venv /tmp/verify
+          /tmp/verify/bin/python -m pip install --upgrade pip
+          /tmp/verify/bin/python -m pip install dist/*.whl
+
+      - name: The installed package works without access to src/
+        run: |
+          cd /tmp
+          /tmp/verify/bin/python -c "
+          import neomundi, pathlib
+          print('imported from:', neomundi.__file__)
+          assert 'site-packages' in neomundi.__file__, 'not the installed copy'
+          assert neomundi.__version__ == '0.1.0'
+          assert neomundi.API_CONTRACT['measurement_version'] == '3.3.0'
+          assert neomundi.API_CONTRACT['openapi_frozen'] is False
+          assert (pathlib.Path(neomundi.__file__).parent / 'py.typed').exists()
+          print('OK')
+          "
+
+      - name: Upload the distribution as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 14
+
+  lint:
+    name: Syntax and static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ruff
+
+      - name: Compile every source file
+        # Verification de syntaxe la plus basique, et la plus decisive :
+        # aucun fichier ne doit etre incompilable.
+        run: python -m compileall -q src tests examples
+
+      - name: Ruff
+        # Non bloquant a la v0.1 : le code n'a jamais ete passe au linter,
+        # et un echec de style ne doit pas masquer un echec de test.
+        # A rendre bloquant quand les ecarts seront traites.
+        continue-on-error: true
+        run: python -m ruff check src tests examples
+
+  security:
+    name: No secret in the repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install the package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run the secret-leak guards only
+        # Ces tests balaient tout le depot a la recherche d'une cle
+        # plausible et verifient que la cle ne fuit ni dans un repr, ni
+        # dans un message d'exception, ni dans un journal. Les lancer dans
+        # un job separe rend un echec immediatement lisible.
+        run: python -m pytest tests/test_no_secret_leak.py -v

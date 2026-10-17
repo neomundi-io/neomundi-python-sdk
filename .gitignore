@@ -1,0 +1,116 @@
+# ---------------------------------------------------------------------
+# Environnements virtuels
+# ---------------------------------------------------------------------
+.venv/
+.venv_*/
+venv/
+ENV/
+env/
+
+# ---------------------------------------------------------------------
+# Caches et bytecode Python
+# ---------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ---------------------------------------------------------------------
+# Caches d'outils
+# ---------------------------------------------------------------------
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+dmypy.json
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+
+# ---------------------------------------------------------------------
+# Artefacts de construction et de distribution
+# ---------------------------------------------------------------------
+dist/
+build/
+*.egg-info/
+*.egg
+wheels/
+sdist/
+.installed.cfg
+MANIFEST
+
+# ---------------------------------------------------------------------
+# Secrets et configuration locale — JAMAIS versionnes
+# ---------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+credentials.json
+.netrc
+.npmrc
+
+# Un exemple local contenant une vraie cle API. Le modele versionne,
+# examples/90_cle_reelle.py.disabled, ne contient AUCUNE cle.
+examples/local_*.py
+
+# ---------------------------------------------------------------------
+# Captures contenant des donnees d'execution
+# ---------------------------------------------------------------------
+# Les fixtures `captured` proviennent d'appels a une instance NeoMundi.
+# Le harnais de capture les expurge, mais elles restent des donnees
+# d'execution : elles ne sont versionnees qu'apres relecture explicite,
+# jamais automatiquement.
+tests/fixtures/captured/
+validation/capture_report.json
+
+# ---------------------------------------------------------------------
+# Outillage interne, non destine a ce depot
+# ---------------------------------------------------------------------
+# `validation/` contient des bancs qui lisent le depot backend a un
+# chemin local ABSOLU. Ils n'ont aucun sens hors du poste de
+# developpement, et exposeraient un chemin personnel.
+validation/
+
+# Rapports d'audit internes. Ils citent des constats non publies et,
+# pour l'un d'eux, le prefixe d'une cle de PRODUCTION reelle.
+RAPPORT_VALIDATION.md
+RAPPORT_VALIDATION_02_ENVIRONNEMENT.md
+
+# ---------------------------------------------------------------------
+# Fichiers temporaires, journaux, systeme
+# ---------------------------------------------------------------------
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------------
+# Editeurs et IDE
+# ---------------------------------------------------------------------
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# ---------------------------------------------------------------------
+# Garde-fou : le depot API de reference ne doit jamais etre copie ici
+# ---------------------------------------------------------------------
+govern-v3/
+portal/
+alembic/

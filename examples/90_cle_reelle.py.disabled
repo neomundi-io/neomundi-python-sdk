@@ -1,0 +1,119 @@
+"""Exemple 90 — Appel réel contre un serveur NeoMundi.
+
+###############################################################################
+#  CE FICHIER N'EST PAS EXÉCUTABLE EN L'ÉTAT.                                 #
+#                                                                             #
+#  Son extension est `.py.disabled` : Python ne le lancera pas, et la suite    #
+#  de tests vérifie qu'il le reste. C'est volontaire — le seul exemple du      #
+#  dépôt capable de contacter un vrai serveur ne doit pas pouvoir partir       #
+#  par accident.                                                              #
+#                                                                             #
+#  Contrairement aux exemples 01, 02 et 03, celui-ci :                        #
+#    · consomme une REQUÊTE FACTURÉE sur votre quota ou votre portefeuille ;  #
+#    · crée une OBSERVATION réelle dans les journaux NeoMundi ;               #
+#    · écrase la référence `delta_g` de votre compte.                         #
+#                                                                             #
+#  POUR L'UTILISER, délibérément :                                            #
+#    1. copier ce fichier sous `examples/local_cle_reelle.py` ;               #
+#    2. renseigner NEOMUNDI_API_KEY et NEOMUNDI_BASE_URL dans                 #
+#       l'environnement — jamais en dur dans le fichier ;                     #
+#    3. commencer par une clé `ct_test_` sur un environnement de test.        #
+#                                                                             #
+#  Ne JAMAIS committer une vraie clé. `tests/test_no_secret_leak.py`          #
+#  refuse toute clé plausible dans le dépôt.                                  #
+###############################################################################
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+
+from neomundi import (
+    AggregateWithheldError,
+    APIError,
+    NeoMundiClient,
+    RateLimitError,
+    TransportError,
+)
+
+
+def main() -> int:
+    api_key = os.environ.get("NEOMUNDI_API_KEY")
+    base_url = os.environ.get("NEOMUNDI_BASE_URL")
+
+    if not api_key or not base_url:
+        print(
+            "NEOMUNDI_API_KEY et NEOMUNDI_BASE_URL doivent être définis.\n"
+            "Aucune valeur par défaut n'est fournie : le SDK ne choisit pas\n"
+            "d'environnement à votre place.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if api_key.startswith("ct_live_"):
+        print(
+            "ATTENTION : clé `ct_live_`. Cet appel sera facturé et créera une\n"
+            "observation réelle. Commencer par une clé `ct_test_`.",
+            file=sys.stderr,
+        )
+
+    # Rappel : l'appelant interroge SON modèle lui-même, puis envoie ici
+    # les métriques réelles de la réponse obtenue.
+    with NeoMundiClient(api_key=api_key, base_url=base_url, timeout=90) as client:
+        try:
+            result = client.govern(
+                token_count=128,
+                latency_ms=842.0,
+                cost=0.0031,
+                prompt_length=480,      # CARACTÈRES
+                response_length=1200,   # CARACTÈRES
+                model_name="gpt-4o-mini",
+                llm_prompt="Quelle est la capitale de la France ?",
+                llm_response="La capitale de la France est Paris.",
+            )
+        except RateLimitError as exc:
+            print(f"Limite de débit — réessayer dans {exc.retry_after} s")
+            return 1
+        except APIError as exc:
+            print(f"Erreur API {exc.status_code} : {exc.detail}")
+            return 1
+        except TransportError as exc:
+            # Un timeout ici est le cas délicat : l'observation existe
+            # peut-être déjà côté serveur. Ne pas rejouer à l'aveugle.
+            print(f"Échec de transport : {exc}")
+            return 1
+
+    print(f"request_id        : {result.request_id}")
+    print(f"version de mesure : {result.audit.measurement_version}")
+    print(f"décision          : {result.governance.decision}")
+    print(f"base              : {result.governance.decision_basis}")
+    print(f"mesure complète   : {not result.measurement_incomplete}")
+    print(f"g_score           : {result.format_score('g_score')}")
+
+    # Vérification de comparabilité : si la version de mesure du serveur
+    # diffère de celle que ce SDK modélise, les valeurs ne sont pas
+    # comparables avec celles d'une autre série.
+    from neomundi import API_CONTRACT
+
+    attendue = API_CONTRACT["measurement_version"]
+    servie = result.audit.measurement_version
+    if servie != attendue:
+        print(
+            f"\nAVERTISSEMENT : le serveur sert la version de mesure {servie!r}\n"
+            f"alors que ce SDK a été écrit contre {attendue!r}. Les résultats\n"
+            f"ne sont pas comparables avec une série produite sous {attendue!r},\n"
+            f"et des champs peuvent avoir changé de sens.",
+            file=sys.stderr,
+        )
+
+    try:
+        print(f"valeur exploitable : {result.require('g_score')}")
+    except AggregateWithheldError as exc:
+        print(f"agrégat retenu : {exc}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

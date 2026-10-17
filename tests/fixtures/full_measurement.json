@@ -1,0 +1,178 @@
+{
+  "_fixture_origin": "derived_from_code",
+  "_fixture_note": "Mesure complete, palier TIER_02+. Valeurs calculees avec les formules de govern-v3/app/core/score_engine.py (G = 0.30*conf + 0.30*coh - 0.20*risk - 0.20*hal ; G_MAX = 0.60) et metrics/g_final.py, avec conf=1.0 coh=0.72 risk=0.0 hal=0.12 N=128. Structure relevee de app/models/responses.py au commit 68d6057.",
+  "request_id": "11111111-2222-3333-4444-555555555555",
+  "timestamp": "2026-10-17T09:14:22.481233",
+  "system_id": "controltower-api",
+  "mode": "OBS",
+  "g_score": 0.492,
+  "g_final": 0.870878,
+  "v_score": 0.88,
+  "delta_g": 0.0138,
+  "checks_emitted": 3,
+  "trajectory_points": null,
+  "measured_signals": [
+    "stability_score",
+    "coherence_score",
+    "semantic_risk",
+    "factual_hallucination_score",
+    "semantic_instability_score"
+  ],
+  "unmeasured_signals": null,
+  "measurement": {
+    "status": "complete",
+    "checks_attempted": 3,
+    "checks_succeeded": 3,
+    "coverage": 1.0,
+    "confidence_basis": "measurement_coverage",
+    "degraded_g_inputs": [],
+    "failed_checks": {},
+    "missing_required_signals": [],
+    "aggregates_publishable": true
+  },
+  "processing_time_ms": 2841.66,
+  "latency_ms": 842.0,
+  "model": "gpt-4o-mini",
+  "provider": null,
+  "evaluators": {
+    "stability_score": {
+      "evaluator": "runtime_engine.process",
+      "model_used": null,
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": null,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "coherence_score": {
+      "evaluator": "embedding_detector.compute_coherence",
+      "model_used": "nomic-embed-text",
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": null,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "semantic_risk": {
+      "evaluator": "semantic_risk.moderate",
+      "model_used": "llama-guard3:1b",
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": null,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "factual_hallucination_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": "llama3.2:3b",
+      "status": "measured",
+      "reason": null,
+      "model_configured": "llama3.2:3b",
+      "served_by": "primary",
+      "attempts": 1,
+      "latency_ms": 2104.3,
+      "evaluator_runtime": "ollama",
+      "prompt_template_hash": "9f2c41ab77d0e513",
+      "inference_config_hash": "3b81aa02ef5c7d64",
+      "config_fingerprint": "c40d9e71bb2a6f08"
+    },
+    "semantic_instability_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": "llama3.2:3b",
+      "status": "measured",
+      "reason": null,
+      "model_configured": "llama3.2:3b",
+      "served_by": "primary",
+      "attempts": 1,
+      "latency_ms": 2104.3,
+      "evaluator_runtime": "ollama",
+      "prompt_template_hash": "9f2c41ab77d0e513",
+      "inference_config_hash": "3b81aa02ef5c7d64",
+      "config_fingerprint": "c40d9e71bb2a6f08"
+    }
+  },
+  "governance": {
+    "decision": "ALLOW",
+    "decision_basis": "measured_thresholds",
+    "confidence": 1.0,
+    "reasons": [
+      "stability_score=0.820, regime=STABLE -- all metrics within bounds",
+      "R=0.412 (latency=0.168, cost=0.030, efficiency=0.004)"
+    ]
+  },
+  "quality": {
+    "g_score": 0.492,
+    "stability_score": 0.82,
+    "confidence": 1.0,
+    "coherence_score": 0.72,
+    "semantic_risk": 0.0,
+    "factual_hallucination_score": 0.12,
+    "semantic_instability_score": 0.0,
+    "information_density": 0.6412,
+    "suspect_phrases": null
+  },
+  "runtime": {
+    "r_score": 0.412,
+    "latency_score": 0.168,
+    "cost_score": 0.03,
+    "e_token": 0.00042,
+    "energy_score": 0.004
+  },
+  "metrics": {
+    "energy_score": 0.18,
+    "e_token": 0.00042,
+    "cost_proxy": 0.03,
+    "latency_proxy": 0.1684,
+    "stability_score": 0.18
+  },
+  "baseline": {
+    "reference_energy": 0.05,
+    "observed_energy": 0.065012,
+    "delta_E": -0.015012,
+    "calibration_status": null,
+    "esi_q": 0.9413,
+    "esi_bootstrap": false
+  },
+  "audit": {
+    "measurement_version": "3.3.0",
+    "normalizer_version": "1.0.0",
+    "trace_id": "trace-11111111"
+  },
+  "density": {
+    "volumetric_density": 0.266667,
+    "volumetric_density_basis": "response_tokens_per_prompt_character",
+    "informational_energy": 128.36,
+    "informational_density": 1.002813,
+    "risk_coefficient": 3,
+    "factual_input_measured": true,
+    "unmeasured_reason": null
+  },
+  "esi": {
+    "g_final": 0.870878,
+    "s_component": 0.328,
+    "p_component": 0.249299,
+    "q_component": 0.149579,
+    "c_component": 0.144,
+    "s_value": 0.82,
+    "p_value": 0.997195,
+    "q_value": 0.997195,
+    "c_value": 0.72,
+    "betas": {"beta_s": 0.4, "beta_p": 0.25, "beta_q": 0.15, "beta_c": 0.2}
+  },
+  "rag_grounding": null
+}
