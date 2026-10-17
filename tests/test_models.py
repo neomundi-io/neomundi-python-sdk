@@ -499,7 +499,11 @@ def test_les_fixtures_declarent_leur_origine():
     for path in files:
         payload = json.loads(path.read_text(encoding="utf-8"))
         origin = payload.get("_fixture_origin")
-        assert origin in {"derived_from_code", "synthetic"}, path.name
+        # `captured` a été ajouté quand les premières charges réelles ont
+        # été relevées depuis une instance de test : c'est l'origine la
+        # plus probante des trois, et la seule qui valide la
+        # compatibilité live.
+        assert origin in {"derived_from_code", "synthetic", "captured"}, path.name
 
 
 def test_les_fixtures_nominales_sont_derivees_du_code():
