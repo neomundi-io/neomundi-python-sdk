@@ -1,0 +1,10 @@
+# Les documents qui disent ce que l'instrument mesure, et ce qu'il ne
+# mesure pas, doivent voyager avec l'artefact. Un paquet construit qui
+# ne contiendrait que le README renverrait vers des fichiers absents.
+include KNOWN_LIMITATIONS.md
+include PILOT_INTEGRATION_GUIDE.md
+include LICENSE_NOTICE.md
+recursive-include docs *.md
+
+# Les captures sont des donnees d'execution, hors depot et hors paquet.
+prune tests/fixtures/captured
