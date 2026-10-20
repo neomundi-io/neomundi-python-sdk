@@ -343,6 +343,18 @@ constant ≈ 0.3988.
 
 **The verdict (`decision`) is more informative than the score.**
 
+The documented numeric floor is a property of the reference formula, not
+a percentage of factual correctness. When required signals are
+unmeasured, aggregates may instead be withheld as `null`. The floor alone
+does not establish the cause of a historical `0.40` result; its version,
+measurement status and trace must also be checked.
+
+```python
+result.audit.measurement_version     # which formula produced it
+result.measurement.status            # complete | partial | not_attempted
+result.audit.trace_id                # the record to pull
+```
+
 ### `stability_score` exists twice, with inverted scales
 
 ```python
@@ -374,11 +386,36 @@ It is the `G` difference against the **previous request from the same
 account**, whatever question was asked. It may carry a number while
 `g_score` is `None`. Do not read it as a drift signal.
 
+Requests from different users or sessions sharing an account also share
+the previous-request reference. A change between unrelated requests is
+not evidence of drift. Session-level comparisons would require an
+explicitly scoped reference and comparable inputs; the SDK does not
+provide that isolation.
+
+**Separate API keys do not isolate it either.** The reference is stored
+per **account**, so every key issued to one account writes to and reads
+from the same slot. Separate accounts, or a reference you scope yourself,
+are the only isolations available today.
+
 ### `confidence` is not statistical confidence
 
 It is instrumental coverage: `checks_succeeded / checks_attempted`, with a
 denominator ≤ 3. Its only possible values are `0`, `1/3`, `1/2`, `2/3`,
 `1`.
+
+For display, use **"check coverage"**, ideally alongside the counts (for
+example, `3/3`), rather than "100% confidence". This is not a probability
+that the response is correct. Read it together with
+`measurement.status`: a coverage of `1.0` when **no checks were
+attempted** does not establish successful evaluation.
+
+```python
+result.measurement.coverage          # 1.0 — but of what?
+result.measurement.status            # 'not_attempted' -> nothing ran
+result.measurement.confidence_basis  # 'no_server_check' vs 'measurement_coverage'
+```
+
+`confidence_basis` is the field that names the difference outright.
 
 ### Two results are only comparable under conditions
 
@@ -524,12 +561,20 @@ has been worked around in the client.
 | 2 | Backend publishes a **frozen OpenAPI document** | Contract drift becomes detectable mechanically instead of by capture |
 | 3 | Resolve **BL-001** (SSE decision invariance) | A prerequisite to any streaming support in this SDK |
 | 4 | Backend exposes an **`Idempotency-Key`** on `POST /v1/govern` | Would make retry-on-timeout safe; until then no retry is performed |
-| 5 | A pilot integration reports back | First evidence from outside this repository — **none recorded to date** |
+| 5 | A pilot integration reports **results** back | First evidence from outside this repository — **feedback received 2026-10-20, integration results still pending** |
+
+**First external pilot feedback received — 20 October 2026.** A pilot
+reviewed the SDK, reported straightforward installation, and highlighted
+clarification needs around `g_final`, check coverage and the account
+scope of `delta_g`. Those three points are addressed in
+[Known limitations](#known-limitations) above. **Integration results and
+the paired-control detection experiment remain pending.**
 
 **Criterion for promotion beyond "Experimental / Pilot Evaluation"**:
 items 1 and 2 above, plus at least one pilot integration whose results
-have actually been observed. Local verification alone is not sufficient,
-and no such pilot observation exists yet.
+have actually been observed. Local verification alone is not sufficient.
+**A documentation review is not an integration**: no pilot integration
+result has been observed to date, so the criterion is not met.
 
 ---
 
