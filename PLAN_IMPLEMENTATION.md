@@ -22,7 +22,7 @@ Forme des erreurs | `govern-v3/app/main.py:189-200, 340-395` | `ErrorResponse` �
 Politique des champs supplémentaires | `responses.py` — aucun `model_config.extra` | défaut Pydantic v2 = `ignore` côté serveur |
 OpenAPI | `govern-v3/app/config.py:768-770` | `docs_enabled = not is_production or DEBUG` → **absent en production, aucun fichier figé dans le dépôt** |
 Consommateur de référence | `govern-v3/rgc_consumer_demo/` | gabarit retenu : indépendance, mode hors-ligne, hors-périmètre explicite |
-Client e2e existant | `tests/e2e_smoke.py` | confirme l'usage réel de l'en-tête et de la forme du corps |
+Client e2e existant | `govern-v3/tests/e2e_smoke.py` *(dépôt backend)* | confirme l'usage réel de l'en-tête et de la forme du corps |
 Environnement local | — | Python 3.12.10, `httpx` 0.28.1, `pytest` 9.1.1 présents ; **`respx` absent** |
 
 ### 0.1 Une divergence NON recensée par l'audit, découverte ici

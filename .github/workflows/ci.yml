@@ -91,6 +91,7 @@ jobs:
           assert 'site-packages' in neomundi.__file__, 'not the installed copy'
           assert neomundi.__version__ == '0.1.0'
           assert neomundi.API_CONTRACT['measurement_version'] == '3.3.0'
+          assert neomundi.API_CONTRACT['verified_measurement_versions'] == ('3.3.0', '3.3.1')
           assert neomundi.API_CONTRACT['openapi_frozen'] is False
           assert (pathlib.Path(neomundi.__file__).parent / 'py.typed').exists()
           print('OK')

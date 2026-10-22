@@ -268,3 +268,11 @@ def test_le_contrat_api_declare_le_commit_de_reference():
     assert contract["measurement_version"] == "3.3.0"
     assert contract["route"] == "POST /v1/govern"
     assert contract["openapi_frozen"] is False
+    # `verified_measurement_versions` est plus large que
+    # `measurement_version`, et le contient toujours : la version de
+    # dérivation ne peut pas être absente de la liste des versions
+    # vérifiées. Un tuple, pour qu'on ne le modifie pas par mégarde.
+    verified = contract["verified_measurement_versions"]
+    assert isinstance(verified, tuple)
+    assert contract["measurement_version"] in verified
+    assert "3.3.1" in verified

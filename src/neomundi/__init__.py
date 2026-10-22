@@ -33,9 +33,25 @@ __version__ = "0.1.0"
 #: deux résultats produits sous deux valeurs différentes ne sont pas
 #: comparables pour une même entrée. Comparer la valeur ci-dessous à
 #: `result.audit.measurement_version` avertit d'un écart.
+#:
+#: `verified_measurement_versions` est une liste **plus large**, et la
+#: distinction compte. `measurement_version` dit de quel commit ce SDK a
+#: été dérivé ; `verified_measurement_versions` dit sous quelles versions
+#: de mesure la surface REST a été vérifiée identique à celle-là. Un
+#: écart entre les deux n'est donc pas une incompatibilité tant que la
+#: version servie figure dans cette liste — mais il reste un écart, et il
+#: reste décisif pour la **comparabilité** de deux séries.
+#:
+#: `3.3.1` y figure depuis le 2026-10-22, sur deux preuves énoncées en
+#: entier dans `KNOWN_LIMITATIONS.md` §6 : les fichiers de contrat du
+#: backend sont **inchangés** entre `68d6057` et le commit déployé
+#: `aeff13c`, et une réponse réellement émise par la production sous
+#: `3.3.1` a été rejouée sans avertissement ni champ inconnu. **Aucune
+#: des deux n'est un appel de ce SDK contre le service hébergé.**
 API_CONTRACT = {
     "backend_commit": "68d6057cf620e430e6488da3cfcec9c471c75ed6",
     "measurement_version": "3.3.0",
+    "verified_measurement_versions": ("3.3.0", "3.3.1"),
     "normalizer_version": "1.0.0",
     "route": "POST /v1/govern",
     "contract_source": "govern-v3/app/models/responses.py, requests.py",
