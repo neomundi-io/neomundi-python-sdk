@@ -12,6 +12,23 @@ Version de mesure : **`3.3.0`**.
 > commit : sans spécification figée, le commit est le seul point de
 > référence vérifiable.
 
+> **Vérifié aussi sous la version de mesure `3.3.1`** — 2026-10-22, et
+> c'est la version que sert la production. Entre `68d6057` et le commit
+> déployé `aeff13c`, **aucun fichier de `app/models/` ne change**, et
+> `app/api/v1/governance.py` non plus : ce relevé décrit donc les deux
+> versions à l'identique. Le seul fichier applicatif qui diffère est
+> `app/api/v1/streaming.py` — le chemin SSE, hors du périmètre de ce
+> SDK — plus la chaîne `MEASUREMENT_VERSION` dans `app/config.py`. Le
+> verrou doré du backend sur sa surface de mesure
+> (`govern-v3/tests/golden/measurement_surface_lock.json`, dépôt
+> backend, 1 266 lignes) diffère
+> d'**une seule ligne** : la version.
+>
+> **Ne pas en conclure que les deux versions sont comparables.** Lire
+> `audit.measurement_version` sur chaque réponse et le consigner :
+> identité de contrat et comparabilité de série sont deux choses
+> distinctes. Voir `../KNOWN_LIMITATIONS.md` §6.
+
 ---
 
 ## 1. Requête

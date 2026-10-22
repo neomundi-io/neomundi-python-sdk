@@ -11,19 +11,26 @@ Python client for the NeoMundi measurement API.
 > **🚀 [`PILOT_INTEGRATION_GUIDE.md`](PILOT_INTEGRATION_GUIDE.md) — setup
 > and first integration for pilot developers.**
 >
-> Three backend defects are open and documented: **BL-001** (a trial key is
-> suspended on its first call), **BL-002** (a streaming decision depends on
-> network fragmentation), **BL-003** (`delta_g` is published while the
-> aggregate is withheld). None is worked around by this SDK — all three are
-> surfaced.
+> Three backend limitations are documented: **BL-001** (a trial key is
+> suspended on its first call) and **BL-003** (`delta_g` is published while
+> the aggregate is withheld) are **open and unchanged at `3.3.1`**;
+> **BL-002** (a streaming decision depends on network fragmentation) is
+> **partly corrected in `3.3.1`** — the decision no longer depends on the
+> slicing, the published trajectory still does. None is worked around by
+> this SDK — all three are surfaced.
 
 > **Not published on PyPI.** Install from source only — see
 > [Installation](#installation).
 >
 > **Compatibility verified against a local instance** built from backend
-> commit `68d6057`, measurement version `3.3.0` — and **against no hosted
-> deployment**. Verify compatibility with your own deployment before relying
-> on results: see [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6.
+> commit `68d6057`, measurement version `3.3.0`. The REST contract has
+> since been verified against measurement version **`3.3.1`** — the
+> version production serves — by source comparison and by replaying a real
+> `3.3.1` production response: **0 type discrepancies, 0 unmodelled
+> fields**. **No call by this SDK to a hosted deployment has ever been
+> made**, under either version. Verify compatibility with your own
+> deployment before relying on results: see
+> [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6.
 
 ---
 
@@ -151,7 +158,7 @@ with NeoMundiClient(
 print(result.governance.decision)        # 'ALLOW' | 'FLAG'
 print(result.governance.decision_basis)  # why — see below
 print(result.request_id)
-print(result.audit.measurement_version)  # '3.3.0'
+print(result.audit.measurement_version)  # '3.3.1' on production today
 ```
 
 **`llm_response` is the parameter that triggers the server-side checks.**
@@ -305,27 +312,71 @@ Read before communicating any figure produced by this SDK. The complete
 register is [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md); methodological
 detail is in [`docs/LIMITES.md`](docs/LIMITES.md).
 
-### Live compatibility: verified locally, not against any deployment
+### Live compatibility: the contract is verified, the call is not
 
-The SDK **has** been exercised against a running NeoMundi instance — a
-local one, built from backend commit
+Two campaigns, and the distinction between them is the whole point of
+this section.
+
+**Against a local instance, `3.3.0`.** The SDK was exercised against a
+running NeoMundi instance — a local one, built from backend commit
 `68d6057cf620e430e6488da3cfcec9c471c75ed6`. Ten REST calls at tier
 `TIER_02` with all three evaluators live, plus a fully degraded run, were
 captured and replayed through the test suite: **zero type discrepancies,
 zero unmodelled fields**, measurement version `3.3.0` as declared.
 
-What that establishes: the modelled contract matches what an instance
-built from the reference commit actually emits.
+**Against the production contract, `3.3.1` — 2026-10-22.** Production
+serves `3.3.1`, not `3.3.0`. Two independent checks closed that gap for
+the REST route:
 
-What it does **not** establish: behaviour against any hosted or shared
-deployment, under load, or on another backend version. No frozen OpenAPI
-specification exists server-side, so verification against your own
-deployment remains necessary — [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6
-gives the minimum check.
+| Check | Nature of the evidence | Result |
+|---|---|---|
+Source comparison `68d6057` → deployed `aeff13c` | code inspection | **nothing under `app/models/` changed**, and the REST route did not change. One application file differs — the SSE path — plus the version string |
+Replay of a real `3.3.1` production response through the client | replay of a production capture | **0 `parse_warnings`, 0 unknown root fields**, exact round-trip, aliases agreeing, coverage re-derivable |
 
-**Three backend defects were observed during that campaign** and are
-documented as BL-001, BL-002 and BL-003. The SDK surfaces them; it does
-not work around them.
+A sanitised copy of that response ships as
+`tests/fixtures/production_331/rest_complete_allow.json` and is exercised
+by `tests/test_measurement_version_331.py`, so the check is reproducible
+rather than merely reported.
+
+What all of that establishes: **the contract this client models is the
+contract production emits**.
+
+What it does **not** establish, and this is not a formality — **no call
+made by this SDK has ever reached a hosted deployment**, under `3.3.0` or
+`3.3.1`. Every error family, every timeout and every authentication path
+in this client has been exercised against a simulated transport only.
+Behaviour under load is uncharacterised. No frozen OpenAPI specification
+exists server-side, so verification against your own deployment remains
+necessary — [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6 gives the
+minimum check.
+
+**Three backend limitations were observed during the first campaign** and
+are documented as BL-001, BL-002 and BL-003. All three were re-read
+against `3.3.1` on 2026-10-22: BL-001 and BL-003 live in files that are
+byte-identical between the two commits and stand unchanged; BL-002 is the
+reason `3.3.1` exists and is partly corrected by it. The SDK surfaces
+them; it does not work around them.
+
+### Which version number means what
+
+```python
+result.audit.measurement_version   # '3.3.1' — the only one with scientific meaning
+```
+
+`GET /v1/health` reports an **application build version** — `3.0.0` on
+production — which is not the measurement version and must never be read
+as one. No endpoint publishes the measurement version: reading it costs
+one metered observation.
+
+```python
+import neomundi
+served = result.audit.measurement_version
+
+if served not in neomundi.API_CONTRACT["verified_measurement_versions"]:
+    ...   # unverified contract — stop, and report
+elif served != neomundi.API_CONTRACT["measurement_version"]:
+    ...   # parsing is safe; the SERIES is not comparable. Record `served`.
+```
 
 ### The scores do not use the whole `[0, 1]` range
 
@@ -470,6 +521,7 @@ python -m pytest tests
 `test_errors.py` | 401, 402, 413, 422, 429, 500, 502, 503, 418; timeouts; network failures; invalid JSON; empty body |
 `test_retry.py` | no retry by default on any status; a timeout is never retried even with a policy |
 `test_contract_drift.py` | no numeric default; no backend import; no undeclared dependency; no embedded threshold (AST-checked); fixture ↔ contract consistency |
+`test_measurement_version_331.py` | the REST surface under measurement version `3.3.1`: no parse warning, no unknown root field, exact round-trip, provenance exposed, version gap still detectable |
 `test_no_secret_leak.py` | no key in `repr`, messages, logs, body or URL; repository-wide key sweep |
 `test_examples.py` | the three examples run and exit 0 |
 
@@ -482,16 +534,22 @@ backend does not emit, built to exercise SDK robustness), or `captured`
 
 | Scope | Fixtures | Result |
 |---|---|---|
-| Repository / CI | `derived_from_code` + `synthetic` | **206 passed, 12 skipped** |
-| Local, with captures | the above + 11 `captured` | **328 passed** |
+| Repository / CI | `derived_from_code` + `synthetic` + the sanitised `3.3.1` production payload | **225 passed, 12 skipped** |
+| Local, with captures | the above + 11 `3.3.0` `captured` | **347 passed** |
 
-The 12 skipped tests are `test_captured_fixtures.py`, which replays real
-recorded payloads. `tests/fixtures/captured/` is excluded from the
-repository — recorded responses are execution data, not source — so those
-tests skip with a stated reason wherever the directory is absent, CI
-included. They are not a weaker part of the suite; they are the only part
-that can observe a divergence between the contract as read and the
+The 12 skipped tests are `test_captured_fixtures.py`, which replays the
+`3.3.0` recorded payloads. `tests/fixtures/captured/` is excluded from
+the repository — recorded responses are execution data, not source — so
+those tests skip with a stated reason wherever the directory is absent,
+CI included. They are not a weaker part of the suite; they are the only
+part that can observe a divergence between the contract as read and the
 contract as served.
+
+`tests/fixtures/production_331/` is the one exception that **is**
+shipped: the `3.3.1` production response it holds carries no prompt, no
+response text and no evaluator identity, so it could be sanitised safely.
+Its `_fixture_redacted` key lists every field that was replaced.
+`tests/test_measurement_version_331.py` runs against it in CI.
 
 **A pass on simulated transport does not validate production behaviour**,
 and a pass on captured fixtures validates one instance at one commit, not
@@ -515,6 +573,7 @@ import neomundi
 neomundi.API_CONTRACT
 # {'backend_commit': '68d6057cf620e430e6488da3cfcec9c471c75ed6',
 #  'measurement_version': '3.3.0',
+#  'verified_measurement_versions': ('3.3.0', '3.3.1'),
 #  'normalizer_version': '1.0.0',
 #  'route': 'POST /v1/govern',
 #  'contract_source': 'govern-v3/app/models/responses.py, requests.py',
@@ -529,10 +588,18 @@ captured from an instance built from that same commit. Naming the commit
 is the only way to state what this SDK corresponds to: absent a published
 specification, there is nothing else to point at.
 
-If `result.audit.measurement_version` differs from
-`API_CONTRACT["measurement_version"]`, results are not comparable with a
-series produced under the expected version, and fields may have changed
-meaning.
+**The two version keys answer two different questions.**
+`measurement_version` names the commit this client was derived from.
+`verified_measurement_versions` names every measurement version whose
+REST surface has been verified identical to it — `3.3.1` was added on
+2026-10-22, on the evidence set out in
+[`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6.
+
+A served version **outside** the verified list means fields may have
+changed meaning: stop and report. A served version **inside** it but
+different from `measurement_version` means parsing is safe while the
+series is not comparable — record the served version with every
+observation.
 
 ---
 
@@ -553,15 +620,36 @@ of them turned out to be backend defects and are recorded as BL-001,
 BL-002 and BL-003 in [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md). None
 has been worked around in the client.
 
+### Done — contract verification against production's `3.3.1`
+
+2026-10-22. Production serves measurement version `3.3.1`; this SDK was
+derived from `3.3.0`. The gap was closed for the REST route by source
+comparison between the two commits and by replaying a real `3.3.1`
+production response through the client — **0 `parse_warnings`, 0
+unmodelled root fields**. `3.3.1` is now listed in
+`API_CONTRACT["verified_measurement_versions"]`, a sanitised copy of the
+response ships as a fixture, and the three backend limitations were
+re-read against it rather than assumed closed by the version bump.
+
+**This did not involve a call made by this SDK**, and the item below
+stays open because of that.
+
 ### Open — what would change the status next
 
 | # | Action | What it would establish |
 |---|---|---|
-| 1 | Replay the same campaign against a **hosted** test deployment | That the contract holds outside a locally built instance |
+| 1 | **One `POST /v1/govern` made by this SDK against the hosted deployment** | The only missing piece: that an end-to-end call works, not merely that the contract matches. Blocked on a credential, not on the code — see below |
 | 2 | Backend publishes a **frozen OpenAPI document** | Contract drift becomes detectable mechanically instead of by capture |
-| 3 | Resolve **BL-001** (SSE decision invariance) | A prerequisite to any streaming support in this SDK |
+| 3 | Resolve the residue of **BL-002** (ΔG invariance to slicing) | A prerequisite to any streaming support in this SDK. **`3.3.1` closed the decision half; the trajectory half is still open, and a backend test requires that it stay visible** |
 | 4 | Backend exposes an **`Idempotency-Key`** on `POST /v1/govern` | Would make retry-on-timeout safe; until then no retry is performed |
 | 5 | A pilot integration reports **results** back | First evidence from outside this repository — **feedback received 2026-10-20, integration results still pending** |
+
+**On item 1, precisely.** The verification session of 2026-10-22 could
+not execute it: the production credential is sealed in an operator-side
+key store whose decryption the session was not permitted to perform, and
+a `POST /v1/govern` creates an observation and debits a quota, so it is
+not something to attempt speculatively. The call itself is one request.
+Everything that can be verified without it has been.
 
 **First external pilot feedback received — 20 October 2026.** A pilot
 reviewed the SDK, reported straightforward installation, and highlighted

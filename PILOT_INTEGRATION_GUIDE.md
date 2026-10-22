@@ -7,10 +7,20 @@ measurement. It assumes you have been granted access to this private
 repository and have received a test API key through a separate channel.
 
 **Read [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) before you quote any
-number this SDK returns.** Three backend defects are open: BL-001, BL-002
-and BL-003. One of them (BL-001) may stop your very first call, and the
-error message it produces is misleading — §7 tells you how to recognise
-it.
+number this SDK returns.** Three backend limitations are documented:
+BL-001 and BL-003 are open and unchanged at measurement version `3.3.1`;
+BL-002 is partly corrected by it and concerns the streaming route only.
+BL-001 may stop your very first call, and the error message it produces
+is misleading — §7 tells you how to recognise it.
+
+> **Version, stated once and plainly.** Production serves measurement
+> version **`3.3.1`**. This SDK was derived from `3.3.0`, and its REST
+> surface has been **verified against `3.3.1`** on 2026-10-22 — by
+> comparing the backend source at the two commits, and by replaying a
+> real `3.3.1` production response through the client with zero parsing
+> discrepancies. **No call made by this SDK has ever reached a hosted
+> deployment**, so your first call will be the first of its kind.
+> §6 tells you exactly what to check on it.
 
 ---
 
@@ -89,6 +99,7 @@ Expected:
 0.1.0
 {'backend_commit': '68d6057cf620e430e6488da3cfcec9c471c75ed6',
  'measurement_version': '3.3.0',
+ 'verified_measurement_versions': ('3.3.0', '3.3.1'),
  'normalizer_version': '1.0.0',
  'route': 'POST /v1/govern',
  'contract_source': 'govern-v3/app/models/responses.py, requests.py',
@@ -96,7 +107,8 @@ Expected:
 ```
 
 `API_CONTRACT` names the exact backend commit this client was built
-against. Keep it in your notes — §6 explains why.
+against, and the measurement versions whose REST surface has been
+verified identical to it. Keep it in your notes — §6 explains why.
 
 ---
 
@@ -361,9 +373,10 @@ emitted something the contract does not declare — a finding to report
 (§7), not something to work around.
 
 In the validation campaign against an instance built from commit
-`68d6057`, `parse_warnings` was empty on all 11 captured responses. If
-you see entries, something differs on your deployment and that is worth
-knowing.
+`68d6057`, `parse_warnings` was empty on all 11 captured responses — and
+it was empty again on the real `3.3.1` production response replayed on
+2026-10-22. If you see entries, something differs on your deployment and
+that is worth knowing.
 
 ---
 
@@ -505,17 +518,34 @@ payload the server sent.
 
 ### Why `measurement_version` matters most
 
-If `result.audit.measurement_version` differs from
-`API_CONTRACT["measurement_version"]`, your results are **not comparable**
-with a series produced under the expected version, and fields may have
-changed meaning. Check it on your first call and alert on change:
+`result.audit.measurement_version` is the only version number with
+scientific meaning, and **the only place it appears is a response**.
+`GET /v1/health` reports the *application build* — `3.0.0` on production
+— which is a different thing entirely; reading it as the measurement
+version is the single most common mistake made against this API.
+
+Two questions, two checks. Keep them apart:
 
 ```python
-expected = neomundi.API_CONTRACT["measurement_version"]
-actual = result.audit.measurement_version
-if actual != expected:
-    log.error("measurement version drift: server=%s client=%s", actual, expected)
+served = result.audit.measurement_version
+
+if served not in neomundi.API_CONTRACT["verified_measurement_versions"]:
+    # CAN THIS CLIENT READ IT? Unverified contract: fields may have
+    # changed meaning. Stop, and report (§7).
+    log.error("unverified measurement version: %s", served)
+
+elif served != neomundi.API_CONTRACT["measurement_version"]:
+    # MAY THESE NUMBERS SHARE A SERIES? No — not with a series produced
+    # under a different measurement version. Parsing is safe; the
+    # comparison is not.
+    log.info("served %s, derived from %s — record it with the observation",
+             served, neomundi.API_CONTRACT["measurement_version"])
 ```
+
+Today, against production, the second branch is the one that fires:
+production serves `3.3.1` and this SDK was derived from `3.3.0`. That is
+expected and is **not** an error — but it does mean every observation
+must carry its served version, or it cannot be placed in a series later.
 
 **There is no frozen OpenAPI specification server-side**
 (`openapi_frozen: False`), so the named commit and this version string are
@@ -527,13 +557,33 @@ to. Do not discard them.
 Before you build on it, replay a handful of calls and check:
 
 1. `parse_warnings` is empty on every one;
-2. `result.audit.measurement_version` equals `3.3.0`;
+2. `result.audit.measurement_version` is in
+   `API_CONTRACT["verified_measurement_versions"]` — that is `3.3.0` or
+   `3.3.1`; record which one you got, with every observation;
 3. no root field in `result.raw` is unknown to this SDK version;
 4. a deliberately incomplete call (omit `llm_response`) produces
    `decision_basis == "no_check_attempted"` and no fabricated aggregate.
 
 If 1, 2 or 3 fails, stop and report (§7) before collecting data. The SDK
 is the detector here — that is the point of its non-coercive parsing.
+
+**One thing to expect on `3.3.1`, so you do not report it as a fault.**
+On the `3.3.1` response examined during verification, the three
+configuration fingerprints (`prompt_template_hash`,
+`inference_config_hash`, `config_fingerprint`) were populated only for
+the factuality judge's two signals. `stability_score`, `coherence_score`
+and `semantic_risk` were `measured` with all three fingerprints `null`.
+You therefore cannot demonstrate that two observations share an evaluator
+configuration on those three signals — the data is not published. That is
+a backend characteristic, faithfully exposed.
+
+**And one about `GET /v1/health`.** A `degraded` status on
+`judge_factuality` does not mean the judge is failing. The probe compares
+the configured model name against the provider's catalogue, so a model
+served under an alias reports `degraded` while measuring perfectly. The
+`3.3.1` response used in verification came from a deployment reporting
+exactly that, with the judge's own per-signal `status` reading
+`measured`. Read the per-signal `status` in a response, not the probe.
 
 ### Do not store this
 
@@ -554,7 +604,8 @@ validation campaign: zero fields required redaction.
 |---|---|
 | A non-empty `parse_warnings` | **Yes — highest value.** It means the contract drifted. |
 | An unknown root field in `result.raw` | **Yes.** The backend evolved past this SDK version. |
-| `measurement_version` other than `3.3.0` | **Yes.** |
+| `measurement_version` **outside** `API_CONTRACT["verified_measurement_versions"]` | **Yes.** Anything other than `3.3.0` or `3.3.1`. |
+| `measurement_version` `3.3.1` where you expected `3.3.0` | **No** — that is production's current version and the REST surface is verified for it. Record it; do not mix series across the two. |
 | An aggregate that is `null` **without** any declaration | **Yes.** That invariant should always hold. |
 | A `TypeError` or `AttributeError` from inside the SDK | **Yes.** `require()` exists so you never get an opaque one. |
 | `decision_basis` absent or outside the three known values | **Yes.** |
@@ -620,8 +671,8 @@ Related documents:
 | | Summary | Does it affect you? |
 |---|---|---|
 | **BL-001** | TRIAL account/key status inconsistency | **Possibly your first call.** A trial-tier account in the canonical state receives HTTP 402 claiming the quota is exhausted when it is not, and its keys are suspended. Subsequent calls return 401. If this happens, your key is not at fault — report it (§7). |
-| **BL-002** | SSE governance decisions depend on network chunking | **Not through this SDK** — v0.1 does not implement SSE. It matters if you call the streaming endpoint directly. |
-| **BL-003** | `delta_g` is published even when the aggregate is withheld | **Yes, if you read `delta_g`.** Check `aggregates_publishable` before interpreting it. |
+| **BL-002** | SSE governance decisions depend on network chunking | **Not through this SDK** — v0.1 does not implement SSE. It matters if you call the streaming endpoint directly. **Partly corrected in `3.3.1`**: the published decision no longer depends on the slicing, the published trajectory (`series`, `profile`, `total_variation`) still does. |
+| **BL-003** | `delta_g` is published even when the aggregate is withheld | **Yes, if you read `delta_g`.** Check `aggregates_publishable` before interpreting it. **Unchanged at `3.3.1`** — the code that publishes it is byte-identical between the two commits. |
 
 None of these is worked around in the client. The SDK reports what the
 server says.
@@ -632,20 +683,31 @@ server says.
 
 This SDK is at **v0.1.0 — Experimental / Pilot Evaluation**.
 
-**What has been verified.** 328 tests pass locally against fixtures that
+**What has been verified.** 347 tests pass locally against fixtures that
 include 11 responses captured from a running instance built from backend
-commit `68d6057`; 206 pass with 12 skipped in CI, where captured fixtures
+commit `68d6057`; 225 pass with 12 skipped in CI, where those captures
 are absent by design. The capture campaign produced zero type
 discrepancies and zero unmodelled fields, at `measurement_version 3.3.0`,
 exercising all three values of `decision_basis`.
 
-**What has not.** No hosted or shared deployment has been exercised. No
-behaviour under load has been characterised. The variance of the
-factuality judge at constant input has never been measured, which means
-**no difference between two `stability_score` values can presently be
-called significant**. And no pilot has yet installed or validated this
-SDK — if you are reading this, you may be the first; that has not
-happened yet and is not claimed.
+**And, on 2026-10-22, the REST contract under `3.3.1`.** The backend
+source at the deployed commit was compared field by field with the
+reference commit — nothing under `app/models/` and nothing in the REST
+route changed — and one real `3.3.1` production response was replayed
+through the client with zero parsing discrepancies and zero unmodelled
+fields. A sanitised copy ships as a fixture, so the check is
+reproducible.
+
+**What has not.** **No call made by this SDK has ever reached a hosted
+deployment** — not under `3.3.0`, not under `3.3.1`. Everything above is
+a contract check, not an end-to-end one; authentication, error statuses,
+timeouts and quota behaviour against production are exercised against a
+simulated transport only. No behaviour under load has been
+characterised. The variance of the factuality judge at constant input has
+never been measured, which means **no difference between two
+`stability_score` values can presently be called significant**. And no
+pilot has yet installed or validated this SDK — if you are reading this,
+you may be the first; that has not happened yet and is not claimed.
 
 This is not production-validated software and it is not described as
 such. It is an honest experimental client for a measurement instrument

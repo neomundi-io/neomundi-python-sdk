@@ -1,0 +1,202 @@
+{
+  "_fixture_origin": "captured",
+  "_fixture_note": "Reponse REELLE de PRODUCTION, POST /v1/govern, measurement_version 3.3.1, relevee le 2026-10-21. Cas : mesure complete, cinq signaux mesures, ALLOW / measured_thresholds, coverage 3/3, rag_grounding null. ASSAINIE : identifiants et identite des evaluateurs remplaces par des valeurs factices. Structure, types, nullite et TOUTES les valeurs de mesure sont conservees telles qu'emises. La charge d'origine ne porte aucun texte de prompt ni de reponse.",
+  "_fixture_redacted": [
+    "audit.trace_id",
+    "evaluators.coherence_score.model_used",
+    "evaluators.factual_hallucination_score.config_fingerprint",
+    "evaluators.factual_hallucination_score.evaluator_runtime",
+    "evaluators.factual_hallucination_score.inference_config_hash",
+    "evaluators.factual_hallucination_score.model_configured",
+    "evaluators.factual_hallucination_score.model_used",
+    "evaluators.factual_hallucination_score.prompt_template_hash",
+    "evaluators.semantic_instability_score.config_fingerprint",
+    "evaluators.semantic_instability_score.evaluator_runtime",
+    "evaluators.semantic_instability_score.inference_config_hash",
+    "evaluators.semantic_instability_score.model_configured",
+    "evaluators.semantic_instability_score.model_used",
+    "evaluators.semantic_instability_score.prompt_template_hash",
+    "evaluators.semantic_risk.model_used",
+    "request_id",
+    "timestamp"
+  ],
+  "request_id": "00000000-0000-4000-8000-000000000331",
+  "timestamp": "2026-10-21T00:00:00.000000Z",
+  "system_id": "controltower-api",
+  "mode": "OBS",
+  "g_score": 0.56394,
+  "g_final": 0.94746,
+  "v_score": 1.0,
+  "delta_g": -0.00054,
+  "checks_emitted": 3,
+  "trajectory_points": null,
+  "measured_signals": [
+    "stability_score",
+    "coherence_score",
+    "semantic_risk",
+    "factual_hallucination_score",
+    "semantic_instability_score"
+  ],
+  "measurement": {
+    "status": "complete",
+    "checks_attempted": 3,
+    "checks_succeeded": 3,
+    "coverage": 1.0,
+    "confidence_basis": "measurement_coverage",
+    "degraded_g_inputs": [],
+    "failed_checks": {},
+    "missing_required_signals": [],
+    "aggregates_publishable": true
+  },
+  "unmeasured_signals": null,
+  "processing_time_ms": 9800.63,
+  "latency_ms": 0.0,
+  "model": "unknown",
+  "evaluators": {
+    "stability_score": {
+      "evaluator": "runtime_engine.process",
+      "model_used": null,
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": null,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "coherence_score": {
+      "evaluator": "embedding_detector.compute_coherence",
+      "model_used": "embedding-model",
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": 9784.4,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "semantic_risk": {
+      "evaluator": "semantic_risk.moderate",
+      "model_used": "moderation-model",
+      "status": "measured",
+      "reason": null,
+      "model_configured": null,
+      "served_by": null,
+      "attempts": null,
+      "latency_ms": null,
+      "evaluator_runtime": null,
+      "prompt_template_hash": null,
+      "inference_config_hash": null,
+      "config_fingerprint": null
+    },
+    "factual_hallucination_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": "judge-model",
+      "status": "measured",
+      "reason": null,
+      "model_configured": "judge-model",
+      "served_by": "primary",
+      "attempts": 1,
+      "latency_ms": 1668.4,
+      "evaluator_runtime": "judge-runtime.invalid",
+      "prompt_template_hash": "1111111111111111",
+      "inference_config_hash": "2222222222222222",
+      "config_fingerprint": "3333333333333333"
+    },
+    "semantic_instability_score": {
+      "evaluator": "hallucination_detector.detect_hallucination",
+      "model_used": "judge-model",
+      "status": "measured",
+      "reason": null,
+      "model_configured": "judge-model",
+      "served_by": "primary",
+      "attempts": 1,
+      "latency_ms": 1668.4,
+      "evaluator_runtime": "judge-runtime.invalid",
+      "prompt_template_hash": "1111111111111111",
+      "inference_config_hash": "2222222222222222",
+      "config_fingerprint": "3333333333333333"
+    }
+  },
+  "provider": null,
+  "governance": {
+    "decision": "ALLOW",
+    "decision_basis": "measured_thresholds",
+    "confidence": 1.0,
+    "reasons": [
+      "stability_score=0.940, regime=STABLE -- all metrics within bounds",
+      "R=1.000 (latency=1.000, cost=1.000, efficiency=1.000)"
+    ]
+  },
+  "quality": {
+    "g_score": 0.56394,
+    "stability_score": 0.9399,
+    "confidence": 1.0,
+    "coherence_score": 0.8798,
+    "semantic_risk": 0.0,
+    "factual_hallucination_score": 0.0,
+    "semantic_instability_score": 0.0,
+    "information_density": 0.4448,
+    "suspect_phrases": null
+  },
+  "runtime": {
+    "r_score": 1.0,
+    "latency_score": 1.0,
+    "cost_score": 1.0,
+    "e_token": 0.0,
+    "energy_score": 1.0
+  },
+  "metrics": {
+    "energy_score": 0.0601,
+    "e_token": 0.0,
+    "cost_proxy": 0.0,
+    "latency_proxy": 0.0,
+    "stability_score": 0.0601
+  },
+  "baseline": {
+    "reference_energy": 0.05,
+    "observed_energy": 0.0,
+    "delta_E": 0.05,
+    "calibration_status": null,
+    "esi_q": 0.5365,
+    "esi_bootstrap": false
+  },
+  "audit": {
+    "measurement_version": "3.3.1",
+    "normalizer_version": "1.0.0",
+    "trace_id": "trace-00000000"
+  },
+  "density": {
+    "volumetric_density": 0.0,
+    "informational_energy": 0.0,
+    "factual_input_measured": true,
+    "unmeasured_reason": null,
+    "informational_density": 1.0,
+    "volumetric_density_basis": "response_tokens_per_prompt_character",
+    "risk_coefficient": 3
+  },
+  "esi": {
+    "g_final": 0.94746,
+    "s_component": 0.585221,
+    "p_component": 0.157233,
+    "q_component": 0.09434,
+    "c_component": 0.110667,
+    "s_value": 0.9399,
+    "p_value": 1.0,
+    "q_value": 1.0,
+    "c_value": 0.8798,
+    "betas": {
+      "beta_s": 0.622642,
+      "beta_p": 0.157233,
+      "beta_q": 0.09434,
+      "beta_c": 0.125786
+    }
+  },
+  "rag_grounding": null
+}
