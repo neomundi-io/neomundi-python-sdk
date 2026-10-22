@@ -10,6 +10,10 @@ améliorer, et ne doit pas donner l'illusion qu'il le fait.
 Source : audit de référence du 2026-10-17, documents 02 et 03, dont les
 valeurs numériques ont été recalculées depuis les formules implémentées.
 
+> **Compatibilité du contrat REST `POST /v1/govern` avec la version de
+> mesure `3.3.1` vérifiée par tests locaux et rejeu d'une capture de
+> production. Appel direct du SDK contre la production non effectué.**
+
 **Ces limites valent aussi sous `3.3.1`**, la version servie par la
 production. Vérifié le 2026-10-22 : le calcul de mesure est inchangé
 entre les deux commits — rien sous `app/models/`, rien dans la route

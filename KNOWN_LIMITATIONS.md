@@ -667,6 +667,11 @@ offered for this SDK at v0.1.
 
 ## 6. Version compatibility
 
+> **REST contract compatibility of `POST /v1/govern` with measurement
+> version `3.3.1` is verified by local tests and by replaying a
+> production capture. A direct call of the SDK against production has not
+> been performed.**
+
 | | |
 |---|---|
 **Audited reference** | backend commit `68d6057cf620e430e6488da3cfcec9c471c75ed6` |

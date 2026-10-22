@@ -22,15 +22,26 @@ Python client for the NeoMundi measurement API.
 > **Not published on PyPI.** Install from source only — see
 > [Installation](#installation).
 >
-> **Compatibility verified against a local instance** built from backend
-> commit `68d6057`, measurement version `3.3.0`. The REST contract has
-> since been verified against measurement version **`3.3.1`** — the
-> version production serves — by source comparison and by replaying a real
-> `3.3.1` production response: **0 type discrepancies, 0 unmodelled
-> fields**. **No call by this SDK to a hosted deployment has ever been
-> made**, under either version. Verify compatibility with your own
-> deployment before relying on results: see
-> [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6.
+> **Compatibility, stated once.** REST contract compatibility of
+> `POST /v1/govern` with measurement version **`3.3.1`** is verified by
+> local tests and by replaying a production capture. **A direct call of
+> the SDK against production has not been performed.** Verify
+> compatibility with your own deployment before relying on results:
+> [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) §6 gives the minimum
+> check.
+
+---
+
+## Contents
+
+| | |
+|---|---|
+| 1 | [What NeoMundi is](#what-neomundi-is) · [what this SDK does](#what-this-sdk-does) |
+| 2 | [Requirements](#requirements) and [installation](#installation) |
+| 3 | [First REST call](#first-rest-call) — the minimal one, then the real one |
+| 4 | [Supported functionality](#supported-functionality-v010) |
+| 5 | [Compatibility](#compatibility) and [known limitations](#known-limitations) |
+| 6 | [Pilot guide and detailed documentation](#repository-documentation) |
 
 ---
 
@@ -82,26 +93,6 @@ no execution. A `FLAG` is advisory.
 
 ---
 
-## v0.1.0 feature set
-
-| Area | Detail |
-|---|---|
-**Route** | `POST /v1/govern` (post-call) — the only route in scope |
-**Auth** | `X-API-Key`; key **format** validated locally before any network call, so an invalid key consumes neither a request nor a quota unit |
-**Models** | 11 immutable dataclasses (`frozen=True`): `GovernResult` + `Governance`, `Measurement`, `Quality`, `Runtime`, `Metrics`, `Baseline`, `Esi`, `Density`, `RagGrounding`, `Audit`, plus `SuspectPhrase`, `Citation`, `UngroundedSnippet` |
-**Parsing** | **non-coercive**: a `"0.5"` string is never converted to `0.5`. The typed field becomes `None`, the raw value stays in `raw`, and a `ParseWarning` is recorded. A boolean is never read as a number. |
-**Measurement state** | `MeasurementState` with four values, including a deliberately ambiguous `NOT_ATTEMPTED_OR_GATED` — the server does not distinguish "never launched" from "gated by tier" on the wire, and the SDK does not invent it |
-**Traceability** | `is_measured()`, `unmeasured_reason()`, `measurement_state()`, `evaluator_of()`, `aggregates_publishable`, `missing_required_signals`, `measurement_incomplete` |
-**Safe reads** | `require()` raises naming the cause; `format_score()` never raises; `get()`, `field_present()` |
-**Forward compatibility** | unknown root fields are preserved in `raw` and listed in `unknown_fields`; a new backend field never breaks an integration |
-**Errors** | 14 exception classes, raw server body and headers preserved, `request_id` recovered from the `X-Request-ID` header when the body omits it |
-**Retries** | `RetryPolicy`, explicit, **disabled by default** |
-**Typing** | PEP 561 marker (`py.typed`) shipped |
-**Dependencies** | **`httpx` only** in production; `pytest` for development |
-**Python** | ≥ 3.9 |
-
----
-
 ## Requirements
 
 - **Python ≥ 3.9**
@@ -136,6 +127,35 @@ python -m pytest tests
 ---
 
 ## First REST call
+
+### The minimal one
+
+Four arguments. Two are required by the server (`token_count`,
+`latency_ms`); the other two are what make it measure anything at all.
+
+```python
+from neomundi import NeoMundiClient
+
+with NeoMundiClient(api_key="ct_test_...", base_url="https://your-instance") as client:
+    result = client.govern(
+        token_count=128,
+        latency_ms=842.0,
+        llm_prompt="What is the capital of France?",
+        llm_response="The capital of France is Paris.",
+    )
+
+print(result.governance.decision)       # 'ALLOW' | 'FLAG'
+print(result.format_score("g_score"))   # never raises, even when withheld
+```
+
+Want to see it run before you have a key? The three examples in
+`examples/` use a simulated server and need neither key nor network:
+
+```bash
+python examples/01_premiere_mesure.py
+```
+
+### The real one
 
 ```python
 from neomundi import NeoMundiClient
@@ -306,11 +326,32 @@ server-side. A *received* `503`, by contrast, proves it was not.
 
 ---
 
-## Known limitations
+## Supported functionality (v0.1.0)
 
-Read before communicating any figure produced by this SDK. The complete
-register is [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md); methodological
-detail is in [`docs/LIMITES.md`](docs/LIMITES.md).
+| Area | Detail |
+|---|---|
+**Route** | `POST /v1/govern` (post-call) — the only route in scope |
+**Auth** | `X-API-Key`; key **format** validated locally before any network call, so an invalid key consumes neither a request nor a quota unit |
+**Models** | 11 immutable dataclasses (`frozen=True`): `GovernResult` + `Governance`, `Measurement`, `Quality`, `Runtime`, `Metrics`, `Baseline`, `Esi`, `Density`, `RagGrounding`, `Audit`, plus `SuspectPhrase`, `Citation`, `UngroundedSnippet` |
+**Parsing** | **non-coercive**: a `"0.5"` string is never converted to `0.5`. The typed field becomes `None`, the raw value stays in `raw`, and a `ParseWarning` is recorded. A boolean is never read as a number. |
+**Measurement state** | `MeasurementState` with four values, including a deliberately ambiguous `NOT_ATTEMPTED_OR_GATED` — the server does not distinguish "never launched" from "gated by tier" on the wire, and the SDK does not invent it |
+**Traceability** | `is_measured()`, `unmeasured_reason()`, `measurement_state()`, `evaluator_of()`, `aggregates_publishable`, `missing_required_signals`, `measurement_incomplete` |
+**Safe reads** | `require()` raises naming the cause; `format_score()` never raises; `get()`, `field_present()` |
+**Forward compatibility** | unknown root fields are preserved in `raw` and listed in `unknown_fields`; a new backend field never breaks an integration |
+**Errors** | 14 exception classes, raw server body and headers preserved, `request_id` recovered from the `X-Request-ID` header when the body omits it |
+**Retries** | `RetryPolicy`, explicit, **disabled by default** |
+**Typing** | PEP 561 marker (`py.typed`) shipped |
+**Dependencies** | **`httpx` only** in production; `pytest` for development |
+**Python** | ≥ 3.9 |
+
+---
+
+## Compatibility
+
+> **REST contract compatibility of `POST /v1/govern` with measurement
+> version `3.3.1` is verified by local tests and by replaying a
+> production capture. A direct call of the SDK against production has not
+> been performed.**
 
 ### Live compatibility: the contract is verified, the call is not
 
@@ -359,14 +400,26 @@ them; it does not work around them.
 
 ### Which version number means what
 
+Three numbers circulate, they are not the same number, and confusing them
+is the most common way to reach a wrong conclusion about this SDK.
+
+| | Value today | Where you read it | What it tells you |
+|---|---|---|---|
+| **SDK version** | `0.1.0` | `neomundi.__version__` | which client you installed |
+| **Measurement version** | `3.3.1` | `result.audit.measurement_version` — **a response, nowhere else** | which formula produced the numbers. **The only one with scientific meaning**: two results under two different values are not comparable for the same input |
+| **Application version** | `3.0.0` | `GET /v1/health`, field `version` | which service build is running — **and nothing about the measurement** |
+
 ```python
-result.audit.measurement_version   # '3.3.1' — the only one with scientific meaning
+import neomundi
+neomundi.__version__                 # '0.1.0'   — the client
+result.audit.measurement_version     # '3.3.1'   — the formula
+# GET /v1/health -> {"version": "3.0.0", ...}    — the service build
 ```
 
-`GET /v1/health` reports an **application build version** — `3.0.0` on
-production — which is not the measurement version and must never be read
-as one. No endpoint publishes the measurement version: reading it costs
-one metered observation.
+**`GET /v1/health` does not publish the measurement version**, and no
+other endpoint does either: `/openapi.json`, `/docs`, `/v1/version` and
+`/version` all answer `404`. Reading the measurement version therefore
+costs one metered observation. There is no free way to get it.
 
 ```python
 import neomundi
@@ -377,6 +430,14 @@ if served not in neomundi.API_CONTRACT["verified_measurement_versions"]:
 elif served != neomundi.API_CONTRACT["measurement_version"]:
     ...   # parsing is safe; the SERIES is not comparable. Record `served`.
 ```
+
+---
+
+## Known limitations
+
+Read before communicating any figure produced by this SDK. The complete
+register is [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md); methodological
+detail is in [`docs/LIMITES.md`](docs/LIMITES.md).
 
 ### The scores do not use the whole `[0, 1]` range
 
@@ -668,16 +729,24 @@ result has been observed to date, so the criterion is not met.
 
 ## Repository documentation
 
-| Document | Language | Contents |
+**Start here, in this order.**
+
+| Document | Language | Read it for |
 |---|---|---|
-`docs/CONTRAT_API.md` | French | the backend contract as surveyed, field by field, with the three recorded discrepancies between description and implementation |
-`docs/LIMITES.md` | French | inherited methodological limits, with the computed value tables |
-`PLAN_IMPLEMENTATION.md` | French | design rationale: why no pydantic, why no retry, why `null` is preserved |
-`CHANGELOG.md` | French | v0.1.0 contents and design decisions |
-`LICENSE_NOTICE.md` | French | licence status — **not settled**, see below |
+[`PILOT_INTEGRATION_GUIDE.md`](PILOT_INTEGRATION_GUIDE.md) | English | **zero to a first correctly read measurement.** Access, install, configure, call, read the result, report an anomaly |
+[`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) | English | **what is verified, how, and what is not.** The BL/SL register, and §6 — the version-compatibility rules and the minimum check against your own deployment |
+[`docs/CONTRAT_API.md`](docs/CONTRAT_API.md) | French | the backend contract as surveyed, field by field, with the three recorded discrepancies between description and implementation |
+[`docs/LIMITES.md`](docs/LIMITES.md) | French | inherited methodological limits, with the computed value tables |
+[`PLAN_IMPLEMENTATION.md`](PLAN_IMPLEMENTATION.md) | French | design rationale: why no pydantic, why no retry, why `null` is preserved |
+[`CHANGELOG.md`](CHANGELOG.md) | French | what changed, when, and on what evidence |
+[`LICENSE_NOTICE.md`](LICENSE_NOTICE.md) | French | licence status — **not settled**, see below |
 
 The developer documentation is in French, matching the audit corpus it
-derives from. This README is the English entry point.
+derives from; the README and the pilot guide are the English entry
+points. **The two languages state the same facts** — the measurement
+version verified, the evidence behind it, and the missing live call —
+and any divergence between them is a defect worth reporting (§7 of the
+pilot guide).
 
 ## Licence
 

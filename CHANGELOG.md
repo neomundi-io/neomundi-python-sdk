@@ -7,7 +7,10 @@ Versionnement sémantique.
 
 ## [Non publié] — 2026-10-22
 
-**Vérification du périmètre REST contre la version de mesure `3.3.1`.**
+> **Compatibilité du contrat REST `POST /v1/govern` avec la version de
+> mesure `3.3.1` vérifiée par tests locaux et rejeu d'une capture de
+> production. Appel direct du SDK contre la production non effectué.**
+
 Aucun changement de comportement du client : le code de transport et de
 parsing est inchangé.
 

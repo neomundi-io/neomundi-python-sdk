@@ -12,6 +12,10 @@ Version de mesure : **`3.3.0`**.
 > commit : sans spécification figée, le commit est le seul point de
 > référence vérifiable.
 
+> **Compatibilité du contrat REST `POST /v1/govern` avec la version de
+> mesure `3.3.1` vérifiée par tests locaux et rejeu d'une capture de
+> production. Appel direct du SDK contre la production non effectué.**
+>
 > **Vérifié aussi sous la version de mesure `3.3.1`** — 2026-10-22, et
 > c'est la version que sert la production. Entre `68d6057` et le commit
 > déployé `aeff13c`, **aucun fichier de `app/models/` ne change**, et

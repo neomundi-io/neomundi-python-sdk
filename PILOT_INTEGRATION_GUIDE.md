@@ -13,14 +13,19 @@ BL-002 is partly corrected by it and concerns the streaming route only.
 BL-001 may stop your very first call, and the error message it produces
 is misleading — §7 tells you how to recognise it.
 
-> **Version, stated once and plainly.** Production serves measurement
-> version **`3.3.1`**. This SDK was derived from `3.3.0`, and its REST
-> surface has been **verified against `3.3.1`** on 2026-10-22 — by
-> comparing the backend source at the two commits, and by replaying a
-> real `3.3.1` production response through the client with zero parsing
-> discrepancies. **No call made by this SDK has ever reached a hosted
-> deployment**, so your first call will be the first of its kind.
-> §6 tells you exactly what to check on it.
+> **Version and compatibility, stated once and plainly.**
+>
+> **REST contract compatibility of `POST /v1/govern` with measurement
+> version `3.3.1` is verified by local tests and by replaying a
+> production capture. A direct call of the SDK against production has not
+> been performed.**
+>
+> Production serves measurement version **`3.3.1`**; this SDK was derived
+> from `3.3.0`, and the gap was closed on 2026-10-22 by comparing the
+> backend source at the two commits and by replaying a real `3.3.1`
+> production response through the client with zero parsing discrepancies.
+> **Your first call will be the first this SDK has ever made to a hosted
+> deployment.** §6 tells you exactly what to check on it.
 
 ---
 
