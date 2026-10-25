@@ -1,3 +1,7 @@
+> **Choose your path:** integrate the measurement signal into your own infrastructure with the API, SDK or MCP, or [explore Station](https://github.com/neomundi-io/neomundi-station-public) to use the hosted instrument. The dashboard is a planned capability; see Station's current access and availability.
+>
+> [Understand the measurements](https://github.com/neomundi-io/neomundi-metric-contract) · [Data flows and confidentiality](https://github.com/neomundi-io/neomundi-io-data-protection)
+
 # NeoMundi Python SDK
 
 **Status: v0.1.0 — Experimental / Pilot Evaluation**
