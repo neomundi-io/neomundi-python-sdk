@@ -26,6 +26,24 @@ modernisation de types ; sa CI reste non bloquante comme avant. Les
 nouveaux fichiers ont été contrôlés séparément sur les erreurs, imports
 et règles de robustesse.
 
+## État du chantier
+
+La [PR #3](https://github.com/neomundi-io/neomundi-python-sdk/pull/3) est
+fusionnée dans `main` depuis le 26 octobre 2026
+(commit `8895a99ffcbfa55abf3871959f48eb6d7281fd37`).
+Le développement du SDK 2.0.0 REST et SSE est terminé.
+
+**Qualification réelle du SDK V2 installé : en attente.** Elle doit relever
+un appel REST et une génération SSE bornée contre l'API déployée, avec
+identifiants, événements, texte final, intégrité, durées, états de mesure
+et coût retourné. Les valeurs absentes restent absentes ; un transport
+terminé ne garantit pas une mesure complète.
+
+Le compte rendu de cette qualification sera ajouté après son exécution.
+Les anciens appels REST ou tests MCP ne remplacent pas un test du SDK V2.
+La publication de la release, la distribution et l'intégration Station
+restent des étapes distinctes de cette qualification.
+
 ## Validation GitHub exécutée
 
 Le [run CI 40285081931](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/40285081931)
