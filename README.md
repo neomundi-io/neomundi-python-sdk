@@ -1,5 +1,7 @@
 # NeoMundi Python SDK 2
 
+[English](README.md) · [Français](README_FR.md)
+
 ![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Status](https://img.shields.io/badge/qualification-live_tests_pending-orange)
 
 **Version 2.0.0 — REST and SSE implemented. Pilot evaluation.**
