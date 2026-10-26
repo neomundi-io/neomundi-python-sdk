@@ -24,8 +24,18 @@ flux : un tampon fixe HTTPX ne doit pas transformer le streaming en lot.
 Le linter complet du dépôt conserve les avertissements historiques de
 modernisation de types ; sa CI reste non bloquante comme avant. Les
 nouveaux fichiers ont été contrôlés séparément sur les erreurs, imports
-et règles de robustesse. Les autres versions Python de la matrice CI
-restent à confirmer lors de leur exécution.
+et règles de robustesse.
+
+## Validation GitHub exécutée
+
+Le [run CI 40285081931](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/40285081931)
+valide les sept contrôles sur le commit `85eef9959c2ee77b1a8b28facfbeb4501fee68a1` :
+tests et exemples sous Python **3.9, 3.11, 3.12 et 3.13**, construction et
+installation isolée du wheel, syntaxe et contrôle des secrets.
+
+Le premier run échouait avant les tests Python 3.9 : setup-python ne
+fournit pas cette version sur Ubuntu 26.04. Ce cas utilise désormais
+Ubuntu 22.04 ; les trois autres versions conservent ubuntu-latest.
 
 Les comparaisons avec la production sont celles des anciennes preuves
 REST documentées, pas des acquisitions réalisées pour V2. SSE a été
