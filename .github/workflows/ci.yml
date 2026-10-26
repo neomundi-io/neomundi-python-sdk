@@ -20,13 +20,21 @@ permissions:
 jobs:
   test:
     name: Tests (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         # pyproject.toml declare requires-python >= 3.9. La matrice verifie
         # les bornes et un point intermediaire, plutot que de l'affirmer.
         python-version: ["3.9", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest]
+        include:
+          # Python 3.9 has no setup-python binary for Ubuntu 26.04.
+          - python-version: "3.9"
+            os: ubuntu-22.04
+        exclude:
+          - python-version: "3.9"
+            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -45,12 +53,13 @@ jobs:
         run: python -m pytest tests -v
 
       - name: Run the offline examples
-        # Les trois exemples sont deja executes par tests/test_examples.py.
+        # Les quatre exemples sont deja executes par tests/test_examples.py.
         # Les relancer ici rend leur sortie lisible dans le journal de CI.
         run: |
           python examples/01_premiere_mesure.py
           python examples/02_mesure_partielle.py
           python examples/03_gestion_erreurs.py
+          python examples/04_streaming_sse.py
 
   build:
     name: Build and packaging checks
@@ -89,8 +98,9 @@ jobs:
           import neomundi, pathlib
           print('imported from:', neomundi.__file__)
           assert 'site-packages' in neomundi.__file__, 'not the installed copy'
-          assert neomundi.__version__ == '0.1.0'
+          assert neomundi.__version__ == '2.0.0'
           assert neomundi.API_CONTRACT['measurement_version'] == '3.3.0'
+          assert neomundi.API_CONTRACT['verified_measurement_versions'] == ('3.3.0', '3.3.1')
           assert neomundi.API_CONTRACT['openapi_frozen'] is False
           assert (pathlib.Path(neomundi.__file__).parent / 'py.typed').exists()
           print('OK')

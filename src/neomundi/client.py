@@ -1,12 +1,13 @@
 """Client HTTP synchrone pour l'API NeoMundi.
 
-Périmètre v0.1 : `POST /v1/govern` uniquement. Le streaming SSE fait
-l'objet d'une mission séparée — voir `README.md`, section « Limites ».
+REST post-call et proxy de génération SSE. Les deux routes ont des
+requêtes et des enveloppes finales distinctes — voir docs/STREAMING.md.
 """
 
 from __future__ import annotations
 
 import json
+import math
 import time
 from types import TracebackType
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Type
@@ -18,11 +19,11 @@ from .errors import (
     ConfigurationError,
     InvalidResponseError,
     NetworkError,
-    RateLimitError,
     TimeoutError,
     api_error_for_status,
 )
 from .models import GovernResult
+from .streaming import GovernStream, build_stream_request_body
 
 __all__ = ["NeoMundiClient", "GOVERN_PATH", "KEY_PREFIXES"]
 
@@ -281,6 +282,46 @@ class NeoMundiClient:
     # Transport
     # ------------------------------------------------------------------
 
+    def stream(
+        self,
+        *,
+        prompt: str,
+        provider_api_key: str,
+        model: str,
+        provider: Optional[str] = None,
+        system_prompt: Optional[str] = None,
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+        mode: str = "OBS",
+        metadata: Optional[Mapping[str, Any]] = None,
+        max_event_bytes: int = 1024 * 1024,
+        max_response_bytes: int = 16 * 1024 * 1024,
+    ) -> "GovernStream":
+        """Open POST /v1/govern/stream lazily; prefer ``with client.stream(...)``.
+
+        This route GENERATES a response with the supplied provider key.
+        It may incur provider cost and a NeoMundi quota charge. It is not
+        govern() encoded as SSE. Model selection is explicit. RetryPolicy
+        never applies here: no automatic replay/reconnect on this POST.
+
+        Iterate StreamEvent objects. After done, stream.result contains a
+        StreamResult, not a fabricated REST GovernResult. Closing early
+        retains partial response_text but does not manufacture a result.
+        """
+        body = build_stream_request_body(
+            prompt=prompt, provider_api_key=provider_api_key, model=model,
+            provider=provider, system_prompt=system_prompt,
+            max_tokens=max_tokens, temperature=temperature, mode=mode,
+            metadata=metadata,
+        )
+        return GovernStream(
+            self._client, self._base_url + "/v1/govern/stream", body,
+            self._headers, self._timeout, max_event_bytes=max_event_bytes,
+            max_response_bytes=max_response_bytes,
+        )
+
+    govern_stream = stream
+
     def _request(
         self, method: str, path: str, body: Optional[Dict[str, Any]]
     ) -> httpx.Response:
@@ -373,7 +414,7 @@ def _build_request_body(
         raise ConfigurationError("token_count doit être >= 0.")
     if isinstance(latency_ms, bool) or not isinstance(latency_ms, (int, float)):
         raise ConfigurationError("latency_ms doit être un nombre.")
-    if latency_ms < 0:
+    if not math.isfinite(latency_ms) or latency_ms < 0:
         raise ConfigurationError("latency_ms doit être >= 0.")
 
     raw_metrics: Dict[str, Any] = {
@@ -382,7 +423,7 @@ def _build_request_body(
     }
 
     if cost is not None:
-        if isinstance(cost, bool) or not isinstance(cost, (int, float)) or cost < 0:
+        if isinstance(cost, bool) or not isinstance(cost, (int, float)) or not math.isfinite(cost) or cost < 0:
             raise ConfigurationError("cost doit être un nombre >= 0.")
         raw_metrics["cost"] = float(cost)
 
@@ -583,7 +624,7 @@ def _coerce_timeout(timeout: "httpx.Timeout | float | None") -> httpx.Timeout:
         return timeout
     if isinstance(timeout, bool) or not isinstance(timeout, (int, float)):
         raise ConfigurationError("timeout doit être un nombre ou un httpx.Timeout.")
-    if timeout <= 0:
+    if not math.isfinite(timeout) or timeout <= 0:
         raise ConfigurationError("timeout doit être > 0.")
     return httpx.Timeout(float(timeout))
 

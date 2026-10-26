@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "neomundi-sdk"
-version = "0.1.0"
-description = "Client Python de l'API de mesure NeoMundi (POST /v1/govern)"
+version = "2.0.0"
+description = "Client Python NeoMundi : REST post-call et streaming SSE"
 readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["neomundi", "ai-governance", "llm-measurement", "observability"]

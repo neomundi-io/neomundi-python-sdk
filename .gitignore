@@ -87,6 +87,11 @@ RAPPORT_VALIDATION.md
 RAPPORT_VALIDATION_02_ENVIRONNEMENT.md
 RAPPORT_PUBLICATION_GITHUB.md
 RAPPORT_CONSOLIDATION_SDK_V01.md
+RAPPORT_VERIFICATION_3.3.1.md
+
+# Corps de PR prepares localement. Ils citent des chemins du depot
+# backend et l'etat d'acces aux identifiants : hors perimetre public.
+PR_A_OUVRIR_*.md
 
 # ---------------------------------------------------------------------
 # Fichiers temporaires, journaux, systeme

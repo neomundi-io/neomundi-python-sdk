@@ -271,7 +271,7 @@ def test_la_surface_publique_est_explicite():
     # `annotations` vient de `from __future__ import annotations` ; les
     # trois sous-modules sont des détails d'implémentation accessibles
     # mais non annoncés dans la surface publique.
-    not_public = {"client", "errors", "models", "annotations"}
+    not_public = {"client", "errors", "models", "streaming", "annotations"}
     public = {
         n for n in dir(neomundi) if not n.startswith("_") and n not in not_public
     }

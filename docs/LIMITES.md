@@ -10,6 +10,19 @@ améliorer, et ne doit pas donner l'illusion qu'il le fait.
 Source : audit de référence du 2026-10-17, documents 02 et 03, dont les
 valeurs numériques ont été recalculées depuis les formules implémentées.
 
+> **Compatibilité du contrat REST `POST /v1/govern` avec la version de
+> mesure `3.3.1` vérifiée par tests locaux et rejeu d'une capture de
+> production. Appel direct du SDK contre la production non effectué.**
+
+**Ces limites valent aussi sous `3.3.1`**, la version servie par la
+production. Vérifié le 2026-10-22 : le calcul de mesure est inchangé
+entre les deux commits — rien sous `app/models/`, rien dans la route
+REST —, et une réponse réelle de production sous `3.3.1` les exhibe
+encore, dont les deux homonymes `stability_score` d'échelles inverses et
+le signe de `baseline.delta_E`. Les deux seules sections à lire avec
+`3.3.1` à l'esprit sont le §9, sur la comparabilité, et ce qui touche au
+chemin SSE, que `3.3.1` modifie ; SDK 2 le transporte sans réparer sa métrologie.
+
 ---
 
 ## 1. Les scores n'utilisent pas toute l'échelle `[0, 1]`
@@ -311,6 +324,25 @@ mêmes contrôles actifs | `result.measurement.checks_attempted` |
 > Partout ailleurs ils sont identiques. **Toute étude longitudinale doit se
 > tenir entièrement d'un seul côté de la frontière.**
 
+Et pour `3.3.0` face à `3.3.1` — la version que sert la production — le
+backend est plus étroit, également à reprendre tel quel :
+
+> Sous 3.3.0 et 3.3.1 les résultats diffèrent pour une même entrée
+> **uniquement** sur une observation en flux qui (a) était laissée à
+> `ALLOW` par les signaux mesurés et (b) produisait un profil `DROP` ou
+> `OSCILLATING` à partir de points non mesurés. Partout ailleurs — **tout
+> le chemin REST**, chaque agrégat, chaque état de couverture, chaque
+> champ filtré par palier — les deux sont identiques.
+
+**Ce qu'il faut en faire, et ce qu'il ne faut pas en faire.** C'est
+l'énoncé du backend sur sa propre formule, et il est corroboré par la
+comparaison des sources entre les deux commits : rien sous `app/models/`,
+rien dans la route REST. Ce n'est pas pour autant une autorisation de
+mêler deux séries. La pratique prudente ne coûte rien : consigner
+`result.audit.measurement_version` avec chaque observation, et tenir une
+série d'un seul côté. Une mesure dont la version n'a pas été consignée ne
+se rattrape pas après coup.
+
 **Le SDK ne vérifie pas ces conditions à votre place** : décider qu'une
 série est valide est une décision méthodologique, pas une opération de
 transport.
@@ -388,10 +420,10 @@ if result.g_score is None and result.delta_g is not None:
 
 ### Les compteurs qui disent « tokens »
 
-Sur le chemin SSE (hors périmètre de ce SDK), `tokens_so_far`,
+Sur le chemin SSE (transporté par le SDK 2), `tokens_so_far`,
 `token_position` et `tokens_checked` comptent des **fragments de flux**,
 pas des tokens. Le backend le déclare dans `counter_units`. Mentionné ici
-pour le futur client SSE.
+pour le client SSE ; ces noms ne deviennent pas des mesures de tokens.
 
 ### `prompt_length` et `response_length` — en caractères
 
