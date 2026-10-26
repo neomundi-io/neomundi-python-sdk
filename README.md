@@ -1,14 +1,33 @@
 # NeoMundi Python SDK 2
 
-![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Status](https://img.shields.io/badge/status-experimental-orange)
+![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Status](https://img.shields.io/badge/qualification-live_tests_pending-orange)
 
-**Version 2.0.0 — Experimental / Pilot Evaluation.**
+**Version 2.0.0 — REST and SSE implemented. Pilot evaluation.**
 
 Integrate NeoMundi measurements into your infrastructure, or
 [explore Station](https://github.com/neomundi-io/neomundi-station-public).
 Check Station's current access and availability; its dashboard evolves separately.
 [Understand the measurements](https://github.com/neomundi-io/neomundi-metric-contract) ·
 [Data flows and confidentiality](https://github.com/neomundi-io/neomundi-io-data-protection)
+
+## Where we stand
+
+The V2 development work is complete and [merged into main](https://github.com/neomundi-io/neomundi-python-sdk/pull/3).
+Both REST and SSE are available in the SDK source.
+
+| Step | Status |
+|---|---|
+| REST and SSE implementation | Complete |
+| Offline tests | 282 passed; 12 optional historical captures skipped |
+| CI | Passed on Python 3.9, 3.11, 3.12 and 3.13 |
+| Live REST and SSE qualification using the installed V2 SDK | Pending |
+
+The remaining qualification will check the installed SDK against the deployed
+API, record the actual responses and streaming events, and distinguish
+transport success from measurement completeness. Passing offline tests does
+not establish live service availability or compatibility with every provider.
+See the [executed checks and remaining qualification](docs/VERIFICATION_V2.md).
+Publication and Station integration are separate steps.
 
 ## Choose the right path
 
@@ -31,6 +50,8 @@ Python 3.9+; `httpx` is the only runtime dependency. Not published on PyPI.
 The licence decision remains documented in [LICENSE_NOTICE.md](LICENSE_NOTICE.md).
 
 ```sh
+git clone https://github.com/neomundi-io/neomundi-python-sdk.git
+cd neomundi-python-sdk
 python -m pip install .
 # Or install a locally built package:
 python -m pip install dist/neomundi_sdk-2.0.0-py3-none-any.whl
@@ -117,7 +138,8 @@ backend metric, trajectory, quota or evaluator defects.
 
 - [SSE lifecycle, errors, integrity and limits](docs/STREAMING.md)
 - [Migration from v0.1](docs/MIGRATION_V2.md)
-- [Audit and repair plan](docs/AUDIT_SDK_V2.md)
+- [Audit and repairs delivered](docs/AUDIT_SDK_V2.md)
+- [Verification results and live qualification status](docs/VERIFICATION_V2.md)
 - [Known backend and SDK limitations](KNOWN_LIMITATIONS.md)
 - [REST pilot guide](PILOT_INTEGRATION_GUIDE.md)
 - [Inspected REST contract](docs/CONTRAT_API.md) · [Measurement limits](docs/LIMITES.md)
