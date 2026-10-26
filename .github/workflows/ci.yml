@@ -51,6 +51,7 @@ jobs:
           python examples/01_premiere_mesure.py
           python examples/02_mesure_partielle.py
           python examples/03_gestion_erreurs.py
+          python examples/04_streaming_sse.py
 
   build:
     name: Build and packaging checks
@@ -89,8 +90,9 @@ jobs:
           import neomundi, pathlib
           print('imported from:', neomundi.__file__)
           assert 'site-packages' in neomundi.__file__, 'not the installed copy'
-          assert neomundi.__version__ == '0.1.0'
+          assert neomundi.__version__ == '2.0.0'
           assert neomundi.API_CONTRACT['measurement_version'] == '3.3.0'
+          assert neomundi.API_CONTRACT['verified_measurement_versions'] == ('3.3.0', '3.3.1')
           assert neomundi.API_CONTRACT['openapi_frozen'] is False
           assert (pathlib.Path(neomundi.__file__).parent / 'py.typed').exists()
           print('OK')

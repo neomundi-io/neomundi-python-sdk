@@ -24,6 +24,7 @@ RUNNABLE = [
     "01_premiere_mesure.py",
     "02_mesure_partielle.py",
     "03_gestion_erreurs.py",
+    "04_streaming_sse.py",
 ]
 
 
