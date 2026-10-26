@@ -1,5 +1,7 @@
 # REST and SSE in SDK 2
 
+[English](STREAMING.md) · [Français](STREAMING_FR.md)
+
 The SDK is synchronous. SSE is a streaming transport, not an async Python
 client. Python async/await support is not included in this release.
 

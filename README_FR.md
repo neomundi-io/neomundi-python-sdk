@@ -163,15 +163,16 @@ ou d’évaluateurs du backend.
 
 ## Pour aller plus loin
 
-Les titres ci-dessous sont en français ; certains documents techniques
-liés restent en anglais.
+Les trois guides principaux sont disponibles en français et proposent
+un lien vers leur version anglaise. Les noms de méthodes et de champs
+restent ceux du SDK.
 
-- [Fonctionnement SSE, erreurs, intégrité et limites](docs/STREAMING.md)
+- [Fonctionnement SSE, erreurs, intégrité et limites](docs/STREAMING_FR.md)
 - [Passer de la version 0.1 à la V2](docs/MIGRATION_V2.md)
 - [Audit et réparations livrées](docs/AUDIT_SDK_V2.md)
 - [Résultats des vérifications et état des tests réels](docs/VERIFICATION_V2.md)
-- [Limites connues du backend et du SDK](KNOWN_LIMITATIONS.md)
-- [Guide pilote REST](PILOT_INTEGRATION_GUIDE.md)
+- [Limites connues du backend et du SDK](KNOWN_LIMITATIONS_FR.md)
+- [Guide pilote REST](PILOT_INTEGRATION_GUIDE_FR.md)
 - [Contrat REST inspecté](docs/CONTRAT_API.md) · [Limites des mesures](docs/LIMITES.md)
 - [Exemple SSE hors ligne](examples/04_streaming_sse.py)
 

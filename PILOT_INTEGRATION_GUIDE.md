@@ -5,11 +5,13 @@
 
 # Pilot Integration Guide
 
+[English](PILOT_INTEGRATION_GUIDE.md) · [Français](PILOT_INTEGRATION_GUIDE_FR.md)
+
 **Status: v2.0.0 — Experimental / Pilot Evaluation**
 
 This guide takes a pilot developer from zero to a first correctly read
-measurement. It assumes you have been granted access to this private
-repository and have received a test API key through a separate channel.
+measurement. The repository is public; an API key is supplied separately.
+Public source visibility does not settle reuse rights: see [LICENSE_NOTICE.md](LICENSE_NOTICE.md).
 
 **Read [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) before you quote any
 number this SDK returns.** Three backend limitations are documented:
@@ -29,35 +31,28 @@ is misleading — §7 tells you how to recognise it.
 > from `3.3.0`, and the gap was closed on 2026-10-22 by comparing the
 > backend source at the two commits and by replaying a real `3.3.1`
 > production response through the client with zero parsing discrepancies.
-> **Your first call will be the first this SDK has ever made to a hosted
-> deployment.** §6 tells you exactly what to check on it.
+> **Live qualification of the installed V2 SDK remains pending.**
+> See [the current verification status](docs/VERIFICATION_V2.md); §6 explains what to record.
 
 ---
 
-## 1. Install from the private repository
+## 1. Install from the public repository
 
 ### Access
 
-This repository is **private**. Access is granted **individually to
-authorized pilots** — there is no organization-wide access, no public
-mirror, and no anonymous clone. If `git clone` fails with a 404, the
-likely cause is that your GitHub account has not been added yet, not that
-the URL is wrong. Contact your NeoMundi point of contact.
+This repository is **public**. Anonymous HTTPS cloning does not require
+a GitHub token. API access still requires a separately supplied key.
 
-**The package is not on PyPI.** `pip install neomundi-sdk` will not
-install this SDK. Install it from the repository.
+**The package is not on PyPI.** Do not assume that `pip install neomundi-sdk`
+installs this delivery. Install from the repository or an identified wheel.
 
-### Authenticate to GitHub
+### GitHub authentication when needed
 
-Pick whichever you already use:
-
-- **SSH** — your public key registered on your GitHub account.
-- **HTTPS + personal access token** — a token with `repo` scope, stored
-  in your platform credential helper.
-- **GitHub CLI** — `gh auth login`, then `gh auth setup-git`.
-
-Do not embed a token in a URL that ends up in `requirements.txt`, a
-Dockerfile, or shell history.
+HTTPS read access to this public repository needs no authentication.
+If you choose SSH, register your public key on GitHub. For operations
+requiring authentication, use your platform credential helper or
+GitHub CLI (`gh auth login`, then `gh auth setup-git`).
+Never embed a token in a URL stored in requirements, a Dockerfile or shell history.
 
 ### Install
 
@@ -68,14 +63,14 @@ source .venv/bin/activate            # Windows: .venv\Scripts\activate
 # SSH - replace <commit-sha> with the SHA supplied to you
 pip install "git+ssh://git@github.com/neomundi-io/neomundi-python-sdk.git@<commit-sha>"
 
-# or HTTPS, with credentials supplied by your credential helper
+# or anonymous HTTPS for this public repository
 pip install "git+https://github.com/neomundi-io/neomundi-python-sdk.git@<commit-sha>"
 ```
 
-**There is no git tag and no GitHub release** for this version: pin the
-commit SHA your contact gives you, never a branch. `main` moves, and a
-measurement should be attributable to one exact client version. Record
-the SHA you installed alongside your results (section 6).
+For a pilot qualification, pin the exact commit selected for your run,
+not a moving branch. `main` changes; a measurement should be attributable
+to one exact client version. Record the installed SHA with your results
+(section 6). Release publication is a separate step.
 
 If you prefer a working copy:
 
@@ -103,7 +98,8 @@ pydantic was rejected.
 python -c "import neomundi; print(neomundi.__version__); print(neomundi.API_CONTRACT)"
 ```
 
-Expected:
+Expected SDK version: `2.0.0`. The following is an excerpt of the REST
+contract reference; V2 also includes SSE reference fields:
 
 ```
 2.0.0
@@ -259,8 +255,8 @@ print(result.format_score("g_score"))    # never raises
 ### This is a post-call API
 
 You call your own model first, then send the **observed** metrics of the
-response you actually got. NeoMundi does not call your model and does not
-sit in your request path.
+response you actually got. On this REST path, NeoMundi does not call your model.
+The SSE generation proxy has a different data flow.
 
 ### Parameter names
 
@@ -357,8 +353,7 @@ which scale you are on.
 
 They do not use the whole `[0, 1]` range. In practice
 `stability_score ∈ [0.60 ; 1.00]` and `g_final ∈ [0.40 ; 1.00]`. A
-`g_final` of 0.45 is near the floor, not "slightly below average". §3 of
-the README and `docs/LIMITES.md` give the derivation.
+`g_final` of 0.45 is near the floor, not "slightly below average". `docs/LIMITES.md` gives the derivation.
 
 **And the headline caveat:** a stability score is not evidence of truth,
 safety, absence of hallucination, or predictive capability. It is a
@@ -587,10 +582,9 @@ You therefore cannot demonstrate that two observations share an evaluator
 configuration on those three signals — the data is not published. That is
 a backend characteristic, faithfully exposed.
 
-**And one about `GET /v1/health`.** A `degraded` status on
-`judge_factuality` does not mean the judge is failing. The probe compares
-the configured model name against the provider's catalogue, so a model
-served under an alias reports `degraded` while measuring perfectly. The
+**And one about `GET /v1/health`.** A `degraded` status on `judge_factuality` can coexist with a successful
+per-signal measurement. A configured-name/catalogue mismatch was documented
+in the historical campaign; do not assume that cause for every new degraded probe. The
 `3.3.1` response used in verification came from a deployment reporting
 exactly that, with the judge's own per-signal `status` reading
 `measured`. Read the per-signal `status` in a response, not the probe.
@@ -638,9 +632,9 @@ output; copy-pasted shell history does not.
 
 ### How to report
 
-Open an issue on this private repository, or use the channel your
-NeoMundi contact gave you. Follow whichever your contact specified — do
-not post measurement payloads to a public tracker.
+This repository and its issues are public. Use issues only for sanitised,
+non-sensitive reproductions. Send confidential payloads through the private
+channel agreed with your NeoMundi contact; never post keys or private content.
 
 ### One framing worth keeping
 
@@ -693,9 +687,14 @@ server says.
 
 This SDK is at **v2.0.0 — Experimental / Pilot Evaluation**.
 
-**What has been verified.** 347 tests pass locally against fixtures that
+**V2 status (26 October 2026).** Development is complete and merged. The
+current offline suite has 282 passing tests and 12 skips; CI passed on Python
+3.9, 3.11, 3.12 and 3.13. Live REST/SSE qualification of the installed SDK
+remains pending: see [VERIFICATION_V2.md](docs/VERIFICATION_V2.md).
+
+**Historical verification before V2.** 347 tests passed locally against fixtures that
 include 11 responses captured from a running instance built from backend
-commit `68d6057`; 225 pass with 12 skipped in CI, where those captures
+commit `68d6057`; 225 passed with 12 skipped in CI, where those captures
 are absent by design. The capture campaign produced zero type
 discrepancies and zero unmodelled fields, at `measurement_version 3.3.0`,
 exercising all three values of `decision_basis`.
@@ -715,9 +714,7 @@ timeouts and quota behaviour against production are exercised against a
 simulated transport only. No behaviour under load has been
 characterised. The variance of the factuality judge at constant input has
 never been measured, which means **no difference between two
-`stability_score` values can presently be called significant**. And no
-pilot has yet installed or validated this SDK — if you are reading this,
-you may be the first; that has not happened yet and is not claimed.
+`stability_score` values can presently be called significant**. No additional pilot-side installation or validation is claimed by this report.
 
 This is not production-validated software and it is not described as
 such. It is an honest experimental client for a measurement instrument

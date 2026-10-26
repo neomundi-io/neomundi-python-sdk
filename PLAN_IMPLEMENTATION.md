@@ -1,3 +1,5 @@
+> **Document historique — SDK 0.1, 17 octobre 2026.** Ce plan est conservé pour sa traçabilité ; il ne décrit pas le périmètre actuel. Pour le SDK 2 REST/SSE, lire [l’accueil](README_FR.md) et [les vérifications V2](docs/VERIFICATION_V2.md).
+
 # PLAN D'IMPLÉMENTATION — SDK Python NeoMundi v0.1
 
 **Mission 02 — Phase A**

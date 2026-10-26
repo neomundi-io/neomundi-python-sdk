@@ -1,5 +1,7 @@
 # Known Limitations — NeoMundi Python SDK v2.0.0
 
+[English](KNOWN_LIMITATIONS.md) · [Français](KNOWN_LIMITATIONS_FR.md)
+
 **Status: v2.0.0 — Experimental / Pilot Evaluation**
 
 Last updated: 2026-10-26; older backend observations remain dated below
@@ -31,14 +33,18 @@ Version | `2.0.0` |
 Maturity | **Experimental.** Suitable for pilot evaluation, not for production reliance. |
 Scope | REST `POST /v1/govern` and synchronous SSE `POST /v1/govern/stream` |
 Runtime dependency | `httpx` only |
-Python | ≥ 3.9; V2 local validation on 3.12, other versions require the CI matrix |
-Distribution | **Not on PyPI.** Install from this private repository. |
+Python | ≥ 3.9; V2 validated locally on 3.12; CI passed on 3.9, 3.11, 3.12 and 3.13 |
+Distribution | **Not on PyPI.** Install from this public repository or an identified wheel. |
 Licence | **Not settled** — see `LICENSE_NOTICE.md` |
 
 ### What "locally validated" means, precisely
 
-Two distinct test scopes exist, and conflating them would overstate what
-has been verified.
+**Current V2 suite:** 282 passed, 12 skipped; CI passed on Python 3.9,
+3.11, 3.12 and 3.13. Live REST/SSE qualification remains pending; see
+[VERIFICATION_V2.md](docs/VERIFICATION_V2.md).
+
+The two scopes below are **historical, before the V2 additions**, not current
+V2 test totals. Conflating these scopes would overstate what was verified.
 
 | Scope | Count | What it establishes |
 |---|---|---|
@@ -166,8 +172,8 @@ Nine error families: 401, 402, 413, 422, 429, 5xx, timeout, network, invalid res
 Unknown fields preserved in `raw` and listed, never fatal | `test_models.py` |
 No numeric default anywhere in the sources (AST-checked, and the guard is itself tested) | `test_contract_drift.py` |
 No backend import, no undeclared dependency, no embedded threshold | `test_contract_drift.py` |
-No key in `repr`, exception messages, logs, request body or URL; repository-wide key sweep | `test_no_secret_leak.py` (11 tests) |
-The three offline examples run and exit 0 | `test_examples.py` |
+No key in REST `repr`, exception messages, logs, request body or URL; repository-wide key sweep | `test_no_secret_leak.py` (11 tests) |
+The three historical REST examples run and exit 0; V2 adds an SSE example | `test_examples.py` |
 
 ### Not verified
 
@@ -341,8 +347,9 @@ clients or versions. Prefer REST for anything that must be reproducible.
 
 **Evidence, and its limits.** The above is **derived from the backend
 source and its regression suite at `aeff13c`** — read on 2026-10-22. No
-SSE stream has been observed on the production deployment under `3.3.1`,
-by this session or any other. The correction is therefore
+production SSE stream under `3.3.1` was examined in that 22 October
+verification campaign. A later transport success alone would not establish
+invariance to fragmentation. The correction is therefore
 `Fixed — pending verification`, and the entry as a whole stays open.
 
 **What was observed.** Four streams were run against a local instance,
@@ -520,7 +527,8 @@ if m.status == "not_attempted":
 `coverage` is re-derivable, so you can verify it rather than trust it:
 
 ```python
-assert round(m.checks_succeeded / m.checks_attempted, 6) == m.coverage
+if m.checks_attempted:
+    assert round(m.checks_succeeded / m.checks_attempted, 6) == m.coverage
 ```
 
 ### 5.2 Handling `null`
@@ -664,8 +672,8 @@ the `parse_warnings` entries verbatim, the base URL's **environment**
 (not its credentials), and the SDK version. **Never include your API key**,
 and redact any response content you are not permitted to share.
 
-Report through your NeoMundi technical contact. No public issue tracker is
-offered for this SDK at v0.1.
+Use your NeoMundi technical contact for confidential material. Issues on
+this public repository may contain only sanitised, non-sensitive reproductions.
 
 ---
 
@@ -764,18 +772,18 @@ since. That removes one doubt. It does not create an end-to-end call.
   against production remain unverified;
 - it does **not** make two observations comparable across the two
   versions. Comparability is a separate question, answered below;
-- it does **not** cover the streaming route, which this SDK does not
-  implement and where the two versions genuinely differ.
+- these REST compatibility proofs do **not** cover the streaming route.
+  V2 implements SSE; its source-derived contract and offline tests are
+  documented separately in [STREAMING.md](docs/STREAMING.md).
 
 ### Minimum check before a pilot campaign
 
 1. call `GET /v1/health` — unauthenticated, consumes no quota — and
    record the build version and the state of the three evaluators.
    **Do not read a measurement version from it; it does not carry one.**
-   Note also that a `degraded` on `judge_factuality` is a known
-   catalogue-probe artefact: the probe compares the *configured* model
-   name against the provider's catalogue, so a model served under an
-   alias reports `degraded` while measuring correctly. The replayed
+   A `degraded` on `judge_factuality` can coexist with successful measurements.
+   A configured-name/catalogue mismatch was documented historically; do not
+   assume that cause for every new degraded probe. The replayed
    `3.3.1` response was produced by a deployment reporting exactly that,
    with the judge's own `status` reading `measured`;
 2. make one `POST /v1/govern` call and record
@@ -829,7 +837,7 @@ renumbered; a resolved entry keeps its identifier and changes status.
 **BL-001** | TRIAL account and key status inconsistency | `Open — observed` · **re-read at `3.3.1`, unchanged** | backend `68d6057` / `3.3.0`, **and `aeff13c` / `3.3.1`** | accounts with `tier=TRIAL` and `status=ACTIVE`, on a local instance | plan item BL-001 |
 **BL-002** | SSE chunking-dependent governance decision | **one class `Fixed — pending verification` at `3.3.1`; entry stays `Open` for the residue** | observed at `68d6057` / `3.3.0`; corrected at `aeff13c` / `3.3.1` | `POST /v1/govern/stream` only; REST unaffected | plan item BL-002 |
 **BL-003** | `delta_g` published while the aggregate is withheld | `Open — observed`, contract `Under review` · **re-read at `3.3.1`, unchanged** | backend `68d6057` / `3.3.0`, **and `aeff13c` / `3.3.1`** | `POST /v1/govern` when a required signal is unmeasured | plan item BL-003 |
-**SL-001** | **Live deployment/provider validation of V2 SSE** | Transport is implemented and tested offline. Scientific/backend limitations in BL-002 remain; no new hosted SDK SSE call was made. |
+**SL-001** | **Live deployment/provider validation of V2 SSE** | Pending; transport implemented and tested offline | SDK `2.0.0` | V2 SSE qualification; BL-002 remains separate | — |
 **SL-002** | No TypeScript SDK | `By design` | SDK `0.1.0` | SDK scope | — |
 **SL-003** | No longitudinal processing | `By design` | SDK `0.1.0` | SDK scope | — |
 **SL-004** | No automatic score interpretation | `By design` | SDK `0.1.0` | SDK scope | — |

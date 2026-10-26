@@ -138,12 +138,12 @@ backend metric, trajectory, quota or evaluator defects.
 
 ## Documentation
 
-- [SSE lifecycle, errors, integrity and limits](docs/STREAMING.md)
+- [SSE lifecycle, errors, integrity and limits](docs/STREAMING.md) · [Français](docs/STREAMING_FR.md)
 - [Migration from v0.1](docs/MIGRATION_V2.md)
 - [Audit and repairs delivered](docs/AUDIT_SDK_V2.md)
 - [Verification results and live qualification status](docs/VERIFICATION_V2.md)
-- [Known backend and SDK limitations](KNOWN_LIMITATIONS.md)
-- [REST pilot guide](PILOT_INTEGRATION_GUIDE.md)
+- [Known backend and SDK limitations](KNOWN_LIMITATIONS.md) · [Français](KNOWN_LIMITATIONS_FR.md)
+- [REST pilot guide](PILOT_INTEGRATION_GUIDE.md) · [Français](PILOT_INTEGRATION_GUIDE_FR.md)
 - [Inspected REST contract](docs/CONTRAT_API.md) · [Measurement limits](docs/LIMITES.md)
 - [Offline SSE example](examples/04_streaming_sse.py)
 
