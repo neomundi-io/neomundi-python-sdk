@@ -3,6 +3,9 @@
 
 # Contrat API relevé — `POST /v1/govern`
 
+> **Relevé historique, non contrat de production actuel (13 novembre 2026).** Les champs, exemples, limites et seuils ci-dessous ont été relevés sur le commit de référence `68d6057` et la version de mesure `3.3.0`. Ils ne démontrent ni le modèle d'évaluateur actuellement servi, ni une calibration scientifique, ni la configuration effective du service en production. Pour une intégration ou une comparaison actuelle, vérifier le contrat et la provenance dans une réponse récente autorisée, les états de chaque signal et les conditions de mesure. Conserver les distinctions entre observations historiques et garanties présentes.
+
+
 **Source de vérité** : `govern-v3/app/models/requests.py` et
 `responses.py`, au commit **`68d6057cf620e430e6488da3cfcec9c471c75ed6`**.
 Version de mesure : **`3.3.0`**.
