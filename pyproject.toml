@@ -19,7 +19,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Typing :: Typed",
-    "License :: OSI Approved :: Apache Software License",
     "Private :: Do Not Upload",
 ]
 
