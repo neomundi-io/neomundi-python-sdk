@@ -182,7 +182,7 @@ ne porte pas ce champ » — jamais un `measured_thresholds` rassurant.
 `factual_hallucination_score` | `float?` | note d'un LLM-juge, `temperature 0.1` |
 `semantic_instability_score` | `float?` | **ambiguïté du PROMPT**, pas instabilité de la réponse |
 `information_density` | `float?` | densité de texte. **N'entre dans aucun agrégat** |
-`suspect_phrases` | `list?` | peut contenir des extraits **auto-extraits** — voir `LIMITES.md` §11 |
+`suspect_phrases` | `list?` | passages **désignés** par l'évaluateur ; `null` = non mesuré, `[]` = mesuré sans désignation. ⚠ Les mesures **antérieures au 13 nov. 2026** peuvent porter des extraits auto-extraits — voir `LIMITES.md` §11 |
 
 ### `metrics` — bloc de compatibilité historique
 
