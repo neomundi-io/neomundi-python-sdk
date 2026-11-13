@@ -436,19 +436,44 @@ déclare.
 
 ---
 
-## 11. `suspect_phrases` peut contenir des extraits que personne n'a désignés
+## 11. `suspect_phrases` — ce que le champ contient, et ce qu'il a contenu
 
-Quand le juge note une fausseté supérieure à 0,3 **sans** renvoyer
-d'extrait, le serveur publie **les trois premières phrases de la
-réponse** avec `category: "factual_error"`, une sévérité, et une
-explication générique.
+### Depuis le 13 novembre 2026
 
-**Aucun évaluateur n'a désigné ces phrases** : leur position dans le texte
-est leur seule qualification.
+Le champ ne porte plus que des passages **désignés par l'évaluateur**,
+bornés à 10 extraits de 200 caractères au plus. Les trois états du champ
+sont distincts, et le serveur les émet tous les trois :
 
-Le SDK transporte ces extraits tels quels. **Il ne peut pas distinguer un
-extrait désigné par le juge d'un extrait auto-extrait** : le serveur ne le
-signale pas sur le fil.
+| Valeur | Sens |
+|---|---|
+| `null` | l'évaluateur n'a pas produit de mesure — **on ne sait rien** |
+| `[]` | il a tourné et n'a désigné aucun passage — **c'est un résultat** |
+| `[…]` | passages désignés |
+
+⚠ **Un client qui testait `is None` verra une différence** : `[]` est
+désormais émis là où `null` couvrait indistinctement les deux cas. Un
+client qui testait la véracité (`if suspect_phrases:`) n'en voit aucune.
+Le type déclaré — `Optional[List[SuspectPhrase]]` — n'a pas changé, et
+`[]` en a toujours été une valeur valide.
+
+### 🔴 Avant le 13 novembre 2026 — à savoir pour relire d'anciennes mesures
+
+Quand l'évaluateur notait une fausseté supérieure à 0,3 **sans** renvoyer
+d'extrait, le serveur publiait **les trois premières phrases de la
+réponse**, avec `category: "factual_error"`, une sévérité et une
+explication générique. **Aucun évaluateur n'avait désigné ces phrases** :
+leur position dans le texte était leur seule qualification.
+
+Mesuré sur la production avant le retrait : **2 566 mesures** portent de
+tels extraits, sur **22 797** porteuses d'extraits. Sur les 2 000
+dernières mesures porteuses, **943 venaient de ce repli** contre 1 057
+désignées par l'évaluateur.
+
+**Ce paragraphe reste ici parce que ces mesures existent toujours.** Une
+mesure antérieure au 13 novembre 2026 peut porter des extraits que
+personne n'a désignés, et le SDK ne peut pas les distinguer : le serveur
+ne le signalait pas sur le fil. **Les extraits déjà enregistrés n'ont pas
+été modifiés.**
 
 À ne pas présenter comme « les passages que le juge a identifiés ».
 
