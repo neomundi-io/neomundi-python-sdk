@@ -49,7 +49,7 @@ application. The SDK does not add decision thresholds or replace null with zero.
 ## Install
 
 Python 3.9+; `httpx` is the only runtime dependency. Not published on PyPI. The proposed distribution name is `neomundi` (subject to approval and availability), while Python imports remain `import neomundi`.
-The licence decision remains documented in [LICENSE_NOTICE.md](LICENSE_NOTICE.md).
+The SDK code is licensed under [Apache-2.0](LICENSE), subject to contributor-rights review; see the [licensing boundaries](LICENSE_NOTICE.md). The **hosted Runtime Measurement API remains proprietary and commercially metered** (authorised key, applicable credits/quotas and service terms). An open-source SDK does not include free hosted API access.
 
 ```sh
 git clone https://github.com/neomundi-io/neomundi-python-sdk.git
