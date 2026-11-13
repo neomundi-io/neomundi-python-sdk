@@ -1,5 +1,7 @@
 # Limites méthodologiques héritées du backend
 
+> **Scope and version notice — 2026-11-13 / P0 disclosure review.** The formulas, coefficients, thresholds and evaluator behaviours below are a documented **historical implementation snapshot** (reference audit of 2026-10-17, measurement versions 3.3.0/3.3.1). They must **not** be presented as verified specifications of the currently deployed service. Their publication is not proof of current calibration, present routing or provider identity. Validate effective measurement version, evaluator provenance and deployment conditions against a fresh execution before making a current claim. Historical limitations and negative results are retained for traceability; Git history remains public. See [public disclosure rules](https://github.com/neomundi-io/neomundi-metrology-validation/blob/main/PUBLIC_DISCLOSURE_POLICY.md) **after that policy is merged**; until then the link is provisional.
+
 **À lire avant de communiquer tout chiffre produit par ce SDK.**
 
 Ce document ne décrit pas des limites du SDK. Il décrit ce que l'API
