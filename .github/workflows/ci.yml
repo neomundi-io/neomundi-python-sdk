@@ -80,6 +80,9 @@ jobs:
       - name: Build the sdist and the wheel
         run: python -m build
 
+      - name: Audit wheel and sdist file inventories
+        run: python scripts/audit_distribution.py
+
       - name: Check the distribution metadata
         # `twine check` valide les metadonnees et le rendu du README.
         # Il ne publie rien : aucun `twine upload` n'existe dans ce workflow.
