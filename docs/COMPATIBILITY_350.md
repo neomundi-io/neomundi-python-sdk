@@ -21,6 +21,51 @@ The operator's **private** qualification report, stored locally under
 
 It tests only that the SDK (a) preserves extra fields and values exactly; (b) exposes them as unknown; (c) preserves `null` versus numeric zero; (d) keeps the version mismatch visible. **It cannot establish their production types, normative semantics, or 3.5.0 compatibility.**
 
+## Contract-source comparison (repository evidence, not deployed parity)
+
+The named backend contract source was located at
+`neomundi-io/Backend_plateforme_v2/govern-v3/app/contracts/schemas/`
+and the matching public MCP schema copies at
+`neomundi-io/neomundi-measurement-mcp/runtime/schemas/contracts/`.
+Both define REST `govern-rest-1.0.json` and SSE
+`govern-sse-1.0.json`; the corresponding GitHub file blob SHAs match.
+
+From these versioned schema sources:
+
+- REST requires `contract_version = neomundi.govern.rest/1.0` and
+  `token_count_source = caller_declared`,
+  `token_count_scope = caller_declared`,
+  `token_count_unit = tokens`. An additional
+  `stream_contract_metadata` may be an object or null on a REST replay.
+- SSE done requires `contract_version = neomundi.govern.sse/1.0`,
+  plus `audit`, `measurement`, `response_sha256`, `counter_units`,
+  source/scope/unit declarations and the other schema-required fields.
+- SSE with provider usage counts provider tokens; absent provider usage
+  permits a chunk-count fallback, explicitly expressed in `counter_units`.
+  A field named `total_tokens` in the fallback case is NOT evidence of
+  provider token consumption.
+- The SSE schema governs the **named done payload**, not each chunk/event.
+  An intact checksum verifies stream assembly, not scientific validity.
+- Both schemas allow additional future root fields.
+
+The SDK now exposes the four REST string fields and optional stream replay
+metadata directly, preserves the raw response, and reports invalid types.
+The legacy 3.3.1 payload remains valid; no version is silently upgraded.
+
+### Deployment parity gate (read-only)
+
+Run `python scripts/check_live_wire_schemas.py` on an authorised local
+machine with public HTTPS access. It fetches each public deployed schema
+and compares bytes/SHA-256 to a pinned public GitHub reference at
+`43482c070364dde9830e51aa227b8c8627c48249`.
+No key, observation credits, LLM call or write is required.
+
+**This comparison has not been executed successfully from this session:**
+the live API schema endpoints were inaccessible from the available network.
+Therefore no assertion is made that the deployed schemas match GitHub.
+The direct source-schema comparison and synthetic SDK tests are distinct
+from verifying the current deployed server.
+
 ## Required before a verified-compatibility declaration
 
 1. Obtain the authoritative deployed REST/SSE wire contracts and exact schema identifiers/hashes from `/v1/contracts/*` in the authorised environment; compare with the SDK's parsed fields and the actual deployed backend commit. Do not guess endpoint paths or schema content.
