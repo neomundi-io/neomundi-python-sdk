@@ -5,7 +5,6 @@ This is NOT a complete secrets scanner or a legal rights audit.
 """
 from __future__ import annotations
 
-import io
 import re
 import tarfile
 import zipfile
@@ -18,6 +17,19 @@ BANNED_PARTS = {
 BANNED_SUFFIXES = {".pem", ".key", ".p12", ".pfx", ".pyc"}
 BANNED_NAMES = {"credentials.json", "secrets.json", ".netrc", ".npmrc"}
 MAX_FILE_SIZE = 5 * 1024 * 1024
+
+
+def read_metadata(archive: zipfile.ZipFile, name: str) -> str:
+    """Read a wheel's METADATA with its line endings normalised.
+
+    setuptools writes METADATA through a text stream, so a wheel built on
+    Windows carries CRLF where one built on Linux carries LF. The checks
+    below anchor on `^...$` with `re.M`, and `$` does not match before the
+    `\\r` of a CRLF pair: without this, an identical commit audits clean on
+    the Linux CI and fails on a Windows build. Normalising keeps the audit
+    a statement about the metadata, not about the builder's platform.
+    """
+    return archive.read(name).decode("utf-8").replace("\r\n", "\n")
 
 
 def check_name(name: str) -> None:
@@ -43,7 +55,7 @@ def check_archive(path: Path) -> None:
             metadata_files = [n for n in names if n.endswith(".dist-info/METADATA")]
             assert len(license_files) == 1, "Apache-2.0 licence not embedded in wheel"
             assert len(metadata_files) == 1, "Wheel metadata not found"
-            metadata = z.read(metadata_files[0]).decode("utf-8")
+            metadata = read_metadata(z, metadata_files[0])
             assert re.search(r"^Name: neomundi$", metadata, re.M), "Distribution name mismatch"
             assert re.search(r"^License-Expression: Apache-2.0$", metadata, re.M), "Licence mismatch"
             assert any(n == "neomundi/__init__.py" for n in names), "SDK module missing"
