@@ -99,6 +99,8 @@ jobs:
           print('imported from:', neomundi.__file__)
           assert 'site-packages' in neomundi.__file__, 'not the installed copy'
           assert neomundi.__version__ == '2.0.0'
+          from importlib.metadata import distribution
+          assert distribution('neomundi').metadata['Name'] == 'neomundi'
           assert neomundi.API_CONTRACT['measurement_version'] == '3.3.0'
           assert neomundi.API_CONTRACT['verified_measurement_versions'] == ('3.3.0', '3.3.1')
           assert neomundi.API_CONTRACT['openapi_frozen'] is False

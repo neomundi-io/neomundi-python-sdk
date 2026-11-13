@@ -48,7 +48,7 @@ application. The SDK does not add decision thresholds or replace null with zero.
 
 ## Install
 
-Python 3.9+; `httpx` is the only runtime dependency. Not published on PyPI.
+Python 3.9+; `httpx` is the only runtime dependency. Not published on PyPI. The proposed distribution name is `neomundi` (subject to approval and availability), while Python imports remain `import neomundi`.
 The licence decision remains documented in [LICENSE_NOTICE.md](LICENSE_NOTICE.md).
 
 ```sh
@@ -56,7 +56,7 @@ git clone https://github.com/neomundi-io/neomundi-python-sdk.git
 cd neomundi-python-sdk
 python -m pip install .
 # Or install a locally built package:
-python -m pip install dist/neomundi_sdk-2.0.0-py3-none-any.whl
+python -m pip install dist/neomundi-2.0.0-py3-none-any.whl
 ```
 
 No API or provider credentials are included, read automatically or persisted.

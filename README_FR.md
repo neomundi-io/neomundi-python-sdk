@@ -52,7 +52,7 @@ remplace pas les valeurs `null` par zéro.
 ## Installer le SDK
 
 Python 3.9 ou plus récent ; `httpx` est la seule dépendance directe à l’exécution.
-Le SDK n’est pas publié sur PyPI.
+Le SDK n’est pas publié sur PyPI. Le nom de distribution proposé est `neomundi` (sous réserve d'approbation et de disponibilité), sans changement de l'import Python `import neomundi`.
 L’état de la licence est précisé dans [LICENSE_NOTICE.md](LICENSE_NOTICE.md).
 
 Depuis un terminal, après installation de Git et Python :
@@ -62,7 +62,7 @@ git clone https://github.com/neomundi-io/neomundi-python-sdk.git
 cd neomundi-python-sdk
 python -m pip install .
 # Ou installer un paquet construit localement :
-python -m pip install dist/neomundi_sdk-2.0.0-py3-none-any.whl
+python -m pip install dist/neomundi-2.0.0-py3-none-any.whl
 ```
 
 Le SDK ne contient aucune clé API, ne recherche pas automatiquement de clés
