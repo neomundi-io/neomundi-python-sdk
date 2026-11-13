@@ -1,5 +1,7 @@
 # Limites méthodologiques héritées du backend
 
+> **Portée et version — revue P0 du 13 novembre 2026.** Les formules, coefficients, seuils et comportements d'évaluateurs présentés ci-dessous constituent un **instantané historique documenté** (audit de référence du 17 octobre 2026, versions de mesure 3.3.0/3.3.1). Ils ne doivent **pas** être présentés comme la spécification vérifiée du service actuellement déployé. Leur publication ne prouve ni la calibration actuelle, ni le routage ou l'identité du modèle servi. Avant toute affirmation sur la production, contrôler la version de mesure, la provenance par évaluateur et les conditions effectives d'une exécution récente. Les limites et résultats négatifs historiques sont préservés pour la traçabilité ; l'historique Git reste public. Une politique de divulgation complémentaire est proposée dans le dépôt Metrology Validation et ne deviendra une référence stable qu'après relecture et fusion.
+
 **À lire avant de communiquer tout chiffre produit par ce SDK.**
 
 Ce document ne décrit pas des limites du SDK. Il décrit ce que l'API
