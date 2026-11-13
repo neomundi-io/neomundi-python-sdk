@@ -60,11 +60,35 @@ and compares bytes/SHA-256 to a pinned public GitHub reference at
 `43482c070364dde9830e51aa227b8c8627c48249`.
 No key, observation credits, LLM call or write is required.
 
-**This comparison has not been executed successfully from this session:**
-the live API schema endpoints were inaccessible from the available network.
-Therefore no assertion is made that the deployed schemas match GitHub.
-The direct source-schema comparison and synthetic SDK tests are distinct
-from verifying the current deployed server.
+**Updated 2026-11-13:** Direct access from the assistant's execution
+container remains unavailable, but the GitHub Actions runner successfully
+executed the read-only deployed-schema comparison. See the exact evidence
+and hashes above. Synthetic SDK tests remain distinct from this proof.
+
+## Observed deployed schema parity — 2026-11-13 23:18 UTC
+
+A dedicated GitHub Actions Ubuntu runner performed the unauthenticated,
+read-only HTTPS comparison on the exact deployed `api.neomundi.io` endpoints,
+against the pinned public MCP schema source commit
+`43482c070364dde9830e51aa227b8c8627c48249`.
+
+**Both checks passed with byte-identical HTTP response bodies:**
+
+| Published schema | Deployed SHA-256 = pinned SHA-256 |
+| --- | --- |
+| `govern-rest-1.0.json` | `bcd5588edc92376f59d57ad9ae155b09f5ab3fe49e15ece6cb2fe5adbf4835ef` |
+| `govern-sse-1.0.json` | `358fc2ec1869471896d08c8e2cc0855b15def6433340a0506dae180733c7fefe` |
+
+Evidence: GitHub Actions run
+[43526131929](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929),
+job `Compare production REST and SSE public schemas` (PASS).
+No credential, billable observation, LLM provider call or production mutation.
+
+This **resolves the deployed schema-parity gate** from the prior audit.
+It establishes only that those two versioned public JSON Schema artifacts
+match the pinned source **at that observation time**. It does **not**
+establish full SDK error-path/degraded-path coverage, exact server runtime
+commit, or scientific comparability across measurement versions.
 
 ## Required before a verified-compatibility declaration
 
