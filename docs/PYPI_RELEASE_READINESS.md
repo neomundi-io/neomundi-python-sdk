@@ -12,7 +12,7 @@
 
 ## Mandatory gates before first release
 
-1. **Licence decision and ownership:** decide the SDK distribution licence and publish the exact legal terms. The repository's `LICENSE_NOTICE.md` currently records proprietary pilot-only use and no selected publication licence. Do not infer an open-source licence from repository visibility.
+1. **Licence and rights:** the SDK licence has been selected as Apache-2.0; verify copyright ownership, contributors’ grants and third-party material before merging and before publication. The hosted Runtime Measurement service remains separately proprietary and commercially metered. See `LICENSE` and `LICENSE_NOTICE.md`.
 2. **Distribution identity:** verify the proposed `neomundi` name on PyPI when publishing. Search results and pending trusted-publisher registration are not a reservation. Confirm authorised PyPI project ownership.
 3. **Version and compatibility:** confirm that distribution version `2.0.0` is the intended *SDK* release, distinct from the server's measurement version. Review how the SDK handles the *currently served* REST and SSE contracts; its documented verification references measurement versions 3.3.0/3.3.1 and older backend commits, not a fresh production qualification.
 4. **Offline tests:** run the full suite and inspect skips, lint warnings and secret guards on the final commit, not only prior reports. The CI must build source and wheel distributions, pass `twine check`, install the wheel in a fresh environment, and assert `importlib.metadata.distribution("neomundi")` resolves the installed name.
