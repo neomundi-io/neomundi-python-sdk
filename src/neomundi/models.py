@@ -184,6 +184,18 @@ def _int(
     return None
 
 
+def _optional_dict(
+    data: Mapping[str, Any], key: str, warnings: List[ParseWarning], path: str
+) -> Optional[Dict[str, Any]]:
+    """Expose un objet optionnel en conservant {} distinct de None."""
+    if key not in data or data[key] is None:
+        return None
+    if isinstance(data[key], dict):
+        return dict(data[key])
+    _warn(warnings, f"{path}.{key}", "object", data[key])
+    return None
+
+
 def _str(
     data: Mapping[str, Any], key: str, warnings: List[ParseWarning], path: str
 ) -> Optional[str]:
@@ -869,6 +881,11 @@ _KNOWN_ROOT_KEYS = frozenset(
         "density",
         "esi",
         "rag_grounding",
+        "contract_version",
+        "token_count_source",
+        "token_count_scope",
+        "token_count_unit",
+        "stream_contract_metadata",
     }
 )
 
@@ -948,6 +965,16 @@ class GovernResult:
     density: Optional[Density] = None
     esi: Optional[Esi] = None
     rag_grounding: Optional[RagGrounding] = None
+
+    # --- provenance de contrat, ajoutée dans le fil REST 1.0 ---
+    # Ces champs décrivent le contrat et l'origine du comptage des tokens ;
+    # ils ne certifient pas la version de mesure ni les coûts d'usage.
+    contract_version: Optional[str] = None
+    token_count_source: Optional[str] = None
+    token_count_scope: Optional[str] = None
+    token_count_unit: Optional[str] = None
+    # Objet ajouté sur les relectures de données SSE ; ne jamais l'inférer.
+    stream_contract_metadata: Optional[Dict[str, Any]] = None
 
     # --- diagnostic ---
     #: Charge JSON intégrale, telle que reçue.
@@ -1042,6 +1069,11 @@ class GovernResult:
             density=Density.from_dict(density_raw, w) if density_raw else None,
             esi=Esi.from_dict(esi_raw, w) if esi_raw else None,
             rag_grounding=RagGrounding.from_dict(rag_raw, w) if rag_raw else None,
+            contract_version=_str(payload, "contract_version", w, root),
+            token_count_source=_str(payload, "token_count_source", w, root),
+            token_count_scope=_str(payload, "token_count_scope", w, root),
+            token_count_unit=_str(payload, "token_count_unit", w, root),
+            stream_contract_metadata=_optional_dict(payload, "stream_contract_metadata", w, root),
             raw=dict(payload),
             unknown_fields=sorted(set(payload) - _KNOWN_ROOT_KEYS),
             parse_warnings=w,
