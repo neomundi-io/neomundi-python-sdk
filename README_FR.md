@@ -53,7 +53,7 @@ remplace pas les valeurs `null` par zéro.
 
 Python 3.9 ou plus récent ; `httpx` est la seule dépendance directe à l’exécution.
 Le SDK n’est pas publié sur PyPI. Le nom de distribution proposé est `neomundi` (sous réserve d'approbation et de disponibilité), sans changement de l'import Python `import neomundi`.
-L’état de la licence est précisé dans [LICENSE_NOTICE.md](LICENSE_NOTICE.md).
+Le SDK est placé sous [licence Apache-2.0](LICENSE), sous réserve de vérification des droits des contributeurs : voir [les limites de licence](LICENSE_NOTICE.md). L’**API Runtime Measurement hébergée reste propriétaire et commerciale** : clé autorisée, crédits/quotas et conditions de service s’appliquent. Le SDK libre n'accorde pas d'accès gratuit au service.
 
 Depuis un terminal, après installation de Git et Python :
 
