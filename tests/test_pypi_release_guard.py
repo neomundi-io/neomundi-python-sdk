@@ -1,4 +1,4 @@
-"""Publishing preparation remains non-activating until a separate approved release.
+"""PyPI activation is manual-only and requires separate release authorisation.
 
 Deliberately Python 3.9-compatible, offline, and independent of PyYAML.
 These guards cannot replace a review of GitHub branch/environment rules.
@@ -8,11 +8,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_pypi_upload_remains_blocked_in_candidate_metadata():
+def test_pypi_release_metadata_is_explicit_and_has_no_private_classifier():
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert '"Private :: Do Not Upload"' in pyproject
+    assert '"Private :: Do Not Upload"' not in pyproject
     assert 'name = "neomundi"' in pyproject
     assert 'version = "2.0.0"' in pyproject
+    assert 'license = "Apache-2.0"' in pyproject
 
 
 def test_publication_workflow_is_explicit_manual_only():
