@@ -90,6 +90,30 @@ match the pinned source **at that observation time**. It does **not**
 establish full SDK error-path/degraded-path coverage, exact server runtime
 commit, or scientific comparability across measurement versions.
 
+## Synthetic degraded/error-path safety net — 2026-11-14
+
+The SDK already had dedicated partial/null, gating, SSE interruption,
+HTTP error and timeout tests. The added
+`tests/test_350_degraded_errors_synthetic.py` exercises these critical
+states while labelling the measurement version `3.5.0` and exposing
+the REST 1.0 source/scope/unit declarations. It reuses historical
+**sanitized 3.3.x fixtures** with synthetic additions, through a
+**mock transport**: it is NOT a capture or a live test from 3.5.0.
+
+This covers:
+- Complete, partial and no-check-attempted cases without conflation;
+- Explicit `null` aggregate and withheld-error propagation;
+- Exact `3.5.0` version exposure, not forced into the verified list;
+- Required core REST blocks missing, auth/server failures, and timeout;
+- Exactly one simulated HTTP request per case, no automatic retry.
+
+It does **not** cover a genuinely degraded 3.5.0 server response,
+SSE provider-specific error behavior in deployed production, full
+deployed-schema runtime validation of all response variants,
+measurement-comparability evidence, nor provider/instrument scientific
+accuracy. A passing suite must not authorize publishing a blanket
+3.5.0 compatibility statement.
+
 ## Required before a verified-compatibility declaration
 
 1. Obtain the authoritative deployed REST/SSE wire contracts and exact schema identifiers/hashes from `/v1/contracts/*` in the authorised environment; compare with the SDK's parsed fields and the actual deployed backend commit. Do not guess endpoint paths or schema content.
