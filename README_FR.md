@@ -2,7 +2,7 @@
 
 [Français](README_FR.md) · [English](README.md)
 
-![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Validation](https://img.shields.io/badge/validation-tests_r%C3%A9els_en_attente-orange)
+![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Validation](https://img.shields.io/badge/validation-REST_SSE_live_pass-green)
 
 **Version 2.0.0 — REST et SSE disponibles. Évaluation pilote.**
 
@@ -20,17 +20,21 @@ Les deux modes REST et SSE sont disponibles dans le code du SDK.
 | Étape | État |
 |---|---|
 | Développement REST et SSE | Terminé |
-| Tests hors ligne | 282 réussis ; 12 captures historiques optionnelles absentes et ignorées |
+| Tests hors ligne | Suite de régression verte dans GitHub CI ; captures historiques optionnelles suivies séparément |
 | Tests automatisés GitHub | Réussis sous Python 3.9, 3.11, 3.12 et 3.13 |
-| Validation réelle REST et SSE du SDK V2 installé | En attente |
+| Validation réelle REST et SSE du SDK V2 installé | Les deux réussies le 13/11/2026, dans les limites précisées ci-dessous |
 
-La validation restante vérifiera le SDK installé contre l’API déployée et
-enregistrera les réponses et événements réellement reçus. Elle distinguera
-la réussite du transport de la complétude des mesures.
-Les tests hors ligne ne garantissent ni la disponibilité du service en production,
-ni la compatibilité avec tous les fournisseurs.
-Voir les [vérifications effectuées et la validation restante](docs/VERIFICATION_V2.md).
-La publication et l’intégration à Station sont des étapes distinctes.
+Le 13/11/2026, le SDK installé depuis sa roue a réussi un appel REST
+(mesure complète, couverture 1.0, cinq signaux mesurés) et un appel SSE
+(sept événements, événement final présent, intégrité vérifiée).
+Le rapport complet et les identifiants de requête restent privés.
+Les schémas REST/SSE publics ont également été comparés octet par octet
+aux schémas servis par l'API via
+[GitHub Actions](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929).
+Ces résultats n'établissent ni la validité scientifique, ni la compatibilité
+avec tous les fournisseurs, ni les cas réellement dégradés sous 3.5.0.
+Voir [la portée de la qualification 3.5.0](docs/COMPATIBILITY_350.md).
+La publication et l'intégration à Station restent distinctes.
 
 ## Choisir son mode
 
