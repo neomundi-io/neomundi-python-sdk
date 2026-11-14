@@ -19,7 +19,8 @@ Both REST and SSE are available in the SDK source.
 
 | Step | Status |
 |---|---|
-| Public PyPI distribution | Published 2026-11-14; Windows Python 3.12.10 install and import verified |\n| REST and SSE implementation | Complete |
+| Public PyPI distribution | Published 2026-11-14; Windows Python 3.12.10 install and import verified |
+| REST and SSE implementation | Complete |
 | Offline regression suite | Passing in GitHub CI; historical capture skips are tracked separately |
 | CI | Passed on Python 3.9, 3.11, 3.12 and 3.13 |
 | Live REST and SSE qualification using the installed V2 SDK | Both passed on 2026-11-13; see evidence limits below |
