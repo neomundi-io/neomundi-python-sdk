@@ -2,9 +2,9 @@
 
 [Français](README_FR.md) · [English](README.md)
 
-![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Validation](https://img.shields.io/badge/validation-REST_SSE_live_pass-green)
+[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) ![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Validation](https://img.shields.io/badge/validation-REST_SSE_live_pass-green)
 
-**Version 2.0.0 — REST et SSE disponibles. Évaluation pilote.**
+**Version 2.0.0 — publiée sur [PyPI](https://pypi.org/project/neomundi/). REST et SSE disponibles ; qualification réelle de portée pilote.**
 
 Intégrez les mesures NeoMundi à votre infrastructure, ou
 [découvrez Station](https://github.com/neomundi-io/neomundi-station-public).
@@ -19,6 +19,7 @@ Les deux modes REST et SSE sont disponibles dans le code du SDK.
 
 | Étape | État |
 |---|---|
+| Distribution publique PyPI | Publiée le 14/11/2026 ; installation et import vérifiés sur Windows avec Python 3.12.10 |
 | Développement REST et SSE | Terminé |
 | Tests hors ligne | Suite de régression verte dans GitHub CI ; captures historiques optionnelles suivies séparément |
 | Tests automatisés GitHub | Réussis sous Python 3.9, 3.11, 3.12 et 3.13 |
@@ -34,7 +35,7 @@ aux schémas servis par l'API via
 Ces résultats n'établissent ni la validité scientifique, ni la compatibilité
 avec tous les fournisseurs, ni les cas réellement dégradés sous 3.5.0.
 Voir [la portée de la qualification 3.5.0](docs/COMPATIBILITY_350.md).
-La publication et l'intégration à Station restent distinctes.
+La publication PyPI est terminée ; l'intégration à Station reste une étape distincte.
 
 ## Choisir son mode
 
@@ -56,12 +57,14 @@ remplace pas les valeurs `null` par zéro.
 ## Installer le SDK
 
 Python 3.9 ou plus récent ; `httpx` est la seule dépendance directe à l’exécution.
-Le SDK n’est pas publié sur PyPI. Le nom de distribution proposé est `neomundi` (sous réserve d'approbation et de disponibilité), sans changement de l'import Python `import neomundi`.
+Le SDK est **publié sur [PyPI](https://pypi.org/project/neomundi/)** sous le nom `neomundi` (version `2.0.0`), sans changement de l'import Python `import neomundi`.
 Le SDK est placé sous [licence Apache-2.0](LICENSE), sous réserve de vérification des droits des contributeurs : voir [les limites de licence](LICENSE_NOTICE.md). L’**API Runtime Measurement hébergée reste propriétaire et commerciale** : clé autorisée, crédits/quotas et conditions de service s’appliquent. Le SDK libre n'accorde pas d'accès gratuit au service.
 
 Depuis un terminal, après installation de Git et Python :
 
 ```sh
+python -m pip install neomundi==2.0.0
+# Pour les contributeurs souhaitant installer depuis les sources :
 git clone https://github.com/neomundi-io/neomundi-python-sdk.git
 cd neomundi-python-sdk
 python -m pip install .
@@ -153,10 +156,11 @@ si des réessais REST ont été activés.
 
 Le contrat SSE de la V2 provient du code backend inspecté au commit
 `aeff13c`. Les tests utilisent des flux synthétiques et fragmentés avec
-un transport simulé. Aucun nouvel appel authentifié à l’API hébergée ni
-génération fournisseur n’a été exécuté avec le SDK pour qualifier la V2.
-Les preuves REST antérieures et les limites du backend restent datées et
-assorties de leurs réserves.
+un transport simulé. Un test réel borné de REST et un de SSE ont été réussis le 13/11/2026
+avec une roue V2 installée ; les limites de cette qualification sont
+consignées dans [COMPATIBILITY_350.md](docs/COMPATIBILITY_350.md).
+Ces essais ne qualifient ni tous les fournisseurs, ni les cas réellement
+dégradés, ni la comparabilité scientifique.
 
 Le résultat SSE `StreamResult` conserve sa propre réponse brute ; il n’est
 pas converti en résultat REST `GovernResult`.

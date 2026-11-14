@@ -1,3 +1,29 @@
+# PyPI release record — `neomundi` 2.0.0 (published 2026-11-14)
+
+**Status: PUBLISHED AND PUBLIC INSTALL VERIFIED.** [PyPI release](https://pypi.org/project/neomundi/2.0.0/) · [GitHub release](https://github.com/neomundi-io/neomundi-python-sdk/releases/tag/sdk-v2.0.0).
+
+## Verified publication record
+
+- 2026-11-14: the owner merged the separately reviewed upload-activation PR #17 and created release tag `sdk-v2.0.0` on `main` at commit `47f3c83`.
+- The owner manually triggered `PyPI release (manual, gated)` from `main`; the build, package inspection and wheel installation stage succeeded, and the required GitHub environment `pypi` approval was explicitly granted. The publishing job completed **Success**.
+- PyPI project `neomundi` version `2.0.0` became publicly visible, with Apache-2.0 metadata and full provenance indicated by PyPI for both distributions.
+- The owner performed a **real public-index installation on Windows, Python 3.12.10**: `python -m pip install neomundi==2.0.0` returned `Successfully installed neomundi-2.0.0`; `python -c "import neomundi; print(neomundi.__version__)"` returned `2.0.0`.
+- The user confirmed the SDK was developed for their project; this operator assertion does not itself constitute a third-party code-rights audit.
+- **Scope:** package publication, install and import are confirmed. Bounded live REST and SSE qualification happened on 2026-11-13; scientific validity, all providers, degraded-path correctness and Station integration are **not established** by this publication.
+- **Distinguish versions:** SDK `2.0.0` is not API `measurement_version` `3.5.0`. No production backend deployment was performed as part of PyPI publication.
+
+## Installation
+
+```sh
+python -m pip install neomundi==2.0.0
+python -c "import neomundi; print(neomundi.__version__)"
+```
+
+## Historical pre-publication release checklist (retained for traceability)
+
+The following text describes **pre-release gates and preparations that are now historical**, not the current publication status. Its statements about a pending publisher, blocked upload or unpublished candidate no longer apply.
+
+---
 # PyPI readiness — distribution `neomundi` (candidate only)
 
 **Status: ACTIVATION CANDIDATE — NOT APPROVED FOR PUBLICATION.** This file documents the release gates; it does not authorise a PyPI upload or imply that the project name is reserved.
