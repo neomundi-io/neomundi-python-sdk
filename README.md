@@ -2,7 +2,7 @@
 
 [English](README.md) · [Français](README_FR.md)
 
-![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Status](https://img.shields.io/badge/qualification-live_tests_pending-orange)
+![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Status](https://img.shields.io/badge/qualification-REST_SSE_live_pass-green)
 
 **Version 2.0.0 — REST and SSE implemented. Pilot evaluation.**
 
@@ -20,15 +20,20 @@ Both REST and SSE are available in the SDK source.
 | Step | Status |
 |---|---|
 | REST and SSE implementation | Complete |
-| Offline tests | 282 passed; 12 optional historical captures skipped |
+| Offline regression suite | Passing in GitHub CI; historical capture skips are tracked separately |
 | CI | Passed on Python 3.9, 3.11, 3.12 and 3.13 |
-| Live REST and SSE qualification using the installed V2 SDK | Pending |
+| Live REST and SSE qualification using the installed V2 SDK | Both passed on 2026-11-13; see evidence limits below |
 
-The remaining qualification will check the installed SDK against the deployed
-API, record the actual responses and streaming events, and distinguish
-transport success from measurement completeness. Passing offline tests does
-not establish live service availability or compatibility with every provider.
-See the [executed checks and remaining qualification](docs/VERIFICATION_V2.md).
+On 2026-11-13 an installed wheel was tested against the deployed API:
+one REST observation (complete, coverage 1.0, five measured signals) and
+one SSE generation (seven events, terminal done, verified integrity).
+The full operator report and request identifiers remain private.
+The two public REST/SSE versioned JSON schemas were subsequently compared
+byte-for-byte against the deployed API via
+[GitHub Actions](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929).
+These checks establish transport success and schema parity at that time,
+not scientific validity, all providers or a genuine degraded 3.5.0 capture.
+See [3.5.0 compatibility scope](docs/COMPATIBILITY_350.md).
 Publication and Station integration are separate steps.
 
 ## Choose the right path
@@ -127,9 +132,10 @@ including when REST retries were explicitly enabled.
 
 The V2 streaming contract is derived from inspected backend source at
 `aeff13c`; tests use synthetic, fragmented streams with a mock transport.
-No new hosted SDK call or provider generation was run for V2. This does
-not certify a live deployment or all providers. Existing REST compatibility
-evidence and backend limitations remain qualified and dated.
+A bounded hosted SDK REST and SSE qualification was carried out on
+2026-11-13; see the exact evidence scope in
+[the compatibility assessment](docs/COMPATIBILITY_350.md).
+It does not certify all providers, degraded paths or scientific comparability.
 
 The SSE `StreamResult` preserves its own raw envelope; it is not cast into
 REST `GovernResult`. A complete transport can carry an incomplete measurement.
