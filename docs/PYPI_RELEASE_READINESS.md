@@ -1,6 +1,6 @@
 # PyPI readiness — distribution `neomundi` (candidate only)
 
-**Status: NOT APPROVED FOR PUBLICATION.** This file documents the release gates; it does not authorise a PyPI upload or imply that the project name is reserved.
+**Status: ACTIVATION CANDIDATE — NOT APPROVED FOR PUBLICATION.** This file documents the release gates; it does not authorise a PyPI upload or imply that the project name is reserved.
 
 ## Intended scope
 
@@ -8,7 +8,7 @@
 - Python import: `from neomundi import NeoMundiClient` (unchanged).
 - Source package: existing REST + SSE SDK v2.0.0; no new backend engine, evaluator implementation, Station client or Evidence verifier.
 - Runtime dependency: `httpx`.
-- `Private :: Do Not Upload` remains enabled to prevent unintended upload.
+- This candidate branch removes `Private :: Do Not Upload` for a future approved release. It does not publish; merging the activation PR alone cannot dispatch the manual release workflow.
 
 ## Mandatory gates before first release
 
@@ -19,7 +19,7 @@
 5. **Live, bounded qualification:** the 2026-11-13 installed-wheel REST/SSE checks passed, as recorded in the private operator qualification report. Review the actual request/response evidence and confirm the limited claims made in the README; the test used a live campaign-account key, so do not repeat it casually. Any further degraded-path test needs isolated pilot-safe credentials and explicit approval. Keep private identifiers and raw data out of GitHub.
 6. **Public package inspection:** review `sdist` and wheel file inventories for proprietary backend material, secrets, captured observations, personal paths and nonredistributable fixtures. Reconcile `LICENSE_NOTICE.md`, package metadata, README examples and explicit availability warnings.
 7. **Trusted publication:** after steps 1–6 are approved, configure PyPI Trusted Publishing (OIDC) for `neomundi-io/neomundi-python-sdk`, workflow `publish-pypi.yml` and environment `pypi`; configure that environment's required reviewers and deployment-branch rules in GitHub. Use minimal `id-token: write` on the publish job only, never on PRs; require approval for release. Do not add an API token to GitHub.
-8. **Final release approval:** the release workflow is prepared but is **manual only** (`workflow_dispatch` on `main` with exact `sdk-v2.0.0` tag and confirmation phrase). This PR deliberately preserves `Private :: Do Not Upload` so publishing is still blocked. After the owner approves all gates and PyPI trusted-publisher setup, use a **separate, explicitly authorised activation PR** to remove that classifier, run final CI, protect the `pypi` environment, create the exact release tag at reviewed main HEAD, and manually dispatch the workflow. Do not merge unrelated code between tag and dispatch; the workflow verifies tag matches main HEAD. Then verify `pip install neomundi==2.0.0` from the actual index in a fresh environment.
+8. **Final release approval:** the release workflow is prepared but is **manual only** (`workflow_dispatch` on `main` with exact `sdk-v2.0.0` tag and confirmation phrase). This activation candidate removes `Private :: Do Not Upload` **only on its review branch**. The GitHub `pypi` environment and PyPI pending Trusted Publisher have been configured by the owner (screenshots supplied on 2026-11-14); their protection and account state must be rechecked before final dispatch. The owner must separately authorise PR merge and eventual publication, after licensing and provenance review. Then run final CI, protect the `pypi` environment, create the exact release tag at reviewed main HEAD, and manually dispatch the workflow. Do not merge unrelated code between tag and dispatch; the workflow verifies tag matches main HEAD. Then verify `pip install neomundi==2.0.0` from the actual index in a fresh environment.
 
 ## Commands for the packaging qualification
 
@@ -33,16 +33,16 @@ python -m twine check dist/*
 # The CI also installs it into a clean environment and checks the metadata.
 ```
 
-**This preparatory PR adds a manually gated publish workflow but intentionally keeps `Private :: Do Not Upload` in place. No PyPI credential, tag, publication, auto-trigger, measurement-version change, or production deployment is part of this preparation.**
+**This activation-candidate PR only removes the packaging upload blocker and adjusts the release tests/docs. There is still no PyPI credential, tag, publication, auto-trigger, measurement-version change or production deployment.**
 
 
-## Exact owner setup, after this preparation PR is merged
+## Owner release checklist — activation candidate
 
-1. In **GitHub → repository → Settings → Environments**, create environment **`pypi`**, add at least one required reviewer other than an unattended bot (where the repository plan supports it), and restrict deployment to the reviewed main branch or approved release tag. If these protection rules are unavailable, do not dispatch a publish job until an alternative explicit approval control is agreed.
-2. In **PyPI**, confirm account ownership and availability of the distribution name `neomundi`. If the project does not yet exist, follow PyPI's pending Trusted Publisher creation flow. The identity must exactly match **owner `neomundi-io` / repository `neomundi-python-sdk` / workflow `publish-pypi.yml` / environment `pypi`**. Merely searching PyPI is not name reservation.
+1. **GitHub setup reported complete on 2026-11-14:** screenshots show environment `pypi`, required reviewer `Neomundi-Labs`, administrator bypass disabled, and deployment restricted to `main`. Reconfirm those settings before publishing. Note that GitHub branch `main` alone is allowed; no tag rule was configured, and the workflow is manually dispatched *from main*, then checks out a tag in its build job.
+2. **PyPI Pending Trusted Publisher reported complete on 2026-11-14:** screenshot shows pending project name `neomundi`, GitHub owner `neomundi-io`, repository `neomundi-python-sdk`, workflow `publish-pypi.yml`, environment `pypi`. Pending publishing does not reserve the project name. Check that it still belongs to the correct PyPI account when ready.
 3. Record code-licensing rights and any contributor permissions; verify no proprietary engine, keys or unredistributable material are present in built distributions. Complete any outstanding compatibility wording review, **without silently asserting scientific comparability**.
-4. Only upon the user's distinct final publication authorisation, remove `Private :: Do Not Upload` in a separate reviewed PR and record the approved release commit. The configured job is manual and refuses to proceed when that classifier remains present.
+4. **Current PR is the separate activation PR:** it removes `Private :: Do Not Upload`. Do not merge or create the release tag until code-rights review, exact CI evidence, and the owner's explicit merge approval. The configured job remains manual; removing the classifier alone does not publish.
 5. At final approved main HEAD, create release tag `sdk-v2.0.0` and invoke GitHub Actions **PyPI release (manual, gated)** from `main`, entering `sdk-v2.0.0` and the exact confirmation `PUBLISH_NEOMUNDI_TO_PYPI`. The workflow builds, audits, installs and uploads via short-lived OIDC credentials only after any environment protection approval.
 6. Validate the resulting PyPI project page, upload files and metadata, then perform a fresh `python -m pip install neomundi==2.0.0` and basic import/smoke test outside the source tree.
 
-**Important:** the only step that would actually publish is the manually dispatched job after the later activation PR and external account/environment setup. Merging this preparation PR alone cannot publish the package.
+**Important:** only the separately authorised manual GitHub Actions release job can upload to PyPI. Neither opening nor merging this PR uploads or reserves the package. Do not approve the publish job if reviewer bypass, account identity, or licensing rights are unclear.
