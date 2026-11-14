@@ -19,7 +19,8 @@ Les deux modes REST et SSE sont disponibles dans le code du SDK.
 
 | Étape | État |
 |---|---|
-| Distribution publique PyPI | Publiée le 14/11/2026 ; installation et import vérifiés sur Windows avec Python 3.12.10 |\n| Développement REST et SSE | Terminé |
+| Distribution publique PyPI | Publiée le 14/11/2026 ; installation et import vérifiés sur Windows avec Python 3.12.10 |
+| Développement REST et SSE | Terminé |
 | Tests hors ligne | Suite de régression verte dans GitHub CI ; captures historiques optionnelles suivies séparément |
 | Tests automatisés GitHub | Réussis sous Python 3.9, 3.11, 3.12 et 3.13 |
 | Validation réelle REST et SSE du SDK V2 installé | Les deux réussies le 13/11/2026, dans les limites précisées ci-dessous |
