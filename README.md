@@ -2,9 +2,9 @@
 
 [English](README.md) · [Français](README_FR.md)
 
-![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Status](https://img.shields.io/badge/qualification-REST_SSE_live_pass-green)
+[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) ![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Status](https://img.shields.io/badge/qualification-REST_SSE_live_pass-green)
 
-**Version 2.0.0 — REST and SSE implemented. Pilot evaluation.**
+**Version 2.0.0 — published on [PyPI](https://pypi.org/project/neomundi/). REST and SSE available; pilot-level live qualification.**
 
 Integrate NeoMundi measurements into your infrastructure, or
 [explore Station](https://github.com/neomundi-io/neomundi-station-public).
@@ -19,7 +19,7 @@ Both REST and SSE are available in the SDK source.
 
 | Step | Status |
 |---|---|
-| REST and SSE implementation | Complete |
+| Public PyPI distribution | Published 2026-11-14; Windows Python 3.12.10 install and import verified |\n| REST and SSE implementation | Complete |
 | Offline regression suite | Passing in GitHub CI; historical capture skips are tracked separately |
 | CI | Passed on Python 3.9, 3.11, 3.12 and 3.13 |
 | Live REST and SSE qualification using the installed V2 SDK | Both passed on 2026-11-13; see evidence limits below |
@@ -34,7 +34,7 @@ byte-for-byte against the deployed API via
 These checks establish transport success and schema parity at that time,
 not scientific validity, all providers or a genuine degraded 3.5.0 capture.
 See [3.5.0 compatibility scope](docs/COMPATIBILITY_350.md).
-Publication and Station integration are separate steps.
+PyPI publication is complete; Station integration remains a separate step.
 
 ## Choose the right path
 
@@ -53,10 +53,12 @@ application. The SDK does not add decision thresholds or replace null with zero.
 
 ## Install
 
-Python 3.9+; `httpx` is the only runtime dependency. Not published on PyPI. The proposed distribution name is `neomundi` (subject to approval and availability), while Python imports remain `import neomundi`.
+Python 3.9+; `httpx` is the only runtime dependency. **Published on [PyPI](https://pypi.org/project/neomundi/)** as `neomundi` (version `2.0.0`); Python imports use `import neomundi`.
 The SDK code is licensed under [Apache-2.0](LICENSE), subject to contributor-rights review; see the [licensing boundaries](LICENSE_NOTICE.md). The **hosted Runtime Measurement API remains proprietary and commercially metered** (authorised key, applicable credits/quotas and service terms). An open-source SDK does not include free hosted API access.
 
 ```sh
+python -m pip install neomundi==2.0.0
+# For contributors installing from source instead:
 git clone https://github.com/neomundi-io/neomundi-python-sdk.git
 cd neomundi-python-sdk
 python -m pip install .
