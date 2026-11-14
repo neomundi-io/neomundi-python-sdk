@@ -326,7 +326,9 @@ mêmes contrôles actifs | `result.measurement.checks_attempted` |
 > Partout ailleurs ils sont identiques. **Toute étude longitudinale doit se
 > tenir entièrement d'un seul côté de la frontière.**
 
-Et pour `3.3.0` face à `3.3.1` — la version que sert la production — le
+Et pour `3.3.0` face à `3.3.1` — la version que servait la production **au
+2026-10-22** ; elle sert `3.5.0`, relevé le 2026-11-14, voir
+[CONTRAT_API.md](CONTRAT_API.md) — le
 backend est plus étroit, également à reprendre tel quel :
 
 > Sous 3.3.0 et 3.3.1 les résultats diffèrent pour une même entrée
