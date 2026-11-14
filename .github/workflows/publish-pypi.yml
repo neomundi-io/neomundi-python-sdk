@@ -1,0 +1,108 @@
+name: PyPI release (manual, gated)
+
+# NEVER triggered by PR, push, tag push or release creation.
+# Requires an explicit manual invocation from main, an exact tag, a typed
+# confirmation, and a separate publication-activation PR removing
+# "Private :: Do Not Upload". No credentials are stored in GitHub.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Exact reviewed release tag (e.g. sdk-v2.0.0)'
+        required: true
+        type: string
+      confirmation:
+        description: 'Type exactly PUBLISH_NEOMUNDI_TO_PYPI'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Validate release source and distributions
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      inputs.confirmation == 'PUBLISH_NEOMUNDI_TO_PYPI' &&
+      inputs.tag == 'sdk-v2.0.0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify release commit, tag and PyPI upload guard
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          python - <<'PY'
+          import os, subprocess, tomllib
+          from pathlib import Path
+          tag = os.environ["RELEASE_TAG"]
+          assert tag == "sdk-v2.0.0", "Unexpected release tag"
+          config = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+          assert config["project"]["name"] == "neomundi"
+          assert config["project"]["version"] == tag.removeprefix("sdk-v")
+          assert "Private :: Do Not Upload" not in config["project"].get("classifiers", []), (
+              "Release is intentionally blocked. Remove the classifier only in a "
+              "separately approved activation PR after all release gates."
+          )
+          current = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          reference = subprocess.check_output(["git", "rev-list", "-n", "1", tag], text=True).strip()
+          assert current == reference, "Checked out source does not match the release tag"
+          subprocess.run(["git", "fetch", "origin", "main", "--depth=1"], check=True)
+          # Release must be created from the exact default-branch head,
+          # not an older or unreviewed detached/tagged commit.
+          head = subprocess.check_output(["git", "rev-parse", "origin/main"], text=True).strip()
+          assert current == head, "Release tag does not point to current main"
+          print("Release gate: exact tag, package identity, and main HEAD verified")
+          PY
+
+      - name: Build and audit
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+          python -m build
+          python scripts/audit_distribution.py
+          python -m twine check dist/*
+
+      - name: Smoke-test installed distribution in a clean environment
+        run: |
+          python -m venv /tmp/neomundi-release-check
+          /tmp/neomundi-release-check/bin/python -m pip install dist/*.whl
+          (cd /tmp && /tmp/neomundi-release-check/bin/python -c "import neomundi; from importlib.metadata import version; assert version('neomundi') == '2.0.0'; assert neomundi.__version__ == '2.0.0'")
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neomundi-release-dist
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI using Trusted Publishing
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # IMPORTANT: configure GitHub environment 'pypi' with required
+    # reviewers and main-branch restriction BEFORE release activation.
+    environment:
+      name: pypi
+      url: https://pypi.org/project/neomundi/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: neomundi-release-dist
+          path: dist/
+
+      - name: Publish exactly the approved wheel and sdist
+        uses: pypa/gh-action-pypi-publish@release/v1
