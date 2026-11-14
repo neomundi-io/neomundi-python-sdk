@@ -23,7 +23,19 @@ Version de mesure : **`3.3.0`**.
 > production. Appel direct du SDK contre la production non effectué.**
 >
 > **Vérifié aussi sous la version de mesure `3.3.1`** — 2026-10-22, et
-> c'est la version que sert la production. Entre `68d6057` et le commit
+> c'était **à cette date** la version que servait la production.
+>
+> 🔴 **Ce n'est plus le cas.** La production sert `3.5.0`, relevé le
+> 2026-11-14 dans le conteneur en service. Deux incréments ont suivi :
+> `3.4.0` a changé l'instrument derrière `coherence_score` et
+> `semantic_risk`, et `3.5.0` a changé le prompt système de modération et
+> la façon dont le texte lui est présenté. Les deux rompent la
+> comparabilité, délibérément. La portée de la compatibilité du SDK avec
+> `3.5.0` est décrite dans [COMPATIBILITY_350.md](COMPATIBILITY_350.md), et
+> elle est **partielle**.
+>
+> Le relevé ci-dessous n'est pas réécrit : il décrit ce qui a été vérifié,
+> à la date où ce l'a été. Entre `68d6057` et le commit
 > déployé `aeff13c`, **aucun fichier de `app/models/` ne change**, et
 > `app/api/v1/governance.py` non plus : ce relevé décrit donc les deux
 > versions à l'identique. Le seul fichier applicatif qui diffère est
