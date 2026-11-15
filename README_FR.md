@@ -16,7 +16,7 @@ pas de promesse.
 
 | Étape | Ce que c'est | État |
 |---|---|---|
-| **INSTALL** | `pip install neomundi` — publiée le 2026-11-14 | **Réel** — mais `trace()` et `verify()` ne sont **pas** dans la roue `2.0.0` publiée ; ils vivent sur cette branche |
+| **INSTALL** | `pip install neomundi` — `2.1.0` publiée le 2026-11-15 | **Réel** — `trace()` et `verify()` sont dans la roue publiée |
 | **TRACE** | `client.trace()` — chronomètre local, identifiant de corrélation, soumission explicite | **Partiel** — **il n'existe aucune route de traçage sur l'API** ; refermer une trace émet une mesure facturée |
 | **MEASURE** | `client.govern()` (REST post-call) et `client.stream()` (proxy de génération SSE) | **Réel** — qualifié en direct contre l'API hébergée le 2026-11-13, REST et SSE tous les deux PASS |
 | **VERIFY** | `client.verify()` / `client.verify_audit_certificate()` (routes publiques et non facturées) et `verify_evidence_archive()` (vérificateur Evidence indépendant) | **Réel pour l'authenticité d'émission. L'intégrité d'archive demande un second paquet.** |
@@ -29,22 +29,21 @@ Voir [les trois sens du mot « vérifier »](#verify).
 Python 3.9 ou plus récent. `httpx` est la seule dépendance à l'exécution.
 
 ```sh
-# La version publiée : govern() et stream(). Ni trace(), ni verify().
-python -m pip install neomundi==2.0.0
+# La version publiée : tout ce qui est documenté ci-dessous.
+python -m pip install --upgrade neomundi
 
-# Cette branche, qui ajoute TRACE et VERIFY. Non publiée.
+# Ou depuis la source, pour contribuer.
 git clone https://github.com/neomundi-io/neomundi-python-sdk.git
 cd neomundi-python-sdk
 python -m pip install -e ".[dev]"
 ```
 
-`neomundi` 2.0.0 a été téléversée sur PyPI le 2026-11-14. **Les exemples
-`trace()` et `verify()` ci-dessous ne sont pas dans cette roue** et exigent
-l'installation depuis la source. Cette branche laisse volontairement
-`version = "2.0.0"` intacte : la publication est verrouillée par un flux
-manuel épinglé sur l'artefact 2.0.0 relu, et **choisir le prochain numéro de
-version est une décision de publication, pas un effet de bord de cette
-demande de fusion.**
+`neomundi` **2.1.0** a été téléversée sur PyPI le **2026-11-15** : c'est la
+première roue publiée à porter `trace()` et `verify()`. La `2.0.0`
+(2026-11-14) ne portait que `govern()` et `stream()` et reste installable.
+La publication demeure verrouillée par un flux manuel — tag exact, phrase de
+confirmation, environnement GitHub `pypi` et Trusted Publishing : **le numéro
+a été re-pointé, aucun verrou n'a été retiré.**
 
 Le code du SDK est sous [Apache-2.0](LICENSE), sous réserve de la revue des
 droits des contributeurs ; voir les
@@ -248,7 +247,7 @@ certifie une réponse d'IA.
 | Tests hors ligne | 395 réussis ; 12 captures historiques optionnelles ignorées |
 | Tests automatisés GitHub | Python 3.9, 3.11, 3.12, 3.13 |
 | Parité des schémas déployés | Mesurée octet pour octet en [GitHub Actions](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929), et re-mesurée hors ligne par les fixtures de cette branche |
-| `trace()` / `verify()` | Sur cette branche seulement — pas dans la roue `2.0.0` publiée |
+| `trace()` / `verify()` | Publiés dans la `2.1.0` (2026-11-15). Absents de la `2.0.0`. |
 | Version de mesure | Le SDK déclare `3.3.0`, vérifié pour `3.3.0` et `3.3.1`. **La production sert `3.5.0`**, qui n'est volontairement **pas** déclarée vérifiée : personne ne l'a vérifiée. L'avertissement que vous verrez est donc correct. |
 
 Cette qualification réelle a éprouvé une mesure complète et un flux

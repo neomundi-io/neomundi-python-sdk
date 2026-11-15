@@ -309,8 +309,11 @@ qu'un `git fetch` avait expiré en silence. Les PR #17 à #19, fusionnées le
   verrouillé (branche, tag, phrase de confirmation, environnement, OIDC) et
   `tests/test_pypi_release_guard.py` qui éprouve ces verrous.
 
-**Conséquence pour cette branche :** la version reste **`2.0.0`**. Le
-garde-fou de publication épingle ce numéro et le tag `sdk-v2.0.0` ; le bouger
+**Conséquence pour cette branche :** la version restait **`2.0.0`**.
+🟢 **Tranché le 2026-11-15 : le responsable a choisi `2.1.0`, publiée le jour
+même.** Le garde-fou a été **re-pointé** sur `sdk-v2.1.0`, aucun verrou
+retiré. Le paragraphe ci-dessous décrit la situation d'avant cette décision.
+Le garde-fou de publication épingle ce numéro et le tag `sdk-v2.0.0` ; le bouger
 depuis une branche de fonctionnalité relâcherait un contrôle de publication
 délibéré. **Choisir le numéro de la prochaine version est une décision de
 publication**, à prendre avec le tag et le garde-fou — pas un effet de bord de

@@ -1,4 +1,29 @@
-# PyPI release record — `neomundi` 2.0.0 (published 2026-11-14)
+# PyPI release record — `neomundi`
+
+## 2.1.0 — published 2026-11-15
+
+**First published wheel carrying `trace()` and `verify()`.** `2.0.0` carried
+`govern()` and `stream()` only and remains installable.
+
+- Release commit: the exact `main` HEAD at dispatch time; tag `sdk-v2.1.0`
+  created on it. The workflow verifies `tag == origin/main HEAD` and refuses
+  otherwise.
+- **The publication guard was re-pointed, not removed.** `workflow_dispatch`
+  only, `main` only, exact tag `sdk-v2.1.0`, typed confirmation
+  `PUBLISH_NEOMUNDI_TO_PYPI`, GitHub environment `pypi`, Trusted Publishing
+  via OIDC, no stored credential. `tests/test_pypi_release_guard.py` pins
+  every one of those and was updated in the same commit.
+- The release smoke test now also asserts that the installed wheel exposes
+  `trace()`, `verify()` and `verify_evidence_archive()` — a wheel missing the
+  features this version announces cannot be published silently.
+- **Unchanged limits:** `verified_measurement_versions` stays
+  `("3.3.0", "3.3.1")`; production serves `3.5.0`, deliberately not declared
+  verified. SDK `2.1.0` is not a measurement version. No backend deployment
+  was performed as part of this publication.
+
+---
+
+# Record — `neomundi` 2.0.0 (published 2026-11-14)
 
 **Status: PUBLISHED AND PUBLIC INSTALL VERIFIED.** [PyPI release](https://pypi.org/project/neomundi/2.0.0/) · [GitHub release](https://github.com/neomundi-io/neomundi-python-sdk/releases/tag/sdk-v2.0.0).
 

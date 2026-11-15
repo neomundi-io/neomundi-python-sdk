@@ -33,12 +33,11 @@ Lire `docs/LIMITES.md` avant d'interpréter un score.
 
 from __future__ import annotations
 
-#: 🔴 **La roue `2.0.0` publiée sur PyPI ne porte ni `trace()` ni
-#: `verify()`** : ils n'existent que sur cette branche. Le numéro reste
-#: `2.0.0` à dessein — la publication est verrouillée par un flux manuel
-#: épinglé sur l'artefact 2.0.0 relu, et choisir le prochain numéro est
-#: une décision de publication.
-__version__ = "2.0.0"
+#: `2.1.0` ajoute `trace()` et `verify()` à la surface publiée. La
+#: publication reste verrouillée par un flux manuel épinglé sur un tag
+#: exact (`sdk-v2.1.0`), une phrase de confirmation et l'environnement
+#: GitHub `pypi` : le numéro a été re-pointé, aucun verrou n'a été retiré.
+__version__ = "2.1.0"
 
 #: Le contrat backend auquel ce SDK se réfère.
 #:

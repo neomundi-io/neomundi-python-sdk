@@ -12,7 +12,7 @@ def test_pypi_release_metadata_is_explicit_and_has_no_private_classifier():
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert '"Private :: Do Not Upload"' not in pyproject
     assert 'name = "neomundi"' in pyproject
-    assert 'version = "2.0.0"' in pyproject
+    assert 'version = "2.1.0"' in pyproject
     assert 'license = "Apache-2.0"' in pyproject
 
 
@@ -32,7 +32,7 @@ def test_publication_requires_named_tag_confirmation_and_environment():
     yml = (ROOT / ".github/workflows/publish-pypi.yml").read_text(encoding="utf-8")
     assert "github.ref == 'refs/heads/main'" in yml
     assert "inputs.confirmation == 'PUBLISH_NEOMUNDI_TO_PYPI'" in yml
-    assert "inputs.tag == 'sdk-v2.0.0'" in yml
+    assert "inputs.tag == 'sdk-v2.1.0'" in yml
     assert '"Private :: Do Not Upload" not in config' in yml
     assert "current == head" in yml
     assert "name: pypi" in yml
