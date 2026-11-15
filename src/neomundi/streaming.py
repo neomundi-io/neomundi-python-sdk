@@ -109,9 +109,12 @@ class StreamResult:
     def log_persisted(self) -> Optional[bool]:
         """Whether the server says THIS execution reached the log table.
 
-        This is the only server-side registration confirmation the
-        platform publishes anywhere: POST /v1/govern has no equivalent
-        field, and its 200 makes no persistence claim.
+        Server-side registration confirmation. It was the only one the
+        platform published anywhere until 2026-11-15: POST /v1/govern had
+        no equivalent field and its 200 made no persistence claim. That
+        route now publishes the same two fields, with the same vocabulary;
+        this SDK exposes them only on the SSE envelope, and leaves the
+        REST pair in GovernResult.unknown_fields.
 
         ABSENCE MEANS PERSISTED. The backend emits the key only on the
         non-nominal path (app/api/v1/streaming.py:1650-1653), so a done

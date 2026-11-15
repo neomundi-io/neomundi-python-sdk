@@ -105,11 +105,17 @@ with NeoMundiClient(
   l'exige, et la réponse déployée le republie sous
   `token_count_source: "caller_declared"` — le serveur ne compte rien sur cette
   route.
-- 🔴 **`registered` reste `None` sur REST.** `POST /v1/govern` répond 200
-  **même quand l'écriture du journal a échoué**, et son contrat de fil ne
-  publie aucun champ de persistance. Seule la route SSE publie
-  `log_persisted` ; `TraceRecord.from_stream` est le seul chemin où
-  `registered` porte une valeur.
+- 🔴 **`registered` reste `None` sur REST — et c'est désormais un choix du
+  SDK, non un manque du serveur.** Jusqu'au 2026-11-15, `POST /v1/govern`
+  répondait 200 **même quand l'écriture du journal avait échoué**, et son
+  contrat de fil ne publiait aucun champ de persistance. Depuis le
+  déploiement de `03e2b344`, **les deux routes publient `log_persisted` et
+  `log_write`**, et un appel réel l'a vérifié en production. Ce SDK
+  n'interprète pas encore la paire REST : elle arrive dans `unknown_fields`
+  et reste lisible par `result.get("log_persisted")`. La typer serait une
+  nouvelle fonctionnalité, pas une correction de documentation — donc
+  `TraceRecord.from_stream` reste le seul chemin où `registered` porte une
+  valeur. Lire le champ brut si la réponse REST est nécessaire aujourd'hui.
 - 🔴 **Votre `client_trace_id` n'est pas conservé par le serveur.** Le champ
   `metadata` est accepté par le contrat et abandonné par la route. La
   corrélation vous appartient : conservez le couple
@@ -152,7 +158,7 @@ de fournisseur, et peut engager un coût chez lui comme un débit NeoMundi — v
 comptent :
 
 ```python
-stream_result.log_persisted      # la SEULE confirmation d'enregistrement de la plateforme
+stream_result.log_persisted      # confirmation d'enregistrement (REST la publie aussi depuis le 2026-11-15)
 stream_result.log_write          # already_exists / already_exists_divergent / failed
 stream_result.token_count_source # provider_usage, ou chunk_count_fallback
 stream_result.token_count_unit   # "tokens", ou "chunks" sur le chemin de repli
@@ -238,6 +244,7 @@ certifie une réponse d'IA.
 |---|---|
 | Développement REST + SSE | Terminé, inchangé par cette branche |
 | Qualification réelle du SDK installé | **Faite le 2026-11-13 : REST PASS, SSE PASS** contre l'API hébergée |
+| Déclaration de persistance REST | **Vérifiée en production le 2026-11-15** : un appel autorisé a rendu `log_persisted: true` / `log_write: "inserted"`, et `GET /v1/govern/{request_id}` a retrouvé l'observation. Relire cette ligne stockée rend `log_persisted: null` — un rejeu n'énonce aucun verdict de persistance. |
 | Tests hors ligne | 395 réussis ; 12 captures historiques optionnelles ignorées |
 | Tests automatisés GitHub | Python 3.9, 3.11, 3.12, 3.13 |
 | Parité des schémas déployés | Mesurée octet pour octet en [GitHub Actions](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929), et re-mesurée hors ligne par les fixtures de cette branche |

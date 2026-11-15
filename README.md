@@ -101,10 +101,16 @@ with NeoMundiClient(
   and the deployed response republishes it as
   `token_count_source: "caller_declared"` — the server counts nothing on this
   route.
-- 🔴 **`registered` stays `None` on REST.** `POST /v1/govern` answers 200 even
-  when the log write failed, and its wire contract publishes no persistence
-  field. Only the SSE route publishes `log_persisted`; `TraceRecord.from_stream`
-  is the single path where `registered` carries a value.
+- 🔴 **`registered` stays `None` on REST — and that is now an SDK choice, not
+  a server gap.** Until 2026-11-15, `POST /v1/govern` answered 200 even when
+  the log write had failed, and its wire contract published no persistence
+  field at all. Since the deployment of `03e2b344` **both routes publish
+  `log_persisted` and `log_write`**, and a real call was verified in
+  production. This SDK does **not** interpret the REST pair yet: it arrives in
+  `unknown_fields` and stays readable as `result.get("log_persisted")`.
+  Typing it would be a new feature, not a documentation fix, so
+  `TraceRecord.from_stream` remains the only path where `registered` carries
+  a value. Read the raw field if you need the REST answer today.
 - 🔴 **Your `client_trace_id` is not retained by the server.** The `metadata`
   field is accepted by the contract and dropped by the route. Correlation is
   therefore yours to keep: store the `(client_trace_id, request_id)` pair.
@@ -144,7 +150,7 @@ key, and can incur provider cost and a NeoMundi charge — see
 [the streaming guide](docs/STREAMING.md). Two fields are new there and matter:
 
 ```python
-stream_result.log_persisted      # the ONLY server-side registration confirmation
+stream_result.log_persisted      # server-side registration confirmation (REST has it too since 2026-11-15)
 stream_result.log_write          # already_exists / already_exists_divergent / failed
 stream_result.token_count_source # provider_usage, or chunk_count_fallback
 stream_result.token_count_unit   # "tokens", or "chunks" on the fallback path
@@ -225,6 +231,7 @@ certifies an AI answer.
 |---|---|
 | REST + SSE implementation | Complete, unchanged by this branch |
 | Live qualification of the installed SDK | **Done 2026-11-13: REST passed, SSE passed** against the hosted API |
+| REST persistence declaration | **Verified in production 2026-11-15**: one authorised call returned `log_persisted: true` / `log_write: "inserted"`, and `GET /v1/govern/{request_id}` found the observation. Replaying that stored row returns `log_persisted: null` — a replay states no persistence verdict. |
 | Offline tests | 395 passed; 12 optional historical captures skipped |
 | CI | Python 3.9, 3.11, 3.12, 3.13 |
 | Deployed schema parity | Measured byte-for-byte in [GitHub Actions](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929), and re-measured offline by this branch's fixtures |
