@@ -10,7 +10,7 @@ import json
 import math
 import time
 from types import TracebackType
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Type
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple, Type
 
 import httpx
 
@@ -24,6 +24,13 @@ from .errors import (
 )
 from .models import GovernResult
 from .streaming import GovernStream, build_stream_request_body
+from .trace import Trace
+from .verification import (
+    AUDIT_VERIFY_PATH,
+    RGC_VERIFY_PATH,
+    AuditCertificateVerification,
+    ContractVerification,
+)
 
 __all__ = ["NeoMundiClient", "GOVERN_PATH", "KEY_PREFIXES"]
 
@@ -279,6 +286,94 @@ class NeoMundiClient:
         return _parse_govern_response(response)
 
     # ------------------------------------------------------------------
+    # TRACE — instrumentation de l'appel de l'appelant
+    # ------------------------------------------------------------------
+
+    def trace(self, **kwargs: Any) -> Trace:
+        """Ouvre une trace autour de l'appel que l'application va faire.
+
+            with client.trace(model_name="gpt-4o") as t:
+                reply = my_llm(question)
+                t.record(prompt=question, response=reply,
+                         token_count=usage.total_tokens)
+            t.record_.request_id  # identifiant serveur de l'observation
+
+        **Il n'existe aucune route de traçage sur l'API** : refermer la
+        trace soumet `POST /v1/govern`, donc une mesure facturée. Ce
+        n'est pas `govern()` déguisé en « trace-only » — c'est l'étape
+        d'instrumentation qui alimente la mesure, et elle le dit :
+
+        * la latence est **mesurée** localement, plus déclarée à la main ;
+        * `token_count` reste **exigé de l'appelant** : sans lui, rien
+          n'est envoyé ;
+        * `TraceRecord.registered` vaut `None`, parce que cette route ne
+          publie aucune confirmation d'enregistrement ;
+        * `submit=False` n'ouvre aucune socket.
+
+        Voir `neomundi.trace` pour le détail, et `TraceRecord.from_stream`
+        pour le seul chemin où l'enregistrement est confirmé.
+        """
+        return Trace(self, **kwargs)
+
+    # ------------------------------------------------------------------
+    # VERIFY — routes publiques, sans clé, non facturées
+    # ------------------------------------------------------------------
+
+    def verify(self, request_id: str) -> ContractVerification:
+        """Vérifie le contrat RGC signé d'une observation.
+
+        `GET /v1/rgc/verify/{request_id}` : le serveur recalcule
+        l'empreinte canonique depuis le journal source **et** vérifie la
+        signature JWS, au lieu de faire confiance aux valeurs stockées.
+        Route **publique et non facturée** ; la clé du client est
+        transmise mais n'est pas requise.
+
+        Ce que cela établit : l'enregistrement a bien été émis par cette
+        plateforme et n'a pas été altéré depuis. Ce que cela n'établit
+        pas : que la réponse de l'IA mesurée soit vraie.
+
+        Un 404 — aucun contrat RGC émis pour cette observation — rend
+        `valid is None`, **pas** `False` : il n'y a rien à vérifier.
+        L'émission d'un contrat est un appel distinct, réservé au palier
+        TIER_03 (`POST /v1/rgc/contracts/{request_id}`), que ce SDK
+        n'émet pas.
+        """
+        if not isinstance(request_id, str) or not request_id.strip():
+            raise ConfigurationError("request_id doit être une chaîne non vide.")
+        path = RGC_VERIFY_PATH.format(request_id=request_id.strip())
+        response = self._request("GET", path, None, tolerated_statuses=(404,))
+        return ContractVerification.from_payload(
+            request_id.strip(), _json_or_none(response), response.status_code
+        )
+
+    def verify_audit_certificate(
+        self, audit_trail_id: str, *, sha256: Optional[str] = None
+    ) -> AuditCertificateVerification:
+        """Vérifie un certificat d'audit de palier 03.
+
+        `GET /v1/audit/verify/{audit_trail_id}` : route **publique**,
+        conçue pour un auditeur qui n'a que le document.
+
+        ⚠ **Sans `sha256`, rien n'est vérifié.** Aucune empreinte n'est
+        conservée à l'émission : la seule chose comparable est celle
+        imprimée sur le certificat. Omettre l'argument rend donc
+        `valid is None` et une empreinte simplement *recalculée*.
+        """
+        if not isinstance(audit_trail_id, str) or not audit_trail_id.strip():
+            raise ConfigurationError("audit_trail_id doit être une chaîne non vide.")
+        if sha256 is not None and (not isinstance(sha256, str) or not sha256.strip()):
+            raise ConfigurationError(
+                "sha256 doit être une chaîne non vide, ou être omis."
+            )
+        path = AUDIT_VERIFY_PATH.format(audit_trail_id=audit_trail_id.strip())
+        if sha256:
+            path = path + "?sha256=" + sha256.strip()
+        response = self._request("GET", path, None, tolerated_statuses=(404,))
+        return AuditCertificateVerification.from_payload(
+            audit_trail_id.strip(), _json_or_none(response), response.status_code
+        )
+
+    # ------------------------------------------------------------------
     # Transport
     # ------------------------------------------------------------------
 
@@ -323,12 +418,23 @@ class NeoMundiClient:
     govern_stream = stream
 
     def _request(
-        self, method: str, path: str, body: Optional[Dict[str, Any]]
+        self,
+        method: str,
+        path: str,
+        body: Optional[Dict[str, Any]],
+        *,
+        tolerated_statuses: Tuple[int, ...] = (),
     ) -> httpx.Response:
         """Émet la requête et applique la politique de réessai.
 
         Générique sur la méthode et le chemin, pour qu'une route
         supplémentaire n'impose pas de réécrire cette couche.
+
+        `tolerated_statuses` nomme les statuts d'erreur qui sont une
+        **réponse**, et non un échec : le 404 des routes de vérification
+        dit « aucun enregistrement de ce genre », ce qui est une
+        information exacte et attendue. Tout autre statut d'erreur lève,
+        comme avant.
         """
         attempt = 0
         while True:
@@ -355,6 +461,8 @@ class NeoMundiClient:
                 ) from exc
 
             if response.status_code < 400:
+                return response
+            if response.status_code in tolerated_statuses:
                 return response
 
             error = _build_api_error(response)
@@ -475,6 +583,19 @@ def _build_request_body(
         body.update(dict(extra))
 
     return body
+
+
+def _json_or_none(response: httpx.Response) -> Any:
+    """Le corps décodé, ou `None` s'il n'est pas du JSON.
+
+    Les routes de vérification répondent toujours du JSON ; un corps
+    illisible devient `None`, et le modèle de verdict le traduit en
+    « aucune vérification », jamais en échec de vérification.
+    """
+    try:
+        return response.json()
+    except (json.JSONDecodeError, ValueError):
+        return None
 
 
 def _parse_govern_response(response: httpx.Response) -> GovernResult:

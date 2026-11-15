@@ -1,0 +1,408 @@
+{
+  "$defs": {
+    "AuditBlock": {
+      "properties": {
+        "measurement_version": {
+          "type": "string"
+        },
+        "normalizer_version": {
+          "type": "string"
+        },
+        "trace_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "measurement_version",
+        "normalizer_version",
+        "trace_id"
+      ],
+      "type": "object"
+    },
+    "MeasurementBlock": {
+      "properties": {
+        "aggregates_publishable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checks_attempted": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "checks_succeeded": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "confidence_basis": {
+          "type": "string"
+        },
+        "coverage": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "degraded_g_inputs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "failed_checks": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "missing_required_signals": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "checks_attempted",
+        "checks_succeeded",
+        "coverage",
+        "confidence_basis"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://api.neomundi.io/v1/contracts/govern-sse-1.0.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "token_count_source": {
+            "const": "provider_usage"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "counter_units": {
+            "properties": {
+              "total_tokens": {
+                "const": "tokens"
+              }
+            }
+          },
+          "token_count_scope": {
+            "const": "normalized_provider_total"
+          },
+          "token_count_unit": {
+            "const": "tokens"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "token_count_source": {
+            "const": "chunk_count_fallback"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "counter_units": {
+            "properties": {
+              "total_tokens": {
+                "const": "chunks"
+              }
+            }
+          },
+          "token_count_scope": {
+            "const": "content_chunks"
+          },
+          "token_count_unit": {
+            "const": "chunks"
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "audit": {
+      "$ref": "#/$defs/AuditBlock"
+    },
+    "checks_emitted": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "coherence": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "contract_version": {
+      "const": "neomundi.govern.sse/1.0",
+      "type": "string"
+    },
+    "cost": {
+      "type": "number"
+    },
+    "counter_units": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "required": [
+        "total_tokens"
+      ],
+      "type": "object"
+    },
+    "decision": {
+      "type": "string"
+    },
+    "decision_basis": {
+      "type": "string"
+    },
+    "delta_g": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "evaluators": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "geometry": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hallucination": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "is_long_form_safe": {
+      "type": "boolean"
+    },
+    "latency_ms": {
+      "type": "number"
+    },
+    "log_persisted": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "log_write": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "measured_signals": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "measurement": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MeasurementBlock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mode": {
+      "const": "OBS",
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "moderation": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "provider": {
+      "type": "string"
+    },
+    "r_score": {
+      "type": "number"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "regime": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "response_bytes": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "response_length": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "response_sha256": {
+      "pattern": "^[a-fA-F0-9]{64}$",
+      "type": "string"
+    },
+    "response_text": {
+      "type": "string"
+    },
+    "stability_score": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stream_interrupted": {
+      "type": "boolean"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "token_count_scope": {
+      "enum": [
+        "normalized_provider_total",
+        "content_chunks"
+      ],
+      "type": "string"
+    },
+    "token_count_source": {
+      "enum": [
+        "provider_usage",
+        "chunk_count_fallback"
+      ],
+      "type": "string"
+    },
+    "token_count_unit": {
+      "enum": [
+        "tokens",
+        "chunks"
+      ],
+      "type": "string"
+    },
+    "total_tokens": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "trajectory_points": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "unmeasured_signals": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "contract_version",
+    "token_count_source",
+    "token_count_scope",
+    "token_count_unit",
+    "audit",
+    "request_id",
+    "timestamp",
+    "mode",
+    "provider",
+    "model",
+    "decision",
+    "decision_basis",
+    "reasons",
+    "stability_score",
+    "r_score",
+    "regime",
+    "total_tokens",
+    "latency_ms",
+    "cost",
+    "stream_interrupted",
+    "response_text",
+    "response_length",
+    "response_bytes",
+    "response_sha256",
+    "counter_units",
+    "is_long_form_safe",
+    "delta_g",
+    "measured_signals",
+    "unmeasured_signals",
+    "checks_emitted",
+    "trajectory_points",
+    "evaluators",
+    "measurement",
+    "confidence"
+  ],
+  "type": "object"
+}

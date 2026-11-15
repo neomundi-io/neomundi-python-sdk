@@ -1,6 +1,19 @@
 """SDK Python NeoMundi — client de l'API de mesure du comportement des IA.
 
-SDK v2 : REST post-call et proxy de génération SSE.
+SDK v2 : parcours INSTALL -> TRACE -> MEASURE -> VERIFY.
+
+* **TRACE** — `client.trace()` instrumente l'appel de l'application :
+  latence mesurée, identifiant de corrélation, soumission explicite. Il
+  n'existe **aucune route de traçage** sur l'API ; ce module ne prétend
+  pas le contraire. Voir `neomundi.trace`.
+* **MEASURE** — `client.govern()` (REST post-call) et `client.stream()`
+  (proxy de génération SSE), inchangés.
+* **VERIFY** — `client.verify()` et `client.verify_audit_certificate()`
+  interrogent les routes **publiques et non facturées** de vérification
+  d'émission ; `verify_evidence_archive()` délègue l'intégrité au
+  vérificateur Evidence **indépendant**, qui n'est pas réimplémenté ici.
+  Les trois questions — intégrité, authenticité, véracité — sont
+  distinguées dans `neomundi.verification`.
 
 Principe directeur, qui explique chaque choix de ce paquet :
 
@@ -20,6 +33,11 @@ Lire `docs/LIMITES.md` avant d'interpréter un score.
 
 from __future__ import annotations
 
+#: 🔴 **La roue `2.0.0` publiée sur PyPI ne porte ni `trace()` ni
+#: `verify()`** : ils n'existent que sur cette branche. Le numéro reste
+#: `2.0.0` à dessein — la publication est verrouillée par un flux manuel
+#: épinglé sur l'artefact 2.0.0 relu, et choisir le prochain numéro est
+#: une décision de publication.
 __version__ = "2.0.0"
 
 #: Le contrat backend auquel ce SDK se réfère.
@@ -59,9 +77,40 @@ API_CONTRACT = {
     "stream_verification": "local_backend_source_and_offline_tests_only",
     "contract_source": "govern-v3/app/models/responses.py, requests.py",
     "openapi_frozen": False,
+    # Routes de vérification publiques, sans clé et non facturées.
+    # Sondées en production le 2026-11-15 : les deux rendent le 404
+    # documenté sur un identifiant inexistant.
+    "rgc_verify_route": "GET /v1/rgc/verify/{request_id}",
+    "audit_verify_route": "GET /v1/audit/verify/{audit_trail_id}",
+    # Les deux schémas de fil publiés par la production. Relevés le
+    # 2026-11-15 sur `GET /v1/contracts/<nom>` : octet pour octet
+    # identiques aux fichiers du dépôt backend, ce qui est la seule
+    # preuve disponible que ce SDK se réfère au contrat DÉPLOYÉ et non à
+    # une copie locale. `/docs` et `/openapi.json` rendent 404 en
+    # production : il n'y a pas d'autre schéma à lire.
+    "wire_contracts": {
+        "govern-rest-1.0.json": (
+            "bcd5588edc92376f59d57ad9ae155b09f5ab3fe49e15ece6cb2fe5adbf4835ef"
+        ),
+        "govern-sse-1.0.json": (
+            "358fc2ec1869471896d08c8e2cc0855b15def6433340a0506dae180733c7fefe"
+        ),
+    },
 }
 
 from ._retry import NO_RETRY, RetryPolicy
+from .verification import (
+    AUDIT_VERIFY_PATH,
+    EVIDENCE_COMMAND,
+    EVIDENCE_EXIT_CODES,
+    RGC_VERIFY_PATH,
+    AuditCertificateVerification,
+    ContractVerification,
+    EvidenceVerification,
+    EvidenceVerifierUnavailable,
+    verify_evidence_archive,
+)
+from .trace import TRACE_OUTCOMES, Trace, TraceRecord
 from .streaming import (
     GOVERN_STREAM_PATH,
     GovernStream,
@@ -128,6 +177,20 @@ __all__ = [
     # retry
     "RetryPolicy",
     "NO_RETRY",
+    # trace
+    "Trace",
+    "TraceRecord",
+    "TRACE_OUTCOMES",
+    # verify
+    "ContractVerification",
+    "AuditCertificateVerification",
+    "EvidenceVerification",
+    "EvidenceVerifierUnavailable",
+    "verify_evidence_archive",
+    "EVIDENCE_COMMAND",
+    "EVIDENCE_EXIT_CODES",
+    "RGC_VERIFY_PATH",
+    "AUDIT_VERIFY_PATH",
     # modèles
     "GovernResult",
     "MeasurementState",
