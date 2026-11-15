@@ -117,18 +117,56 @@ def test_le_contrat_sse_mesure_ou_se_rabat_et_le_dit():
     assert SSE["properties"]["token_count_unit"]["enum"] == ["tokens", "chunks"]
 
 
-def test_seule_la_route_sse_publie_une_confirmation_d_enregistrement():
-    """Le fait qui gouverne toute l'étape TRACE.
+def test_les_deux_routes_publient_desormais_la_confirmation_d_enregistrement():
+    """Le fait qui gouverne toute l'étape TRACE — et il a changé.
 
-    `log_persisted` existe dans le contrat SSE et **pas** dans le contrat
-    REST. Un SDK qui annoncerait « interaction enregistrée » après un 200
-    de `POST /v1/govern` inventerait une confirmation que le serveur n'a
-    jamais donnée.
+    Jusqu'au 2026-11-15, `log_persisted` n'existait que dans le contrat
+    SSE : le 200 de `POST /v1/govern` n'affirmait **rien** sur
+    l'enregistrement, et un SDK qui aurait annoncé « interaction
+    enregistrée » aurait inventé une confirmation jamais donnée.
+
+    Le déploiement de la révision `03e2b344` de `govern` a fermé cet
+    écart : **les deux routes publient maintenant les deux champs**, dans
+    le même vocabulaire. L'ajout est additif — ils ne sont requis sur
+    aucune des deux.
     """
-    assert "log_persisted" in SSE["properties"]
-    assert "log_write" in SSE["properties"]
-    assert "log_persisted" not in REST["properties"]
-    assert "log_write" not in REST["properties"]
+    for schema in (REST, SSE):
+        assert "log_persisted" in schema["properties"]
+        assert "log_write" in schema["properties"]
+        assert "log_persisted" not in schema["required"]
+        assert "log_write" not in schema["required"]
+
+
+def test_le_sdk_ne_les_interprete_pas_encore_et_le_dit():
+    """🔴 Ce que cette synchronisation ne fait PAS.
+
+    Les deux champs REST arrivent dans `unknown_fields` et restent
+    lisibles par `result.get("log_persisted")` : un consommateur a donc
+    accès au fait brut. Mais `TraceRecord.registered` vaut toujours
+    `None` sur REST, parce que les exposer comme champs typés serait une
+    **évolution** du SDK, et non l'alignement d'une empreinte. La
+    décision est datée et volontaire, pas un oubli.
+    """
+    assert "log_persisted" not in _KNOWN_ROOT_KEYS
+    assert "log_write" not in _KNOWN_ROOT_KEYS
+
+    payload = {
+        k: v
+        for k, v in json.loads(
+            (Path(__file__).parent / "fixtures" / "full_measurement.json").read_text(
+                encoding="utf-8"
+            )
+        ).items()
+        if not k.startswith("_fixture_")
+    }
+    payload.update({"log_persisted": True, "log_write": "inserted"})
+    result = neomundi.GovernResult.from_dict(payload)
+
+    assert result.unknown_fields == ["log_persisted", "log_write"]
+    assert result.parse_warnings == []
+    # Le fait reste accessible, sans être interprété.
+    assert result.get("log_persisted") is True
+    assert result.get("log_write") == "inserted"
 
 
 @pytest.mark.parametrize("nom", ["govern-rest-1.0.json", "govern-sse-1.0.json"])

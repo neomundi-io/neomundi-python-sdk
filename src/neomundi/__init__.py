@@ -88,9 +88,19 @@ API_CONTRACT = {
     # preuve disponible que ce SDK se réfère au contrat DÉPLOYÉ et non à
     # une copie locale. `/docs` et `/openapi.json` rendent 404 en
     # production : il n'y a pas d'autre schéma à lire.
+    #
+    # L'empreinte REST a changé le 2026-11-15 avec le déploiement de la
+    # révision `03e2b344` de `govern` : `POST /v1/govern` publie
+    # désormais `log_persisted` et `log_write`, comme la route SSE le
+    # faisait déjà. Ajout strictement additif — `required` identique —
+    # donc les deux champs arrivent dans `unknown_fields` et restent
+    # lisibles par `result.get("log_persisted")`. **Les exposer comme
+    # champs typés serait une évolution du SDK, pas une
+    # synchronisation : ce n'est volontairement pas fait ici.**
+    # `govern-sse-1.0.json` est INCHANGÉ.
     "wire_contracts": {
         "govern-rest-1.0.json": (
-            "bcd5588edc92376f59d57ad9ae155b09f5ab3fe49e15ece6cb2fe5adbf4835ef"
+            "46b0579f1d413ca75616d01eed1bef0dc317ff5e507dbcabc1dd146b7faab59c"
         ),
         "govern-sse-1.0.json": (
             "358fc2ec1869471896d08c8e2cc0855b15def6433340a0506dae180733c7fefe"
