@@ -308,7 +308,8 @@ de comparer deux observations.
 ---
 
 *Interne : les équipes NeoMundi partent du
-[cockpit maître](https://github.com/Neomundi-Labs/neomundi-workspace/blob/main/START_HERE.md),
+cockpit maître,
 sélectionnent le chantier dans `CHANTIERS.md`, puis y reviennent après la
 mission pour consigner le résultat, les preuves et la prochaine action. Ce
-document reste la porte d'entrée détaillée du SDK lui-même.*
+document reste la porte d'entrée détaillée du SDK lui-même. Ce cockpit est un
+dépôt privé : il n'est donc volontairement pas lié depuis cette page publique.*

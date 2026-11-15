@@ -294,8 +294,8 @@ observations.
 
 ---
 
-*Internal: NeoMundi crews start from the
-[workspace cockpit](https://github.com/Neomundi-Labs/neomundi-workspace/blob/main/START_HERE.md),
-pick the chantier in `CHANTIERS.md`, and come back to it afterwards to record
-the result, the evidence and the next action. This document stays the detailed
-entry point for the SDK itself.*
+*Internal: NeoMundi crews start from the workspace cockpit, pick the chantier
+there, and come back to it afterwards to record the result, the evidence and the
+next action. That cockpit is a private repository, so it is deliberately not
+linked from this public page. This document stays the detailed entry point for
+the SDK itself.*
