@@ -831,6 +831,26 @@
         }
       ]
     },
+    "log_persisted": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "log_write": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "measured_signals": {
       "anyOf": [
         {
