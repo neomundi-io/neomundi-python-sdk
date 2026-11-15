@@ -5,15 +5,17 @@ Versionnement sémantique.
 
 ---
 
-## [Non publié] — 2026-11-15 — INSTALL → TRACE → MEASURE → VERIFY
+## [2.1.0] — 2026-11-15 — INSTALL → TRACE → MEASURE → VERIFY
 
-**Rien n'est publié par cette entrée.** La roue `2.0.0` de PyPI ne porte ni
-`trace()` ni `verify()`. `version` reste `2.0.0` à dessein : la publication
-est verrouillée par un flux manuel épinglé sur l'artefact 2.0.0 relu
-(`tests/test_pypi_release_guard.py`), et **choisir le prochain numéro est une
-décision de publication**, pas un effet de bord de ce travail.
+**Publiée sur PyPI.** `pip install --upgrade neomundi` apporte désormais
+`trace()` et `verify()`, que la `2.0.0` ne portait pas. Le numéro a été choisi
+par le responsable ; le verrou de publication a été **re-pointé** sur le tag
+`sdk-v2.1.0` — tag exact, phrase de confirmation, environnement GitHub `pypi`
+et Trusted Publishing OIDC restent en place, **aucune protection n'a été
+retirée**.
 
-Aucune signature existante n'a changé.
+Aucune signature existante n'a changé : la `2.0.0` reste installable et
+`govern()`, `stream()`, `GovernResult` et `StreamResult` sont compatibles.
 
 ### Ajouté
 
@@ -70,7 +72,8 @@ Aucune signature existante n'a changé.
   et la réponse déployée republie `token_count_source: "caller_declared"`.
 - `verified_measurement_versions` reste `("3.3.0", "3.3.1")`. La production
   sert `3.5.0` ; l'y ajouter déclarerait une compatibilité non vérifiée.
-- `version = "2.0.0"` et le flux de publication verrouillé ne sont pas touchés.
+- les verrous du flux de publication : seul le numéro de version et de tag a
+  été re-pointé, de `2.0.0` vers `2.1.0`.
 
 ### Non fait
 

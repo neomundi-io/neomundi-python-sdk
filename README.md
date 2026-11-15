@@ -15,7 +15,7 @@ built. A promise you cannot reproduce is worse than no promise.
 
 | Step | What it is | Status |
 |---|---|---|
-| **INSTALL** | `pip install neomundi` — published 2026-11-14 | **Real** — but `trace()` and `verify()` are **not** in the published `2.0.0` wheel; they live on this branch |
+| **INSTALL** | `pip install neomundi` — `2.1.0` published 2026-11-15 | **Real** — `trace()` and `verify()` ship in the published wheel |
 | **TRACE** | `client.trace()` — local stopwatch, correlation id, explicit submission | **Partial** — there is **no trace-only route on the API**; closing a trace submits one metered measurement |
 | **MEASURE** | `client.govern()` (post-call REST) and `client.stream()` (SSE generation proxy) | **Real** — live-qualified against the hosted API on 2026-11-13, REST and SSE both passed |
 | **VERIFY** | `client.verify()` / `client.verify_audit_certificate()` (public, unmetered API routes) and `verify_evidence_archive()` (independent Evidence verifier) | **Real for emission authenticity. Archive integrity needs a second package.** |
@@ -28,21 +28,21 @@ What **no** step does: establish that an AI answer is **true**. See
 Python 3.9+. `httpx` is the only runtime dependency.
 
 ```sh
-# The published release: govern() and stream(). No trace(), no verify().
-python -m pip install neomundi==2.0.0
+# The published release: everything documented below.
+python -m pip install --upgrade neomundi
 
-# This branch, which adds TRACE and VERIFY. Not released.
+# Or from source, for contributors.
 git clone https://github.com/neomundi-io/neomundi-python-sdk.git
 cd neomundi-python-sdk
 python -m pip install -e ".[dev]"
 ```
 
-`neomundi` 2.0.0 was uploaded to PyPI on 2026-11-14. **The `trace()` and
-`verify()` examples below are not in that wheel** and require the source
-install. This branch deliberately leaves `version = "2.0.0"` untouched:
-publication is gated by an explicit manual workflow pinned to the reviewed
-2.0.0 artefact, and **choosing the next version number is a release decision,
-not a side effect of this pull request.**
+`neomundi` **2.1.0** was uploaded to PyPI on **2026-11-15**, and it is the
+first published wheel to carry `trace()` and `verify()`. `2.0.0`
+(2026-11-14) carried `govern()` and `stream()` only and remains installable.
+Publication stays gated by an explicit manual workflow: exact tag, typed
+confirmation, GitHub `pypi` environment and Trusted Publishing — **the
+version was re-pointed, no guard was removed.**
 
 The SDK code is licensed under [Apache-2.0](LICENSE), subject to
 contributor-rights review; see the
@@ -235,7 +235,7 @@ certifies an AI answer.
 | Offline tests | 395 passed; 12 optional historical captures skipped |
 | CI | Python 3.9, 3.11, 3.12, 3.13 |
 | Deployed schema parity | Measured byte-for-byte in [GitHub Actions](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929), and re-measured offline by this branch's fixtures |
-| `trace()` / `verify()` | On this branch only — not in the published `2.0.0` wheel |
+| `trace()` / `verify()` | Published in `2.1.0` (2026-11-15). Absent from `2.0.0`. |
 | Published measurement version | The SDK declares `3.3.0`, verified for `3.3.0` and `3.3.1`. **Production serves `3.5.0`**, which is deliberately *not* declared verified: nobody has verified it. The warning you will see is correct. |
 
 That live qualification exercised a complete measurement and a progressive
