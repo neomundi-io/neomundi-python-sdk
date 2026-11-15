@@ -4,12 +4,20 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) ![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Live](https://img.shields.io/badge/qualification_r%C3%A9elle-REST_%2B_SSE_PASS_2026--11--13-green) ![Tests](https://img.shields.io/badge/tests_hors_ligne-395_r%C3%A9ussis-green)
 
+Chaîne produit NeoMundi — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. Ce dépôt est le **client Python** : il installe la chaîne dans votre application, instrumente votre propre appel et expose les mesures sans les interpréter. Il n'embarque aucun seuil et ne dérive aucun verdict.
+
+[Architecture produit](https://github.com/neomundi-io/.github/blob/main/docs/PRODUCT_ARCHITECTURE.md) · [Audit des capacités](https://github.com/neomundi-io/.github/blob/main/docs/V2_FUNCTIONAL_AUDIT_2026-11-15.md) · [Tous les composants](https://github.com/neomundi-io/.github)
+
+---
+
 > **Connectez votre application d'IA. Tracez chaque interaction. Mesurez son
 > comportement. Vérifiez la preuve.**
 
-**INSTALL → TRACE → MEASURE → VERIFY.** Quatre étapes, et ce document dit pour
-chacune ce qui est **réel** aujourd'hui, ce qui est **partiel**, et ce qui
-reste **à construire**. Une promesse qu'on ne peut pas reproduire est pire que
+**INSTALL → TRACE → MEASURE → VERIFY** — les quatre étapes que ce SDK touche.
+**ACT** est la cinquième étape de la chaîne : elle est servie par les exports et
+les attestations de la plateforme, pas par ce paquet. Pour chacune, ce document
+dit ce qui est **réel** aujourd'hui, ce qui est **partiel**, et ce qui reste
+**à construire**. Une promesse qu'on ne peut pas reproduire est pire que
 pas de promesse.
 
 ## Ce que chaque étape fait réellement

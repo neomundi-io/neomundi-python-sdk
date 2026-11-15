@@ -13,9 +13,10 @@ NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT.
 > **Connect your AI application. Trace every interaction. Measure its behavior.
 > Verify the evidence.**
 
-**INSTALL → TRACE → MEASURE → VERIFY.** Four steps, and this README tells you
-for each one what is real today, what is partial, and what is still to be
-built. A promise you cannot reproduce is worse than no promise.
+**INSTALL → TRACE → MEASURE → VERIFY** — the four steps this SDK touches. **ACT**
+is the fifth step of the chain and is served by the platform's exports and
+attestations, not by this package. For each step below, this README tells you
+what is real today, what is partial, and what is still to be built. A promise you cannot reproduce is worse than no promise.
 
 ## What each step actually does
 
