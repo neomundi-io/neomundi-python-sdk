@@ -4,12 +4,19 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) ![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Live](https://img.shields.io/badge/live_qualification-REST_%2B_SSE_passed_2026--11--13-green) ![Tests](https://img.shields.io/badge/offline_tests-395_passed-green)
 
+NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. This repository is the **Python client**: it installs the chain into your application, instruments your own call, and exposes the measurements without interpreting them. It embeds no threshold and derives no verdict.
+
+[Product architecture](https://github.com/neomundi-io/.github/blob/main/docs/PRODUCT_ARCHITECTURE.md) · [Capability audit](https://github.com/neomundi-io/.github/blob/main/docs/V2_FUNCTIONAL_AUDIT_2026-11-15.md) · [All components](https://github.com/neomundi-io/.github)
+
+---
+
 > **Connect your AI application. Trace every interaction. Measure its behavior.
 > Verify the evidence.**
 
-**INSTALL → TRACE → MEASURE → VERIFY.** Four steps, and this README tells you
-for each one what is real today, what is partial, and what is still to be
-built. A promise you cannot reproduce is worse than no promise.
+**INSTALL → TRACE → MEASURE → VERIFY** — the four steps this SDK touches. **ACT**
+is the fifth step of the chain and is served by the platform's exports and
+attestations, not by this package. For each step below, this README tells you
+what is real today, what is partial, and what is still to be built. A promise you cannot reproduce is worse than no promise.
 
 ## What each step actually does
 
