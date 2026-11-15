@@ -4,6 +4,12 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) ![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Live](https://img.shields.io/badge/live_qualification-REST_%2B_SSE_passed_2026--11--13-green) ![Tests](https://img.shields.io/badge/offline_tests-395_passed-green)
 
+NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. This repository is the **Python client**: it installs the chain into your application, instruments your own call, and exposes the measurements without interpreting them. It embeds no threshold and derives no verdict.
+
+[Product architecture](https://github.com/neomundi-io/.github/blob/main/docs/PRODUCT_ARCHITECTURE.md) · [Capability audit](https://github.com/neomundi-io/.github/blob/main/docs/V2_FUNCTIONAL_AUDIT_2026-11-15.md) · [All components](https://github.com/neomundi-io/.github)
+
+---
+
 > **Connect your AI application. Trace every interaction. Measure its behavior.
 > Verify the evidence.**
 
