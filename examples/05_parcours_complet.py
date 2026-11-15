@@ -63,6 +63,10 @@ def serveur_simule() -> httpx.MockTransport:
             "token_count_scope": "caller_declared",
             "token_count_unit": "tokens",
             "stream_contract_metadata": None,
+            # Ajoutes par le contrat REST deploye le 2026-11-15 : la route
+            # dit desormais si l'observation a ete enregistree.
+            "log_persisted": True,
+            "log_write": "inserted",
         }
     )
     request_id = mesure["request_id"]
@@ -136,7 +140,10 @@ def main() -> int:
         print(f"  identifiant serveur  : {record.request_id}")
         print(f"  accusé de traitement : {record.acknowledged}")
         print(f"  ENREGISTRÉ ?         : {record.registered}  "
-              "<- None : cette route ne publie AUCUNE confirmation d'écriture")
+              "<- None : REST publie le fait, ce SDK ne l'interprete pas encore")
+        _lp = record.result.get("log_persisted") if record.result else None
+        print(f"  log_persisted brut   : {_lp}  "
+              "<- REST le publie ; lisible sans modifier le SDK")
         print(f"  trace_id serveur     : {record.server_trace_id}  "
               "<- dérivé, tronqué, NON unique : ne jamais s'en servir comme clé")
         print("\n  La trace est journalisable telle quelle — elle ne porte "

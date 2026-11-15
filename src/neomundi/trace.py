@@ -27,10 +27,15 @@ Ce que TRACE n'est pas, et que ce module refuse de laisser croire :
   Le contrat déployé le déclare requis (`app/models/requests.py:36`) et
   la réponse déployée le republie sous `token_count_source:
   "caller_declared"` — le serveur ne compte rien sur cette route ;
-* 🔴 **`registered` reste `None` sur REST.** La route ne publie aucune
-  confirmation d'écriture : son 200 est émis même quand l'insertion en
-  base a échoué (`governance.py` journalise l'échec et continue). Seule
-  la route SSE publie `log_persisted`. Voir `TraceRecord.from_stream`.
+* 🔴 **`registered` reste `None` sur REST, et c'est maintenant un choix
+  de ce SDK.** Jusqu'au 2026-11-15 la route ne publiait aucune
+  confirmation d'écriture : son 200 était émis même quand l'insertion en
+  base avait échoué. Depuis le déploiement de `03e2b344`, **REST publie
+  `log_persisted` et `log_write`** comme la route SSE. Ce module ne les
+  interprète pas : ils arrivent dans `GovernResult.unknown_fields` et
+  restent lisibles par `result.get("log_persisted")`. Les typer serait
+  une évolution du SDK. Voir `TraceRecord.from_stream`, qui reste le seul
+  chemin où `registered` porte une valeur.
 * 🔴 **`client_trace_id` n'est pas conservé par le serveur.** Le champ
   `metadata` est accepté par le contrat (« opaque metadata forwarded for
   tracing ») mais la route déployée ne le lit, ne le republie et ne le
@@ -108,10 +113,10 @@ class TraceRecord:
     request_id: Optional[str] = None
     #: L'observation est-elle enregistrée côté serveur ?
     #:
-    #: `None` sur REST, et ce `None` est une mesure de l'absence : la
-    #: route ne publie aucune confirmation d'écriture. `True`/`False`
-    #: uniquement par `from_stream`, où le serveur publie
-    #: `log_persisted`.
+    #: `None` sur REST — non parce que le serveur se taise (depuis le
+    #: 2026-11-15 il publie `log_persisted`), mais parce que ce SDK ne
+    #: l'interprète pas encore : lire `result.get("log_persisted")`.
+    #: `True`/`False` uniquement par `from_stream`.
     registered: Optional[bool] = None
     #: `audit.trace_id` du serveur, soit `trace-{request_id[:8]}`
     #: (`governance.py:1573`). **Dérivé et tronqué à 8 caractères
@@ -156,7 +161,8 @@ class TraceRecord:
         C'est **le seul chemin où `registered` porte une valeur** : la
         route SSE publie `log_persisted`, et son absence dans l'enveloppe
         `done` déclare une insertion nominale (voir
-        `StreamResult.log_persisted`).
+        `StreamResult.log_persisted`). REST publie le même fait depuis le
+        2026-11-15, mais ce SDK ne le convertit pas en `registered`.
         """
         payload = stream_result.payload
         response_text = stream_result.response_text
@@ -442,8 +448,8 @@ class Trace:
             submitted=result is not None,
             acknowledged=request_id is not None,
             request_id=request_id,
-            # REST ne publie aucune confirmation d'écriture : l'absence
-            # reste une absence.
+            # Non interprété ici : REST publie désormais le champ, mais
+            # le typer serait une évolution du SDK, pas un transport.
             registered=None,
             server_trace_id=server_trace_id,
             transport="rest",

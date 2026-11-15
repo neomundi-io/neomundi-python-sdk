@@ -2,6 +2,36 @@
 
 Issue de référence : [#20](https://github.com/neomundi-io/neomundi-python-sdk/issues/20).
 
+> ## ⚠ Deux constats de cet audit ont été corrigés le jour même
+>
+> Ce document a été écrit **le matin du 2026-11-15**. Le même jour, la
+> PR #30 du backend a été fusionnée **et déployée** (révision `03e2b344`).
+> Deux constats du §1 ne décrivent donc plus la production :
+>
+> 1. **« Le 200 de `POST /v1/govern` ne confirme aucun enregistrement »** —
+>    corrigé. La route publie désormais `log_persisted` et `log_write`, dans
+>    le même vocabulaire que SSE. Un appel réel l'a vérifié en production :
+>    `log_persisted: true`, `log_write: "inserted"`, et l'observation est
+>    récupérable par `GET /v1/govern/{request_id}`. Relire cette ligne
+>    stockée rend `log_persisted: null` — un rejeu n'énonce aucun verdict.
+> 2. **« La route SSE est la seule confirmation d'enregistrement de toute la
+>    plateforme »** — plus vrai : les **deux** routes la publient.
+>
+> ⚠ **Ce SDK n'interprète pas encore la paire REST.** Elle arrive dans
+> `unknown_fields` et reste lisible par `result.get("log_persisted")` ;
+> `TraceRecord.registered` vaut toujours `None` sur REST. La typer serait
+> une évolution du SDK, décidée séparément.
+>
+> 🔴 **L'empreinte REST a changé** :
+> `bcd5588edc92376f…` → `46b0579f1d413ca75616d01eed1bef0dc317ff5e507dbcabc1dd146b7faab59c`.
+> Les empreintes citées plus bas sont celles d'**avant** ce déploiement.
+> La valeur courante est mesurée à chaque exécution de la suite depuis
+> `API_CONTRACT["wire_contracts"]`.
+>
+> Tout le reste de cet audit — aucune route de traçage, `metadata` jeté,
+> `audit.trace_id` non unique, `token_count` non optionnel, les deux routes
+> publiques de vérification — **reste exact**.
+
 Ce document est le relevé de ce qui **existe**, de ce qui **manque** et de ce
 qui est **proposé**, avant toute ligne de code. Chaque affirmation nomme sa
 source. Quand une affirmation n'a pas pu être établie, elle est marquée

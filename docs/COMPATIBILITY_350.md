@@ -74,6 +74,16 @@ against the pinned public MCP schema source commit
 
 **Both checks passed with byte-identical HTTP response bodies:**
 
+> ⚠ **Dated record.** The REST digest below is the one served **before**
+> 2026-11-15. On that day the deployment of `03e2b344` added `log_persisted`
+> and `log_write` to the published REST contract — an additive change that
+> left `required` untouched — and the REST digest became
+> `46b0579f1d413ca75616d01eed1bef0dc317ff5e507dbcabc1dd146b7faab59c`.
+> The SSE digest is unchanged. Parity was re-established and re-measured
+> (`BYTE_MATCH` on both) against the updated pinned mirror; the current
+> values live in `API_CONTRACT["wire_contracts"]`, measured by the test
+> suite on every run.
+
 | Published schema | Deployed SHA-256 = pinned SHA-256 |
 | --- | --- |
 | `govern-rest-1.0.json` | `bcd5588edc92376f59d57ad9ae155b09f5ab3fe49e15ece6cb2fe5adbf4835ef` |
