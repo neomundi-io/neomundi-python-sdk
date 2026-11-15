@@ -4,8 +4,8 @@ Un exemple qui ne tourne pas est un piège : l'exemple officiel du backend
 (`GUIDE_CLIENT.md`) lève un `TypeError` dès qu'un agrégat est retenu, et
 personne ne s'en est aperçu parce qu'il n'était pas exécuté.
 
-Ces tests garantissent que les trois exemples du SDK tournent, sans
-réseau, et sortent en code 0.
+Ces tests garantissent que les exemples du SDK tournent, sans réseau, et
+sortent en code 0.
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ RUNNABLE = [
     "02_mesure_partielle.py",
     "03_gestion_erreurs.py",
     "04_streaming_sse.py",
+    "05_parcours_complet.py",
 ]
 
 

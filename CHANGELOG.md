@@ -5,6 +5,79 @@ Versionnement sémantique.
 
 ---
 
+## [Non publié] — 2026-11-15 — INSTALL → TRACE → MEASURE → VERIFY
+
+**Rien n'est publié par cette entrée.** La roue `2.0.0` de PyPI ne porte ni
+`trace()` ni `verify()`. `version` reste `2.0.0` à dessein : la publication
+est verrouillée par un flux manuel épinglé sur l'artefact 2.0.0 relu
+(`tests/test_pypi_release_guard.py`), et **choisir le prochain numéro est une
+décision de publication**, pas un effet de bord de ce travail.
+
+Aucune signature existante n'a changé.
+
+### Ajouté
+
+- `client.trace()` et `TraceRecord` (`neomundi.trace`) : chronomètre local
+  autour de l'appel applicatif, identifiant de corrélation, soumission
+  explicite. **Aucune route de traçage n'existe sur l'API** — refermer une
+  trace émet `POST /v1/govern`. `token_count` reste exigé de l'appelant ;
+  sans lui, rien n'est envoyé. `TraceRecord` ne porte ni prompt ni réponse,
+  seulement leurs longueurs.
+- `TraceRecord.from_stream()` : le seul chemin où l'enregistrement est
+  confirmé par le serveur.
+- `client.verify()` et `client.verify_audit_certificate()`
+  (`neomundi.verification`) : les deux routes de vérification **publiques et
+  non facturées**, avec un `valid` **tri-état** — `None` signifie « rien n'a
+  été vérifié », jamais « invalide ».
+- `verify_evidence_archive()` : adaptateur vers le vérificateur Evidence
+  **indépendant** (`pip install neomundi-evidence-verify`). Les cinq codes de
+  sortie sont republiés sans traduction ; un vérificateur absent lève au lieu
+  de rendre un verdict ; aucune clé n'est transmise au sous-processus.
+- deux gardes de compatibilité sur `GovernResult` : l'ordre des champs de
+  contrat et la présence d'une valeur par défaut hors du noyau.
+  ⚠ Elles **consignent** que les cinq champs de provenance fusionnés par les
+  PR #18/#19 ont déplacé `raw`, `unknown_fields` et `parse_warnings` de
+  l'index 28 à l'index 33 : une construction positionnelle à 29 arguments ou
+  plus lirait un champ pour un autre. Aucun code du SDK ne construit
+  `GovernResult` autrement que par mots-clés ; le déplacement est consigné,
+  pas défait.
+- `StreamResult.log_persisted`, `.log_write`, `.contract_version`,
+  `.token_count_source`, `.token_count_scope`, `.token_count_unit`.
+  `log_persisted` vaut `True` quand la clé est **absente** : le serveur ne
+  l'émet que sur le chemin non nominal.
+- `API_CONTRACT["wire_contracts"]` : les empreintes des deux schémas de fil
+  **téléchargés depuis la production**, mesurées à chaque exécution de la
+  suite — là où `scripts/check_live_wire_schemas.py` établit la même parité
+  en ligne, sur commande explicite.
+- `tests/fixtures/contracts/` : les deux schémas déployés, à l'octet. Un test
+  échoue si un champ que le contrat déployé déclare **requis** redevient
+  inconnu du SDK.
+- `API_CONTRACT["rgc_verify_route"]` et `["audit_verify_route"]`.
+- `examples/05_parcours_complet.py` : le parcours entier, hors ligne.
+- `docs/AUDIT_INSTALL_TRACE_MEASURE_VERIFY.md` : l'audit, avec ses sources et
+  ses **NON ÉTABLI**.
+
+### Modifié
+
+- README EN et FR entièrement restructurés sur les quatre étapes, avec pour
+  chacune **réel / partiel / à construire**. Les faits établis par les PR #17
+  à #19 — publication PyPI, licence Apache-2.0 du SDK, API hébergée
+  propriétaire et facturée, parité des schémas — sont conservés.
+
+### Inchangé, volontairement
+
+- `token_count` et `latency_ms` restent requis : le contrat déployé les exige
+  et la réponse déployée republie `token_count_source: "caller_declared"`.
+- `verified_measurement_versions` reste `("3.3.0", "3.3.1")`. La production
+  sert `3.5.0` ; l'y ajouter déclarerait une compatibilité non vérifiée.
+- `version = "2.0.0"` et le flux de publication verrouillé ne sont pas touchés.
+
+### Non fait
+
+- aucune route backend ajoutée, aucun déploiement, aucune publication PyPI ;
+- aucun lien attesté observation → archive Evidence : il n'existe pas encore,
+  et ce SDK ne le fabrique pas.
+
 ## [2.0.0] — 2026-10-26 — paquet préparé, non publié sur PyPI
 
 - Ajout de `stream()` et `govern_stream()` pour le proxy SSE, avec contexte,

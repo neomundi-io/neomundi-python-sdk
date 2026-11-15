@@ -58,13 +58,14 @@ jobs:
         run: python -m pytest tests -v
 
       - name: Run the offline examples
-        # Les quatre exemples sont deja executes par tests/test_examples.py.
+        # Les exemples sont deja executes par tests/test_examples.py.
         # Les relancer ici rend leur sortie lisible dans le journal de CI.
         run: |
           python examples/01_premiere_mesure.py
           python examples/02_mesure_partielle.py
           python examples/03_gestion_erreurs.py
           python examples/04_streaming_sse.py
+          python examples/05_parcours_complet.py
 
   build:
     name: Build and packaging checks
@@ -113,6 +114,9 @@ jobs:
           assert neomundi.API_CONTRACT['verified_measurement_versions'] == ('3.3.0', '3.3.1')
           assert neomundi.API_CONTRACT['openapi_frozen'] is False
           assert (pathlib.Path(neomundi.__file__).parent / 'py.typed').exists()
+          assert hasattr(neomundi.NeoMundiClient, 'trace')
+          assert hasattr(neomundi.NeoMundiClient, 'verify')
+          assert callable(neomundi.verify_evidence_archive)
           print('OK')
           "
 

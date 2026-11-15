@@ -271,12 +271,107 @@ def test_la_surface_publique_est_explicite():
     # `annotations` vient de `from __future__ import annotations` ; les
     # trois sous-modules sont des détails d'implémentation accessibles
     # mais non annoncés dans la surface publique.
-    not_public = {"client", "errors", "models", "streaming", "annotations"}
+    not_public = {
+        "client",
+        "errors",
+        "models",
+        "streaming",
+        "trace",
+        "verification",
+        "annotations",
+    }
     public = {
         n for n in dir(neomundi) if not n.startswith("_") and n not in not_public
     }
     missing = public - set(neomundi.__all__)
     assert not missing, f"Noms publics hors de __all__ : {sorted(missing)}"
+
+
+#: L'ordre EXACT des champs de `GovernResult` jusqu'à `rag_grounding`,
+#: tel que la 2.0.0 le publiait.
+#:
+#: ⚠ **Observation, et non correction :** les cinq champs de provenance de
+#: contrat ont été insérés **avant** `raw`, `unknown_fields` et
+#: `parse_warnings`, qui se sont donc déplacés de l'index 28 à l'index 33.
+#: Une construction POSITIONNELLE à 29 arguments ou plus lirait désormais
+#: un champ pour un autre, **sans erreur**. Aucun code du SDK ne construit
+#: `GovernResult` autrement que par mots-clés, et le déplacement est déjà
+#: fusionné : il est consigné ici plutôt que défait.
+#:
+#: La règle pour la suite : **ajouter tout nouveau champ en FIN de
+#: déclaration.**
+_CHAMPS_2_0_0 = (
+    "request_id",
+    "timestamp_raw",
+    "timestamp",
+    "system_id",
+    "mode",
+    "g_score",
+    "g_final",
+    "v_score",
+    "delta_g",
+    "checks_emitted",
+    "trajectory_points",
+    "measured_signals",
+    "unmeasured_signals",
+    "evaluators",
+    "processing_time_ms",
+    "latency_ms",
+    "model",
+    "provider",
+    "governance",
+    "metrics",
+    "baseline",
+    "audit",
+    "quality",
+    "runtime",
+    "measurement",
+    "density",
+    "esi",
+    "rag_grounding",
+)
+
+#: Les trois champs de diagnostic, qui existent depuis la 2.0.0 et doivent
+#: rester présents quelle que soit leur position.
+_CHAMPS_DIAGNOSTIC = ("raw", "unknown_fields", "parse_warnings")
+
+
+def test_l_ordre_des_champs_de_contrat_n_a_pas_bouge():
+    """Compatibilité ascendante, éprouvée et non affirmée."""
+    import dataclasses
+
+    noms = tuple(f.name for f in dataclasses.fields(neomundi.GovernResult))
+    assert noms[: len(_CHAMPS_2_0_0)] == _CHAMPS_2_0_0, (
+        "l'ordre des champs de la 2.0.0 a changé : ajouter tout nouveau champ "
+        "EN FIN de déclaration."
+    )
+    for nom in _CHAMPS_DIAGNOSTIC:
+        assert nom in noms, nom
+
+
+def test_tout_champ_hors_du_noyau_a_une_valeur_par_defaut():
+    """Sinon la construction par mots-clés des intégrations casserait."""
+    import dataclasses
+
+    for champ in dataclasses.fields(neomundi.GovernResult)[len(_CHAMPS_2_0_0) :]:
+        a_un_defaut = (
+            champ.default is not dataclasses.MISSING
+            or champ.default_factory is not dataclasses.MISSING
+        )
+        assert a_un_defaut, champ.name
+
+
+def test_un_resultat_sans_les_nouveaux_champs_reste_lisible(full_payload):
+    """Une charge de la 2.0.0, sans les cinq racines du contrat déployé :
+    elle doit se lire sans avertissement, les nouveaux champs à `None`."""
+    resultat = neomundi.GovernResult.from_dict(full_payload)
+    assert resultat.contract_version is None
+    assert resultat.token_count_source is None
+    assert resultat.token_count_scope is None
+    assert resultat.token_count_unit is None
+    assert resultat.stream_contract_metadata is None
+    assert resultat.parse_warnings == []
+    assert resultat.governance.decision == full_payload["governance"]["decision"]
 
 
 def test_le_marqueur_de_typage_est_present():

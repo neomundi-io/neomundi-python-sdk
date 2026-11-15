@@ -1,0 +1,1008 @@
+{
+  "$defs": {
+    "AuditBlock": {
+      "properties": {
+        "measurement_version": {
+          "type": "string"
+        },
+        "normalizer_version": {
+          "type": "string"
+        },
+        "trace_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "measurement_version",
+        "normalizer_version",
+        "trace_id"
+      ],
+      "type": "object"
+    },
+    "BaselineBlock": {
+      "properties": {
+        "calibration_status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delta_E": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "esi_bootstrap": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "esi_q": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_energy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reference_energy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "reference_energy",
+        "observed_energy",
+        "delta_E"
+      ],
+      "type": "object"
+    },
+    "CohereJudgeCitation": {
+      "properties": {
+        "document_title": {
+          "maxLength": 200,
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 400,
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "document_title"
+      ],
+      "type": "object"
+    },
+    "DensityBlock": {
+      "properties": {
+        "factual_input_measured": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "informational_density": {
+          "minimum": 1.0,
+          "type": "number"
+        },
+        "informational_energy": {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "risk_coefficient": {
+          "type": "integer"
+        },
+        "unmeasured_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "volumetric_density": {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "volumetric_density_basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "volumetric_density",
+        "informational_energy",
+        "informational_density"
+      ],
+      "type": "object"
+    },
+    "ESIBlock": {
+      "properties": {
+        "betas": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "type": "object"
+        },
+        "c_component": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "c_value": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "g_final": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p_component": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p_value": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "q_component": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "q_value": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "s_component": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "s_value": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "g_final",
+        "s_component",
+        "p_component",
+        "q_component",
+        "c_component",
+        "s_value",
+        "p_value",
+        "q_value",
+        "c_value",
+        "betas"
+      ],
+      "type": "object"
+    },
+    "GovernanceBlock": {
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "decision": {
+          "type": "string"
+        },
+        "decision_basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "decision",
+        "confidence"
+      ],
+      "type": "object"
+    },
+    "MeasurementBlock": {
+      "properties": {
+        "aggregates_publishable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checks_attempted": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "checks_succeeded": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "confidence_basis": {
+          "type": "string"
+        },
+        "coverage": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "degraded_g_inputs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "failed_checks": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "missing_required_signals": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "checks_attempted",
+        "checks_succeeded",
+        "coverage",
+        "confidence_basis"
+      ],
+      "type": "object"
+    },
+    "MetricsBlock": {
+      "properties": {
+        "cost_proxy": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "e_token": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "energy_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "latency_proxy": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stability_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "energy_score",
+        "e_token",
+        "cost_proxy",
+        "latency_proxy",
+        "stability_score"
+      ],
+      "type": "object"
+    },
+    "QualityBlock": {
+      "properties": {
+        "coherence_score": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "factual_hallucination_score": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "g_score": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "information_density": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "semantic_instability_score": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "semantic_risk": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stability_score": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "suspect_phrases": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/SuspectPhrase"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "g_score",
+        "stability_score",
+        "confidence"
+      ],
+      "type": "object"
+    },
+    "RagGroundingBlock": {
+      "properties": {
+        "best_doc_index": {
+          "type": "integer"
+        },
+        "best_doc_snippet": {
+          "maxLength": 240,
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/CohereJudgeCitation"
+          },
+          "type": "array"
+        },
+        "grounding_score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "is_grounded": {
+          "type": "boolean"
+        },
+        "judge_mode": {
+          "type": "string"
+        },
+        "model_used": {
+          "type": "string"
+        },
+        "per_doc_scores": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "ungrounded": {
+          "items": {
+            "$ref": "#/$defs/UngroundedSnippet"
+          },
+          "type": "array"
+        },
+        "ungrounded_claims": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "grounding_score",
+        "is_grounded",
+        "best_doc_index"
+      ],
+      "type": "object"
+    },
+    "RuntimeBlock": {
+      "properties": {
+        "cost_score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "e_token": {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "energy_score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "latency_score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "r_score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "r_score",
+        "latency_score",
+        "cost_score",
+        "e_token",
+        "energy_score"
+      ],
+      "type": "object"
+    },
+    "SuspectPhrase": {
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "explanation": {
+          "maxLength": 400,
+          "type": "string"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 400,
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "severity",
+        "category"
+      ],
+      "type": "object"
+    },
+    "UngroundedSnippet": {
+      "properties": {
+        "max_similarity": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "quote": {
+          "maxLength": 400,
+          "type": "string"
+        }
+      },
+      "required": [
+        "quote",
+        "max_similarity"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://api.neomundi.io/v1/contracts/govern-rest-1.0.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "audit": {
+      "$ref": "#/$defs/AuditBlock"
+    },
+    "baseline": {
+      "$ref": "#/$defs/BaselineBlock"
+    },
+    "checks_emitted": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contract_version": {
+      "const": "neomundi.govern.rest/1.0",
+      "type": "string"
+    },
+    "delta_g": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "density": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DensityBlock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "esi": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ESIBlock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evaluators": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "g_final": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "g_score": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "governance": {
+      "$ref": "#/$defs/GovernanceBlock"
+    },
+    "latency_ms": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "measured_signals": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "measurement": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MeasurementBlock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "metrics": {
+      "$ref": "#/$defs/MetricsBlock"
+    },
+    "mode": {
+      "const": "OBS",
+      "type": "string"
+    },
+    "model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "processing_time_ms": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "provider": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "quality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/QualityBlock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rag_grounding": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RagGroundingBlock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "runtime": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RuntimeBlock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stream_contract_metadata": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "system_id": {
+      "type": "string"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "token_count_scope": {
+      "const": "caller_declared",
+      "type": "string"
+    },
+    "token_count_source": {
+      "const": "caller_declared",
+      "type": "string"
+    },
+    "token_count_unit": {
+      "const": "tokens",
+      "type": "string"
+    },
+    "trajectory_points": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "unmeasured_signals": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "v_score": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "request_id",
+    "mode",
+    "governance",
+    "metrics",
+    "baseline",
+    "audit",
+    "contract_version",
+    "token_count_source",
+    "token_count_scope",
+    "token_count_unit"
+  ],
+  "type": "object"
+}

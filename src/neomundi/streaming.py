@@ -105,6 +105,72 @@ class StreamResult:
         value = self.payload.get("measurement")
         return value if isinstance(value, dict) else None
 
+    @property
+    def log_persisted(self) -> Optional[bool]:
+        """Whether the server says THIS execution reached the log table.
+
+        This is the only server-side registration confirmation the
+        platform publishes anywhere: POST /v1/govern has no equivalent
+        field, and its 200 makes no persistence claim.
+
+        ABSENCE MEANS PERSISTED. The backend emits the key only on the
+        non-nominal path (app/api/v1/streaming.py:1650-1653), so a done
+        envelope without it declares a nominal INSERTED write. Reading
+        the absence as "unknown" would withhold a confirmation the
+        server did give; returning None here would make a successful
+        registration indistinguishable from silence. A malformed value
+        is the one case that yields None.
+        """
+        if "log_persisted" not in self.payload:
+            return True
+        value = self.payload["log_persisted"]
+        return value if isinstance(value, bool) else None
+
+    @property
+    def log_write(self) -> Optional[str]:
+        """What the log table actually did, when it was not a plain insert.
+
+        Absent on the nominal path, where log_persisted is True. Known
+        server values include `already_exists` (an identical row is
+        there, log_persisted stays True), `already_exists_divergent` and
+        `failed` (log_persisted False). Returned verbatim, never mapped
+        to a verdict.
+        """
+        value = self.payload.get("log_write")
+        return value if isinstance(value, str) else None
+
+    @property
+    def contract_version(self) -> Optional[str]:
+        """`neomundi.govern.sse/1.0` on this route. Declared, not inferred."""
+        value = self.payload.get("contract_version")
+        return value if isinstance(value, str) else None
+
+    @property
+    def token_count_source(self) -> Optional[str]:
+        """`provider_usage` or `chunk_count_fallback`.
+
+        Unlike REST, this route does count: it either normalises the
+        provider's own usage block or, when the provider sent none,
+        falls back to counting content chunks. In the fallback case
+        token_count_unit is `chunks`, NOT tokens -- a consumer that
+        reads total_tokens without reading these three fields may be
+        comparing chunks to tokens.
+        """
+        value = self.payload.get("token_count_source")
+        return value if isinstance(value, str) else None
+
+    @property
+    def token_count_scope(self) -> Optional[str]:
+        """`normalized_provider_total` or `content_chunks`."""
+        value = self.payload.get("token_count_scope")
+        return value if isinstance(value, str) else None
+
+    @property
+    def token_count_unit(self) -> Optional[str]:
+        """`tokens` or `chunks`. See token_count_source."""
+        value = self.payload.get("token_count_unit")
+        return value if isinstance(value, str) else None
+
     def to_dict(self) -> Dict[str, Any]:
         return copy.deepcopy(self.payload)
 

@@ -494,7 +494,16 @@ def test_les_fixtures_declarent_leur_origine():
     from pathlib import Path
 
     fixtures = Path(__file__).parent / "fixtures"
-    files = sorted(fixtures.rglob("*.json"))
+    # `fixtures/contracts/` est exclu, et c'est la seule exclusion : ces
+    # deux fichiers sont les schémas de fil téléchargés **à l'octet**
+    # depuis la production (`GET /v1/contracts/<nom>`). Y insérer une clé
+    # `_fixture_origin` changerait leur `sha256`, donc détruirait la
+    # propriété même qu'ils servent à prouver. Leur origine est déclarée
+    # dans `test_wire_contract_deploye.py`, qui mesure leur empreinte à
+    # chaque exécution.
+    files = sorted(
+        p for p in fixtures.rglob("*.json") if p.parent.name != "contracts"
+    )
     assert files, "aucune fixture trouvée"
     for path in files:
         payload = json.loads(path.read_text(encoding="utf-8"))
