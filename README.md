@@ -6,7 +6,7 @@
 
 NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. This repository is the **Python client**: it installs the chain into your application, instruments your own call, and exposes the measurements without interpreting them. It embeds no threshold and derives no verdict.
 
-[Product architecture](https://github.com/neomundi-io/.github/blob/main/docs/PRODUCT_ARCHITECTURE.md) · [Capability audit](https://github.com/neomundi-io/.github/blob/main/docs/V2_FUNCTIONAL_AUDIT_2026-11-15.md) · [All components](https://github.com/neomundi-io/.github)
+[Product architecture](https://github.com/neomundi-io/.github/blob/main/docs/PRODUCT_ARCHITECTURE.md) · [Capability audit](https://github.com/neomundi-io/.github/blob/main/docs/V2_FUNCTIONAL_AUDIT_2026-11-15.md) · [All components](https://github.com/orgs/neomundi-io/repositories)
 
 ---
 
