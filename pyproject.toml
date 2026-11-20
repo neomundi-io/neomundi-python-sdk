@@ -8,6 +8,7 @@ version = "2.1.0"
 description = "Client Python NeoMundi : REST post-call et streaming SSE"
 readme = "README.md"
 license = "Apache-2.0"
+authors = [{ name = "Sébastien FAVRE", email = "sebastien@neomundi.org" }]
 requires-python = ">=3.9"
 keywords = ["neomundi", "ai-governance", "llm-measurement", "observability"]
 classifiers = [
@@ -36,6 +37,16 @@ dependencies = [
 dev = [
     "pytest>=8.0",
 ]
+
+# Les URL que PyPI affiche sur la fiche du paquet. Elles pointent toutes sur
+# le depot public, seule source verifiee : il n'existe pas de site de
+# documentation distinct, la documentation vit dans le depot.
+[project.urls]
+Homepage = "https://github.com/neomundi-io/neomundi-python-sdk"
+Repository = "https://github.com/neomundi-io/neomundi-python-sdk"
+Documentation = "https://github.com/neomundi-io/neomundi-python-sdk#readme"
+Changelog = "https://github.com/neomundi-io/neomundi-python-sdk/blob/main/CHANGELOG.md"
+Issues = "https://github.com/neomundi-io/neomundi-python-sdk/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
