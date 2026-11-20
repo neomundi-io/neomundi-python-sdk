@@ -1,0 +1,18 @@
+NeoMundi Python SDK
+Copyright 2026 Sébastien FAVRE
+
+Ce produit inclut des logiciels développés par Sébastien FAVRE,
+titulaire des droits d'auteur.
+
+Le SDK est distribué sous licence Apache License 2.0. Voir le fichier
+LICENSE pour le texte intégral de la licence.
+
+L'Association NeoMundi Recherche bénéficie d'un droit d'usage du SDK dans
+un cadre technique et scientifique. Cette mention est informative : elle
+décrit un usage accordé par le titulaire des droits et n'ajoute, ne
+restreint ni ne modifie aucune des conditions de la licence Apache-2.0
+accordée à tout destinataire du paquet.
+
+Les limites entre ce SDK sous licence libre et le service hébergé
+NeoMundi Runtime Measurement, qui reste propriétaire, sont décrites dans
+LICENSE_NOTICE.md.

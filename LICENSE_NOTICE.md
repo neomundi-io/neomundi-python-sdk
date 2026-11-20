@@ -8,9 +8,9 @@ The same separation applies to Station and Evidence unless and until they receiv
 
 ## Release status
 
-- **No PyPI upload is authorised yet**; `Private :: Do Not Upload` stays in `pyproject.toml` until the separate publication release approval.
+- **No PyPI upload is authorised yet.** The `Private :: Do Not Upload` classifier has been removed from `pyproject.toml`, because PEP 639 metadata and the activation candidate require its absence; `tests/test_pypi_release_guard.py` asserts it stays absent. Publication is held instead by `.github/workflows/publish-pypi.yml`: manual `workflow_dispatch` only, on `main`, with the exact `sdk-v2.0.0` tag, the `PUBLISH_NEOMUNDI_TO_PYPI` confirmation phrase and the protected `pypi` environment. Removing the classifier does not authorise an upload.
 - The package's installed distribution name is being prepared as `neomundi`, distinct from the hosted service.
-- Before merging the licensing change, verify ownership of SDK files, contributions and copyright notices; record the correct rights holder in a separate NOTICE if needed.
+- The rights holder is recorded in the root [NOTICE](NOTICE): Copyright 2026 Sébastien FAVRE. The Association NeoMundi Recherche holds a technical and scientific right of use; that mention is informative and adds no restriction to the Apache-2.0 grant. Ownership of contributions and third-party material still has to be verified before public distribution.
 - Before publication, verify clean distribution artifacts, CI, compatibility with the current API, and the PyPI Trusted Publisher configuration.
 - The sole runtime dependency declared by this SDK, `httpx`, uses the BSD-3-Clause licence. Its licence remains its own.
 
