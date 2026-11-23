@@ -1,6 +1,8 @@
-# NeoMundi Python SDK
+<div align="center">
 
-[English](README.md) · [Français](README_FR.md)
+[![English](https://img.shields.io/badge/EN-English-2563eb?style=flat-square)](README.md) · [![Français](https://img.shields.io/badge/FR-Fran%C3%A7ais-2563eb?style=flat-square)](README_FR.md)
+
+# NeoMundi Python SDK
 
 ### Install. Measure. Verify.
 
@@ -14,6 +16,10 @@ NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT.
 
 [Product architecture](https://github.com/neomundi-io/.github/blob/main/docs/PRODUCT_ARCHITECTURE.md) · [Capability audit](https://github.com/neomundi-io/.github/blob/main/docs/V2_FUNCTIONAL_AUDIT_2026-11-15.md) · [All components](https://github.com/orgs/neomundi-io/repositories)
 
+**[neomundi.io](https://neomundi.io/)**
+
+</div>
+
 ---
 
 > **Connect your AI application. Trace every interaction. Measure its behavior.
@@ -22,6 +28,19 @@ NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT.
 **INSTALL → TRACE → MEASURE → VERIFY** — the four steps this SDK touches. **ACT**
 is the fifth step of the chain and is served by the platform's exports and
 attestations, not by this package. The sections below document each operation, its requirements and the evidence that supports it.
+
+## The SDK integration journey
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/neomundi-io/neomundi-python-sdk/main/docs/assets/sdk-journey-en-dark.svg">
+    <img alt="NeoMundi Python SDK journey: install the client, instrument an AI call, inspect the measured results and coverage, then verify supported technical evidence." src="https://raw.githubusercontent.com/neomundi-io/neomundi-python-sdk/main/docs/assets/sdk-journey-en-light.svg" width="100%">
+  </picture>
+</p>
+
+The SDK instruments and transports measurements; it does not define policies or decide whether an AI response is true. Trace submission invokes a metered API measurement, and archive integrity verification requires the separate Evidence verifier package.
+
+---
 
 ## What each step actually does
 
