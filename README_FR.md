@@ -10,7 +10,7 @@
 
 **[Commencer](#install)** · **[Première mesure](#measure)** · **[Vérifier les preuves](#verify)**
 
-[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) [![REST](https://img.shields.io/badge/transport-REST-blue)](#measure) [![SSE](https://img.shields.io/badge/transport-SSE-blue)](#measure) [![Live](https://img.shields.io/badge/qualification_r%C3%A9elle-REST_%2B_SSE_PASS_2026--11--13-green)](#où-en-sommes-nous-) [![Tests](https://img.shields.io/badge/tests_hors_ligne-395_r%C3%A9ussis-green)](#le-lancer)
+[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) [![REST](https://img.shields.io/badge/transport-REST-blue)](docs/STREAMING_FR.md) [![SSE](https://img.shields.io/badge/transport-SSE-blue)](docs/STREAMING_FR.md) [![Live](https://img.shields.io/badge/qualification_r%C3%A9elle-REST_%2B_SSE_PASS_2026--11--13-green)](#où-en-sommes-nous-) [![Tests](https://img.shields.io/badge/tests_hors_ligne-395_r%C3%A9ussis-green)](#où-en-sommes-nous-)
 
 Chaîne produit NeoMundi — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. Ce dépôt est le **client Python** : il installe la chaîne dans votre application, instrumente votre propre appel et expose les mesures sans les interpréter. Il n'embarque aucun seuil et ne dérive aucun verdict.
 

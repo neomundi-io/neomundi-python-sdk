@@ -10,7 +10,7 @@
 
 **[Get started](#install)** · **[First measurement](#measure)** · **[Verify the evidence](#verify)**
 
-[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) [![REST](https://img.shields.io/badge/transport-REST-blue)](#measure) [![SSE](https://img.shields.io/badge/transport-SSE-blue)](#measure) [![Live](https://img.shields.io/badge/live_qualification-REST_%2B_SSE_passed_2026--11--13-green)](#where-we-stand) [![Tests](https://img.shields.io/badge/offline_tests-395_passed-green)](#run-it)
+[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) [![REST](https://img.shields.io/badge/transport-REST-blue)](docs/STREAMING.md) [![SSE](https://img.shields.io/badge/transport-SSE-blue)](docs/STREAMING.md) [![Live](https://img.shields.io/badge/live_qualification-REST_%2B_SSE_passed_2026--11--13-green)](#where-we-stand) [![Tests](https://img.shields.io/badge/offline_tests-395_passed-green)](#where-we-stand)
 
 NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. This repository is the **Python client**: it installs the chain into your application, instruments your own call, and exposes the measurements without interpreting them. It embeds no threshold and derives no verdict.
 
