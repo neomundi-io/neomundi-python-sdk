@@ -1,6 +1,8 @@
-# SDK Python NeoMundi
+<div align="center">
 
-[Français](README_FR.md) · [English](README.md)
+[![Français](https://img.shields.io/badge/FR-Fran%C3%A7ais-2563eb?style=flat-square)](README_FR.md) · [![English](https://img.shields.io/badge/EN-English-2563eb?style=flat-square)](README.md)
+
+# SDK Python NeoMundi
 
 ### Installer. Mesurer. Vérifier.
 
@@ -12,7 +14,11 @@
 
 Chaîne produit NeoMundi — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. Ce dépôt est le **client Python** : il installe la chaîne dans votre application, instrumente votre propre appel et expose les mesures sans les interpréter. Il n'embarque aucun seuil et ne dérive aucun verdict.
 
-[Architecture produit](https://github.com/neomundi-io/.github/blob/main/docs/PRODUCT_ARCHITECTURE.md) · [Audit des capacités](https://github.com/neomundi-io/.github/blob/main/docs/V2_FUNCTIONAL_AUDIT_2026-11-15.md) · [Tous les composants](https://github.com/orgs/neomundi-io/repositories)
+[Architecture produit](https://github.com/neomundi-io/.github/blob/main/docs/PRODUCT_ARCHITECTURE.fr.md) · [Audit des capacités](https://github.com/neomundi-io/.github/blob/main/docs/V2_FUNCTIONAL_AUDIT_2026-11-15.md) · [Tous les composants](https://github.com/orgs/neomundi-io/repositories)
+
+**[neomundi.io](https://neomundi.io/)**
+
+</div>
 
 ---
 
@@ -22,6 +28,19 @@ Chaîne produit NeoMundi — **INSTALL** → TRACE → MEASURE → VERIFY → AC
 **INSTALL → TRACE → MEASURE → VERIFY** — les quatre étapes que ce SDK touche.
 **ACT** est la cinquième étape de la chaîne : elle est servie par les exports et
 les attestations de la plateforme, pas par ce paquet. Les sections ci-dessous décrivent chaque opération, ses prérequis et les preuves qui l'étayent.
+
+## Le parcours d'intégration du SDK
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/neomundi-io/neomundi-python-sdk/main/docs/assets/sdk-journey-fr-dark.svg">
+    <img alt="Parcours du SDK Python NeoMundi : installer le client, instrumenter un appel IA, examiner les mesures et leur couverture, puis vérifier les preuves techniques disponibles." src="https://raw.githubusercontent.com/neomundi-io/neomundi-python-sdk/main/docs/assets/sdk-journey-fr-light.svg" width="100%">
+  </picture>
+</p>
+
+Le SDK instrumente les interactions et transporte les mesures ; il ne définit pas de politique et ne prouve pas la vérité d'une réponse IA. La soumission d'une trace déclenche une mesure facturée par l'API. La vérification de l'intégrité d'archive exige le paquet Evidence distinct.
+
+---
 
 ## Ce que chaque étape fait réellement
 
