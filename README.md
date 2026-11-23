@@ -2,6 +2,12 @@
 
 [English](README.md) · [Français](README_FR.md)
 
+### Install. Measure. Verify.
+
+**Less guesswork. More evidence.** Instrument an AI interaction, inspect measured signals and their provenance, and access the supported verification checks from Python.
+
+**[Get started](#install)** · **[First measurement](#measure)** · **[Verify the evidence](#verify)**
+
 [![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) ![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Live](https://img.shields.io/badge/live_qualification-REST_%2B_SSE_passed_2026--11--13-green) ![Tests](https://img.shields.io/badge/offline_tests-395_passed-green)
 
 NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. This repository is the **Python client**: it installs the chain into your application, instruments your own call, and exposes the measurements without interpreting them. It embeds no threshold and derives no verdict.
@@ -15,15 +21,14 @@ NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT.
 
 **INSTALL → TRACE → MEASURE → VERIFY** — the four steps this SDK touches. **ACT**
 is the fifth step of the chain and is served by the platform's exports and
-attestations, not by this package. For each step below, this README tells you
-what is real today, what is partial, and what is still to be built. A promise you cannot reproduce is worse than no promise.
+attestations, not by this package. The sections below document each operation, its requirements and the evidence that supports it.
 
 ## What each step actually does
 
 | Step | What it is | Status |
 |---|---|---|
 | **INSTALL** | `pip install neomundi` — `2.1.0` published 2026-11-15 | **Real** — `trace()` and `verify()` ship in the published wheel |
-| **TRACE** | `client.trace()` — local stopwatch, correlation id, explicit submission | **Partial** — there is **no trace-only route on the API**; closing a trace submits one metered measurement |
+| **TRACE** | `client.trace()` — local stopwatch, correlation id, explicit submission | **Available** — closing a trace submits one metered measurement through the API; there is no trace-only route |
 | **MEASURE** | `client.govern()` (post-call REST) and `client.stream()` (SSE generation proxy) | **Real** — live-qualified against the hosted API on 2026-11-13, REST and SSE both passed |
 | **VERIFY** | `client.verify()` / `client.verify_audit_certificate()` (public, unmetered API routes) and `verify_evidence_archive()` (independent Evidence verifier) | **Real for emission authenticity. Archive integrity needs a second package.** |
 
