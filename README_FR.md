@@ -2,6 +2,12 @@
 
 [Français](README_FR.md) · [English](README.md)
 
+### Installer. Mesurer. Vérifier.
+
+**Moins de suppositions. Plus de preuves.** Instrumentez une interaction IA, examinez les signaux mesurés et leur provenance, puis accédez depuis Python aux contrôles de vérification disponibles.
+
+**[Commencer](#install)** · **[Première mesure](#measure)** · **[Vérifier les preuves](#verify)**
+
 [![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) ![REST](https://img.shields.io/badge/transport-REST-blue) ![SSE](https://img.shields.io/badge/transport-SSE-blue) ![Live](https://img.shields.io/badge/qualification_r%C3%A9elle-REST_%2B_SSE_PASS_2026--11--13-green) ![Tests](https://img.shields.io/badge/tests_hors_ligne-395_r%C3%A9ussis-green)
 
 Chaîne produit NeoMundi — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. Ce dépôt est le **client Python** : il installe la chaîne dans votre application, instrumente votre propre appel et expose les mesures sans les interpréter. Il n'embarque aucun seuil et ne dérive aucun verdict.
@@ -15,17 +21,14 @@ Chaîne produit NeoMundi — **INSTALL** → TRACE → MEASURE → VERIFY → AC
 
 **INSTALL → TRACE → MEASURE → VERIFY** — les quatre étapes que ce SDK touche.
 **ACT** est la cinquième étape de la chaîne : elle est servie par les exports et
-les attestations de la plateforme, pas par ce paquet. Pour chacune, ce document
-dit ce qui est **réel** aujourd'hui, ce qui est **partiel**, et ce qui reste
-**à construire**. Une promesse qu'on ne peut pas reproduire est pire que
-pas de promesse.
+les attestations de la plateforme, pas par ce paquet. Les sections ci-dessous décrivent chaque opération, ses prérequis et les preuves qui l'étayent.
 
 ## Ce que chaque étape fait réellement
 
 | Étape | Ce que c'est | État |
 |---|---|---|
 | **INSTALL** | `pip install neomundi` — `2.1.0` publiée le 2026-11-15 | **Réel** — `trace()` et `verify()` sont dans la roue publiée |
-| **TRACE** | `client.trace()` — chronomètre local, identifiant de corrélation, soumission explicite | **Partiel** — **il n'existe aucune route de traçage sur l'API** ; refermer une trace émet une mesure facturée |
+| **TRACE** | `client.trace()` — chronomètre local, identifiant de corrélation, soumission explicite | **Disponible** — refermer une trace soumet une mesure facturée via l'API ; il n'existe pas de route de traçage seule |
 | **MEASURE** | `client.govern()` (REST post-call) et `client.stream()` (proxy de génération SSE) | **Réel** — qualifié en direct contre l'API hébergée le 2026-11-13, REST et SSE tous les deux PASS |
 | **VERIFY** | `client.verify()` / `client.verify_audit_certificate()` (routes publiques et non facturées) et `verify_evidence_archive()` (vérificateur Evidence indépendant) | **Réel pour l'authenticité d'émission. L'intégrité d'archive demande un second paquet.** |
 
