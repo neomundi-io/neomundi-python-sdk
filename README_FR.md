@@ -6,6 +6,10 @@
 
 ### Installer. Mesurer. Vérifier.
 
+**Instrumentez vos interactions IA en exécution, directement depuis votre application Python.**
+
+Accédez aux mesures comportementales après chaque appel instrumenté via REST ou par le proxy de génération SSE, pour alimenter la surveillance continue et les décisions de votre application.
+
 **Moins de suppositions. Plus de preuves.** Instrumentez une interaction IA, examinez les signaux mesurés et leur provenance, puis accédez depuis Python aux contrôles de vérification disponibles.
 
 **[Commencer](#install)** · **[Première mesure](#measure)** · **[Vérifier les preuves](#verify)**
