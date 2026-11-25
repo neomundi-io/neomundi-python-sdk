@@ -6,6 +6,10 @@
 
 ### Install. Measure. Verify.
 
+**Instrument your AI interactions at runtime, directly from your Python application.**
+
+Access behavioral measurements after each instrumented call via REST or through the SSE generation proxy, to support ongoing monitoring and application-level decisions.
+
 **Less guesswork. More evidence.** Instrument an AI interaction, inspect measured signals and their provenance, and access the supported verification checks from Python.
 
 **[Get started](#install)** · **[First measurement](#measure)** · **[Verify the evidence](#verify)**
