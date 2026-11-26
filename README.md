@@ -14,7 +14,7 @@ Access behavioral measurements after each instrumented call via REST or through 
 
 **[Get started](#install)** · **[First measurement](#measure)** · **[Verify the evidence](#verify)**
 
-[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) [![REST](https://img.shields.io/badge/transport-REST-blue)](docs/STREAMING.md) [![SSE](https://img.shields.io/badge/transport-SSE-blue)](docs/STREAMING.md) [![Live](https://img.shields.io/badge/live_qualification-REST_%2B_SSE_passed_2026--11--13-green)](#where-we-stand) [![Tests](https://img.shields.io/badge/offline_tests-395_passed-green)](#where-we-stand)
+[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) [![REST](https://img.shields.io/badge/transport-REST-blue)](docs/STREAMING.md) [![SSE](https://img.shields.io/badge/transport-SSE-blue)](docs/STREAMING.md) [![Live](https://img.shields.io/badge/live_qualification-REST_%2B_SSE_passed_2026--11--26-green)](#where-we-stand) [![Tests](https://img.shields.io/badge/offline_tests-425_passed-green)](#where-we-stand)
 
 NeoMundi product chain — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. This repository is the **Python client**: it installs the chain into your application, instruments your own call, and exposes the measurements without interpreting them. It embeds no threshold and derives no verdict.
 
@@ -50,7 +50,7 @@ The SDK instruments and transports measurements; it does not define policies or 
 
 | Step | What it is | Status |
 |---|---|---|
-| **INSTALL** | `pip install neomundi` — `2.1.0` published 2026-11-15 | **Real** — `trace()` and `verify()` ship in the published wheel |
+| **INSTALL** | `pip install neomundi` — `2.2.0` published 2026-11-26 | **Real** — `trace()` and `verify()` ship in the published wheel |
 | **TRACE** | `client.trace()` — local stopwatch, correlation id, explicit submission | **Available** — closing a trace submits one metered measurement through the API; there is no trace-only route |
 | **MEASURE** | `client.govern()` (post-call REST) and `client.stream()` (SSE generation proxy) | **Real** — live-qualified against the hosted API on 2026-11-13, REST and SSE both passed |
 | **VERIFY** | `client.verify()` / `client.verify_audit_certificate()` (public, unmetered API routes) and `verify_evidence_archive()` (independent Evidence verifier) | **Real for emission authenticity. Archive integrity needs a second package.** |
@@ -72,12 +72,17 @@ cd neomundi-python-sdk
 python -m pip install -e ".[dev]"
 ```
 
-`neomundi` **2.1.0** was uploaded to PyPI on **2026-11-15**, and it is the
-first published wheel to carry `trace()` and `verify()`. `2.0.0`
-(2026-11-14) carried `govern()` and `stream()` only and remains installable.
+`neomundi` **2.2.0** was uploaded to PyPI on **2026-11-26**. It declares
+`measurement_version` **3.5.0** verified on REST, and makes `token_count`
+and `latency_ms` optional: a metric your host never published is now
+**named as absent** rather than substituted with a zero that the server
+would read as the most favourable value. `2.1.0` (2026-11-15) was the first
+wheel to carry `trace()` and `verify()`; `2.0.0` (2026-11-14) carried
+`govern()` and `stream()` only. Both remain installable.
+
 Publication stays gated by an explicit manual workflow: exact tag, typed
-confirmation, GitHub `pypi` environment and Trusted Publishing — **the
-version was re-pointed, no guard was removed.**
+confirmation, GitHub `pypi` environment and Trusted Publishing — **no guard
+has been removed.**
 
 The SDK code is licensed under [Apache-2.0](LICENSE), subject to
 contributor-rights review; see the
@@ -265,20 +270,47 @@ certifies an AI answer.
 | Item | State |
 |---|---|
 | REST + SSE implementation | Complete, unchanged by this branch |
-| Live qualification of the installed SDK | **Done 2026-11-13: REST passed, SSE passed** against the hosted API |
+| Live qualification of the installed SDK | **Done 2026-11-26 against production at `3.5.0`: REST passed, SSE passed.** REST: four authorised calls covering both runtime metrics present, each absent, and both absent — all four served `3.5.0`, five measured signals, zero parse warnings, each re-read as persisted. SSE: one authenticated stream, six events, integrity verified, `contract_version neomundi.govern.sse/1.0`. Evidence under [`docs/evidence/`](docs/evidence/). |
 | REST persistence declaration | **Verified in production 2026-11-15**: one authorised call returned `log_persisted: true` / `log_write: "inserted"`, and `GET /v1/govern/{request_id}` found the observation. Replaying that stored row returns `log_persisted: null` — a replay states no persistence verdict. |
-| Offline tests | 395 passed; 12 optional historical captures skipped |
+| Offline tests | 425 passed; 12 optional historical captures skipped |
 | CI | Python 3.9, 3.11, 3.12, 3.13 |
 | Deployed schema parity | Measured byte-for-byte in [GitHub Actions](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929), and re-measured offline by this branch's fixtures |
 | `trace()` / `verify()` | Published in `2.1.0` (2026-11-15). Absent from `2.0.0`. |
-| Published measurement version | The SDK declares `3.3.0`, verified for `3.3.0` and `3.3.1`. **Production serves `3.5.0`**, which is deliberately *not* declared verified: nobody has verified it. The warning you will see is correct. |
+| Published measurement version | The SDK declares `3.3.0`, `3.3.1` and **`3.5.0`** verified — the set lives in one place, `models.VERIFIED_MEASUREMENT_VERSIONS`, and covers the **REST** surface. Production serves `3.5.0`, so the compatibility warning no longer fires on a current call. It still fires, once per unknown version, on anything outside that set. The stream carries its own declarations (`stream_backend_commit`, `stream_verification`). |
 
-That live qualification exercised a complete measurement and a progressive
-stream. It did **not** exercise a withheld aggregate, a real error path
-(402, 429…) or more than one SSE provider. Passing offline tests establishes
-neither service availability nor compatibility with every provider.
+That live qualification exercised a complete measurement, each
+absent-runtime-metric combination, and one progressive stream. It did
+**not** exercise a withheld aggregate, a real error path (402, 429…) or
+more than one SSE provider — the stream was generated through a single
+provider. Passing offline tests establishes neither service availability
+nor compatibility with every provider.
 See [the 3.5.0 compatibility scope](docs/COMPATIBILITY_350.md) and
 [the executed checks](docs/VERIFICATION_V2.md).
+
+
+## Built on this SDK
+
+You do not have to write a measurement call per call site. Six integrations
+attach the SDK where your framework already has a hook, and each carries an
+evidence level that CI **computes** from a committed proof rather than
+reading from a README.
+
+| Your stack | Package | Evidence |
+|---|---|---|
+| LangChain | [`langchain-neomundi`](https://pypi.org/project/langchain-neomundi/) | **E2** |
+| LiteLLM | [`litellm-neomundi`](https://pypi.org/project/litellm-neomundi/) | **E2** |
+| MLflow | [`mlflow-neomundi`](https://pypi.org/project/mlflow-neomundi/) | **E2** |
+| OpenAI Agents SDK | [`openai-agents-neomundi`](https://pypi.org/project/openai-agents-neomundi/) | **E2** |
+| OpenTelemetry | [`otel-neomundi`](https://pypi.org/project/otel-neomundi/) | **E2** |
+| Langfuse | [`langfuse-neomundi`](https://pypi.org/project/langfuse-neomundi/) | **E2** |
+
+🔴 **They inherit this SDK's refusals, they do not soften them.** No token
+count is invented, so a provider that publishes none yields no observation
+rather than a zero; no exception reaches the host application; every run
+yields an explicit outcome.
+
+**[Integration library](https://github.com/neomundi-io/neomundi-integrations)** ·
+**[Catalogue](https://github.com/neomundi-io/neomundi-integrations/blob/main/CATALOG.md)**
 
 ## Data flows, briefly
 
