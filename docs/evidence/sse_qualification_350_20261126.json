@@ -1,5 +1,5 @@
 {
-  "proof": "neomundi SDK 2.1.0 against production measurement_version 3.5.0, SSE",
+  "proof": "neomundi SDK 2.2.0 against production measurement_version 3.5.0, SSE",
   "started_utc": "2026-11-26T15:46:14.816024+00:00",
   "api_base_url": "https://api.neomundi.io",
   "sdk_version": "2.2.0",

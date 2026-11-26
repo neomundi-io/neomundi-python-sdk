@@ -14,7 +14,7 @@ Accédez aux mesures comportementales après chaque appel instrumenté via REST 
 
 **[Commencer](#install)** · **[Première mesure](#measure)** · **[Vérifier les preuves](#verify)**
 
-[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) [![REST](https://img.shields.io/badge/transport-REST-blue)](docs/STREAMING_FR.md) [![SSE](https://img.shields.io/badge/transport-SSE-blue)](docs/STREAMING_FR.md) [![Live](https://img.shields.io/badge/qualification_r%C3%A9elle-REST_%2B_SSE_PASS_2026--11--13-green)](#où-en-sommes-nous-) [![Tests](https://img.shields.io/badge/tests_hors_ligne-395_r%C3%A9ussis-green)](#où-en-sommes-nous-)
+[![PyPI version](https://img.shields.io/pypi/v/neomundi?style=flat-square)](https://pypi.org/project/neomundi/) [![REST](https://img.shields.io/badge/transport-REST-blue)](docs/STREAMING_FR.md) [![SSE](https://img.shields.io/badge/transport-SSE-blue)](docs/STREAMING_FR.md) [![Live](https://img.shields.io/badge/qualification_r%C3%A9elle-REST_%2B_SSE_PASS_2026--11--26-green)](#où-en-sommes-nous-) [![Tests](https://img.shields.io/badge/tests_hors_ligne-425_r%C3%A9ussis-green)](#où-en-sommes-nous-)
 
 Chaîne produit NeoMundi — **INSTALL** → TRACE → MEASURE → VERIFY → ACT. Ce dépôt est le **client Python** : il installe la chaîne dans votre application, instrumente votre propre appel et expose les mesures sans les interpréter. Il n'embarque aucun seuil et ne dérive aucun verdict.
 
@@ -50,7 +50,7 @@ Le SDK instrumente les interactions et transporte les mesures ; il ne définit p
 
 | Étape | Ce que c'est | État |
 |---|---|---|
-| **INSTALL** | `pip install neomundi` — `2.1.0` publiée le 2026-11-15 | **Réel** — `trace()` et `verify()` sont dans la roue publiée |
+| **INSTALL** | `pip install neomundi` — `2.2.0` publiée le 2026-11-26 | **Réel** — `trace()` et `verify()` sont dans la roue publiée |
 | **TRACE** | `client.trace()` — chronomètre local, identifiant de corrélation, soumission explicite | **Disponible** — refermer une trace soumet une mesure facturée via l'API ; il n'existe pas de route de traçage seule |
 | **MEASURE** | `client.govern()` (REST post-call) et `client.stream()` (proxy de génération SSE) | **Réel** — qualifié en direct contre l'API hébergée le 2026-11-13, REST et SSE tous les deux PASS |
 | **VERIFY** | `client.verify()` / `client.verify_audit_certificate()` (routes publiques et non facturées) et `verify_evidence_archive()` (vérificateur Evidence indépendant) | **Réel pour l'authenticité d'émission. L'intégrité d'archive demande un second paquet.** |
@@ -72,12 +72,18 @@ cd neomundi-python-sdk
 python -m pip install -e ".[dev]"
 ```
 
-`neomundi` **2.1.0** a été téléversée sur PyPI le **2026-11-15** : c'est la
-première roue publiée à porter `trace()` et `verify()`. La `2.0.0`
-(2026-11-14) ne portait que `govern()` et `stream()` et reste installable.
+`neomundi` **2.2.0** a été téléversée sur PyPI le **2026-11-26**. Elle
+déclare la version de mesure **3.5.0** vérifiée en REST, et rend
+`token_count` et `latency_ms` optionnels : une métrique que votre hôte n'a
+jamais publiée est désormais **déclarée absente** au lieu d'être remplacée
+par un zéro, que le serveur lirait comme la valeur la plus favorable. La
+`2.1.0` (2026-11-15) fut la première roue à porter `trace()` et `verify()` ;
+la `2.0.0` (2026-11-14) ne portait que `govern()` et `stream()`. Les deux
+restent installables.
+
 La publication demeure verrouillée par un flux manuel — tag exact, phrase de
-confirmation, environnement GitHub `pypi` et Trusted Publishing : **le numéro
-a été re-pointé, aucun verrou n'a été retiré.**
+confirmation, environnement GitHub `pypi` et Trusted Publishing : **aucun
+verrou n'a été retiré.**
 
 Le code du SDK est sous [Apache-2.0](LICENSE), sous réserve de la revue des
 droits des contributeurs ; voir les
@@ -276,20 +282,46 @@ certifie une réponse d'IA.
 | Élément | État |
 |---|---|
 | Développement REST + SSE | Terminé, inchangé par cette branche |
-| Qualification réelle du SDK installé | **Faite le 2026-11-13 : REST PASS, SSE PASS** contre l'API hébergée |
+| Qualification réelle du SDK installé | **Faite le 2026-11-26 contre la production en `3.5.0` : REST PASS, SSE PASS.** REST : quatre appels autorisés couvrant les deux métriques d'exécution présentes, chacune absente, puis les deux absentes — les quatre ont servi `3.5.0`, cinq signaux mesurés, zéro avertissement d'analyse, chacun relu comme persisté. SSE : un flux authentifié, six évènements, intégrité vérifiée, `contract_version neomundi.govern.sse/1.0`. Preuves sous [`docs/evidence/`](docs/evidence/). |
 | Déclaration de persistance REST | **Vérifiée en production le 2026-11-15** : un appel autorisé a rendu `log_persisted: true` / `log_write: "inserted"`, et `GET /v1/govern/{request_id}` a retrouvé l'observation. Relire cette ligne stockée rend `log_persisted: null` — un rejeu n'énonce aucun verdict de persistance. |
-| Tests hors ligne | 395 réussis ; 12 captures historiques optionnelles ignorées |
+| Tests hors ligne | 425 réussis ; 12 captures historiques optionnelles ignorées |
 | Tests automatisés GitHub | Python 3.9, 3.11, 3.12, 3.13 |
 | Parité des schémas déployés | Mesurée octet pour octet en [GitHub Actions](https://github.com/neomundi-io/neomundi-python-sdk/actions/runs/43526131929), et re-mesurée hors ligne par les fixtures de cette branche |
 | `trace()` / `verify()` | Publiés dans la `2.1.0` (2026-11-15). Absents de la `2.0.0`. |
-| Version de mesure | Le SDK déclare `3.3.0`, vérifié pour `3.3.0` et `3.3.1`. **La production sert `3.5.0`**, qui n'est volontairement **pas** déclarée vérifiée : personne ne l'a vérifiée. L'avertissement que vous verrez est donc correct. |
+| Version de mesure | Le SDK déclare `3.3.0`, `3.3.1` et **`3.5.0`** vérifiées — l'ensemble vit à un seul endroit, `models.VERIFIED_MEASUREMENT_VERSIONS`, et couvre la surface **REST**. La production sert `3.5.0` : l'avertissement de compatibilité ne se déclenche donc plus sur un appel courant. Il se déclenche toujours, une fois par version inconnue, hors de cet ensemble. Le flux porte ses propres déclarations (`stream_backend_commit`, `stream_verification`). |
 
-Cette qualification réelle a éprouvé une mesure complète et un flux
-progressif. Elle n'a **pas** éprouvé un agrégat retenu, un vrai chemin
-d'erreur (402, 429…) ni plus d'un fournisseur SSE. Des tests hors ligne
+Cette qualification réelle a éprouvé une mesure complète, chaque
+combinaison de métrique d'exécution absente, et un flux progressif. Elle n'a
+**pas** éprouvé un agrégat retenu, un vrai chemin d'erreur (402, 429…) ni
+plus d'un fournisseur SSE — le flux a été généré par un seul fournisseur. Des tests hors ligne
 réussis n'établissent ni la disponibilité du service, ni la compatibilité avec
 tous les fournisseurs. Voir [le périmètre de preuve 3.5.0](docs/COMPATIBILITY_350.md)
 et [les vérifications effectuées](docs/VERIFICATION_V2.md).
+
+
+## Construit sur ce SDK
+
+Vous n'avez pas à écrire un appel de mesure par point d'appel. Six
+intégrations attachent le SDK là où votre framework possède déjà un point
+d'accroche, et chacune porte un niveau de preuve que la CI **calcule** depuis
+une preuve versionnée, au lieu de le lire dans un README.
+
+| Votre pile | Paquet | Preuve |
+|---|---|---|
+| LangChain | [`langchain-neomundi`](https://pypi.org/project/langchain-neomundi/) | **E2** |
+| LiteLLM | [`litellm-neomundi`](https://pypi.org/project/litellm-neomundi/) | **E2** |
+| MLflow | [`mlflow-neomundi`](https://pypi.org/project/mlflow-neomundi/) | **E2** |
+| SDK OpenAI Agents | [`openai-agents-neomundi`](https://pypi.org/project/openai-agents-neomundi/) | **E2** |
+| OpenTelemetry | [`otel-neomundi`](https://pypi.org/project/otel-neomundi/) | **E2** |
+| Langfuse | [`langfuse-neomundi`](https://pypi.org/project/langfuse-neomundi/) | **E2** |
+
+🔴 **Elles héritent des refus de ce SDK, elles ne les adoucissent pas.** Aucun
+compte de jetons n'est inventé, donc un fournisseur qui n'en publie pas ne
+produit aucune observation plutôt qu'un zéro ; aucune exception n'atteint
+l'application hôte ; chaque exécution rend une issue explicite.
+
+**[Bibliothèque d'intégrations](https://github.com/neomundi-io/neomundi-integrations)** ·
+**[Catalogue](https://github.com/neomundi-io/neomundi-integrations/blob/main/CATALOG_FR.md)**
 
 ## Flux de données, en bref
 
