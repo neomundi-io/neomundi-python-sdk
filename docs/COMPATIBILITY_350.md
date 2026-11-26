@@ -1,15 +1,19 @@
 # Measurement version 3.5.0 — SDK V2 compatibility assessment (in progress)
 
-**Status: REST QUALIFIED on 2026-11-26. `3.5.0` IS in
-`verified_measurement_versions`. The SSE path is NOT qualified live and its
-own declaration is unchanged.**
+**Status: REST AND SSE QUALIFIED LIVE on 2026-11-26. `3.5.0` IS in
+`verified_measurement_versions`, and the deployed contracts byte-match the
+pinned public source.**
 
 Read the two statements separately, because the field is scoped:
 `verified_measurement_versions` says under which measurement versions **the
 REST surface** was verified identical to the one this SDK derives from. The
 stream has its own declarations, `stream_backend_commit` and
-`stream_verification`, and `stream_verification` still reads
-`local_backend_source_and_offline_tests_only`.
+`stream_verification`; the latter moved from
+`local_backend_source_and_offline_tests_only` to
+`live_authenticated_stream_20261126`, because a real bounded stream was
+executed from this SDK against production on that date. The two scopes stay
+separate on purpose: a REST declaration must never be read as a statement
+about the stream, nor the reverse.
 
 ## Live authenticated REST qualification — 2026-11-26
 
@@ -67,25 +71,77 @@ shape of it. Making them optional would be an evolution of this SDK's
 public surface, not a compatibility synchronisation, and is deliberately not
 done here.
 
-### SSE: attempted, blocked on a client credential
+### Live SSE qualification
 
-`POST /v1/govern/stream` generates with the **caller's** provider key. Both
-provider keys available on the qualifying workstation are invalid, verified
-against the providers directly rather than inferred:
+One bounded stream, no retry, `provider=infomaniak`, `model=mistral24b`,
+16 tokens maximum.
 
 ```
-api.openai.com/v1/models   HTTP 401  "Incorrect API key provided"
-api.mistral.ai/v1/models   HTTP 401  "Invalid API Key"
+events                6   provider_info, chunk, coherence_check,
+                          hallucination_check, density, done
+integrity verified    True
+contract_version      neomundi.govern.sse/1.0
+measurement_version   3.5.0        in verified set: True
+normalizer_version    1.0.0
+measurement status    complete
+token_count_source    provider_usage
+token_count_scope     normalized_provider_total      unit  tokens
+counter_units         tokens_so_far: chunks - total_tokens: tokens -
+                      response_length: characters - response_bytes: bytes
+absent_runtime_metrics  key absent from the SSE payload (permitted: optional)
+request_id            618bc779-6ba0-4943-b4b2-5bbdda68a1bd
+runtime warnings      none - correct, 3.5.0 is verified
 ```
 
-The server's own SSE error event said the same thing first:
-`{"error": "Provider 'openai' rejected the API key.", "tokens_so_far": 0}`.
-Nothing was billed. Evidence:
-`docs/evidence/sse_attempt_350_20261126.json`.
+Evidence: `docs/evidence/sse_qualification_350_20261126.json`.
 
-So the SSE path remains at offline verification, and
-`stream_verification` is unchanged. **The single action that would close it:
-one valid client provider key, for one bounded 16-token stream.**
+⚠ **Two earlier attempts failed, and the reason was never the contract.**
+The stream generates with the **caller's** provider key, and the two keys
+sitting in this workstation's Windows user environment are stale — verified
+against the providers directly rather than inferred: `api.openai.com`
+HTTP 401 *"Incorrect API key provided"*, `api.mistral.ai` HTTP 401
+*"Invalid API Key"*. The server's own SSE error event had said so first.
+Nothing was billed by either attempt.
+
+The **operational** provider credential is `INFOMANIAK_API_KEY` in the
+Station's `.env` (`/home/sebastien/code/neomundi-station/.env`, mode 600,
+WSL, git-ignored), and `infomaniak` is in the backend's
+`SUPPORTED_PROVIDERS` with its own adapter. 🟢 No product id is needed
+client-side: the backend discovers it from the token and caches it per
+process. `llama3` is not provisioned on that account — the server answered
+`Upstream failure (BadRequestError)` with a correlation id; `mistral24b` is.
+
+🔴 **The lesson is about where a credential lives, not about the SDK.** A
+stale key in a user environment looks exactly like a working one until a
+server rejects it, and I spent two attempts on that before checking the
+operational source.
+
+### 🟢 The absent-metric path, now reachable and measured end to end
+
+`client.govern()` used to require `token_count` and `latency_ms`, so the
+three omission cases raised `TypeError` **client-side** before any request:
+the SDK could not produce the very case the server added
+`absent_runtime_metrics` to describe. BL-V1-001 made them optional on
+2026-11-11; this SDK now follows.
+
+Four real observations, each re-read from the API:
+
+| sent | `absent_runtime_metrics` served | re-read | request_id |
+|---|---|---|---|
+| both metrics | `[]` | persisted, `[]` | `e106cadb…` |
+| `token_count` omitted | `['token_count']` | persisted, same | `4c1ceaaa…` |
+| `latency_ms` omitted | `['latency_ms']` | persisted, same | `8c8717aa…` |
+| both omitted | `['token_count', 'latency_ms']` | persisted, same | `ffa598f7…` |
+
+All four: `status=complete`, 5/5 measured signals, zero parse warnings.
+
+🔴 **No substitution, ever.** The server's own contract says why: supplying
+zero is *the most favourable value their term can take* — `latency_ms = 0`
+yields a perfect `latency_score`. An omitted metric is therefore **absent
+from the request body**, never zero, and the server answers by naming it.
+Sending an explicitly measured `0` remains possible and is transmitted as
+`0`: omission and a measured zero are two different statements, and
+`tests/test_runtime_metrics_optional.py` fixes both.
 
 ## Contract provenance, established 2026-11-26
 
@@ -101,6 +157,18 @@ and are byte-identical to what `/v1/contracts/*` served. The public copy in
 `neomundi-measurement-mcp` was synchronised from the backend — not from the
 HTTP response, because a reference taken from the response it checks proves
 nothing.
+
+🟢 **Parity established 2026-11-26.** `SOURCE_COMMIT` now names
+`f1a304d81c036c97386f64103f2012816ddb6c62`, the **merge commit on the MCP's
+`main`** (two parents, reachable from `main`) — a public, stable, genuinely
+merged reference, replacing a pull-request branch commit that carried its
+own warning. `scripts/check_live_wire_schemas.py`:
+
+```
+govern-rest-1.0.json BYTE_MATCH  8e27a9110298a9b9ff31d637…
+govern-sse-1.0.json  BYTE_MATCH  d05caa8d48c6f64f0124a53f…
+PASS: both deployed schema documents byte-match the pinned public source
+```
 
 How the contract reached this state:
 

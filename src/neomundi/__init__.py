@@ -82,7 +82,13 @@ API_CONTRACT = {
     "route": "POST /v1/govern",
     "stream_route": "POST /v1/govern/stream",
     "stream_backend_commit": "aeff13cca717205c9ebbc83c5755ba6a22b284bb",
-    "stream_verification": "local_backend_source_and_offline_tests_only",
+    # Jusqu'au 2026-11-26 : "local_backend_source_and_offline_tests_only".
+    # Un flux reel, authentifie et borne a ete execute depuis ce SDK contre
+    # la production ce jour-la -- 6 evenements, integrite verifiee,
+    # `contract_version neomundi.govern.sse/1.0`, `measurement_version
+    # 3.5.0`, `token_count_source provider_usage`. Preuve :
+    # `docs/evidence/sse_qualification_350_20261126.json`.
+    "stream_verification": "live_authenticated_stream_20261126",
     "contract_source": "govern-v3/app/models/responses.py, requests.py",
     "openapi_frozen": False,
     # Routes de vérification publiques, sans clé et non facturées.
