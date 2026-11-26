@@ -35,7 +35,7 @@ from __future__ import annotations
 
 #: `2.1.0` ajoute `trace()` et `verify()` à la surface publiée. La
 #: publication reste verrouillée par un flux manuel épinglé sur un tag
-#: exact (`sdk-v2.1.0`), une phrase de confirmation et l'environnement
+#: exact (`sdk-v2.2.0`), une phrase de confirmation et l'environnement
 #: GitHub `pypi` : le numéro a été re-pointé, aucun verrou n'a été retiré.
 __version__ = "2.2.0"
 
