@@ -25,7 +25,7 @@ jobs:
     if: >-
       github.ref == 'refs/heads/main' &&
       inputs.confirmation == 'PUBLISH_NEOMUNDI_TO_PYPI' &&
-      inputs.tag == 'sdk-v2.1.0'
+      inputs.tag == 'sdk-v2.2.0'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

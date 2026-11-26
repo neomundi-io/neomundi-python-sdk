@@ -141,7 +141,12 @@ jobs:
       - name: Install tooling
         run: |
           python -m pip install --upgrade pip
-          python -m pip install ruff
+          # Epinglee: la version que cette CI resolvait deja. L'etape
+          # reste `continue-on-error`, donc ce n'est pas une condition
+          # bloquante -- c'est une BASE DE REFERENCE stable. Sans pin, le
+          # compte d'ecarts derive a chaque sortie de ruff et une erreur
+          # NOUVELLE devient indistinguable du bruit de version.
+          python -m pip install 'ruff==0.17.6'
 
       - name: Compile every source file
         # Verification de syntaxe la plus basique, et la plus decisive :

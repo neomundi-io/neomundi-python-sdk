@@ -37,7 +37,7 @@ from __future__ import annotations
 #: publication reste verrouillée par un flux manuel épinglé sur un tag
 #: exact (`sdk-v2.1.0`), une phrase de confirmation et l'environnement
 #: GitHub `pypi` : le numéro a été re-pointé, aucun verrou n'a été retiré.
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 # Importe tot, et volontairement avant `API_CONTRACT` qui s'en sert :
 # `models` ne depend que de `.errors`, donc aucune circularite.
@@ -107,11 +107,15 @@ API_CONTRACT = {
     # synchronisation : ce n'est volontairement pas fait ici.**
     # `govern-sse-1.0.json` est INCHANGÉ.
     "wire_contracts": {
+        # Re-epinglees le 2026-11-26 sur les contrats du backend
+        # `ec9a57646`, republies publiquement par
+        # `neomundi-measurement-mcp`. Les precedentes valeurs etaient l'etat
+        # `03e2b344` du 2026-11-15 : la production avait derive le 21/11.
         "govern-rest-1.0.json": (
-            "46b0579f1d413ca75616d01eed1bef0dc317ff5e507dbcabc1dd146b7faab59c"
+            "8e27a9110298a9b9ff31d6379daefddb1f068fa0b17452ed7b65e341e16d84c3"
         ),
         "govern-sse-1.0.json": (
-            "358fc2ec1869471896d08c8e2cc0855b15def6433340a0506dae180733c7fefe"
+            "d05caa8d48c6f64f0124a53f8977914e9e5fe0558ff6172031d3131d36c4c165"
         ),
     },
 }

@@ -1,6 +1,129 @@
 # Measurement version 3.5.0 — SDK V2 compatibility assessment (in progress)
 
-**Status: PARTIALLY QUALIFIED; DO NOT add 3.5.0 to `verified_measurement_versions` yet.**
+**Status: REST QUALIFIED on 2026-11-26. `3.5.0` IS in
+`verified_measurement_versions`. The SSE path is NOT qualified live and its
+own declaration is unchanged.**
+
+Read the two statements separately, because the field is scoped:
+`verified_measurement_versions` says under which measurement versions **the
+REST surface** was verified identical to the one this SDK derives from. The
+stream has its own declarations, `stream_backend_commit` and
+`stream_verification`, and `stream_verification` still reads
+`local_backend_source_and_offline_tests_only`.
+
+## Live authenticated REST qualification — 2026-11-26
+
+One authenticated `POST /v1/govern` on the **service verification account**
+(`d81bab2b-…`, guard run first, offline, no observation created by the
+guard). Never the campaign key: that account carries the OCTOPUS series and
+a pilot's history, and Sergei's experiment runs to 2026-12-05.
+
+```
+measurement_version   3.5.0
+measurement status    complete
+measured signals      5 / 5
+unmeasured signals    0
+parse_warnings: 0
+unknown_fields        ['log_persisted', 'log_write']
+log_persisted         True          log_write  inserted
+absent_runtime_metrics  present in payload, value []
+request_id            42df84e1-b90c-470e-ba59-041d1a7a59a5
+read back             HTTP 200, persisted, absent_runtime_metrics still []
+```
+
+Evidence: `docs/evidence/rest_qualification_350_20261126.json`. Every field
+of the served `measurement` block was present — `absent_runtime_metrics`,
+`aggregates_publishable`, `checks_attempted`, `checks_succeeded`,
+`confidence_basis`, `coverage`, `degraded_g_inputs`, `failed_checks`,
+`missing_required_signals`, `status` — none missing against the contract.
+
+### Every shape the new property permits, read from a real response
+
+The one property 3.5.0 adds is `absent_runtime_metrics` in
+`$defs/MeasurementBlock`. Its four permitted shapes were parsed from the
+**real** 3.5.0 payload above, mutated only in that property:
+
+| shape | parsed | preserved | parse warnings |
+|---|---|---|---|
+| `[]` — nothing was absent | complete, 5 signals | `[]` | 0 |
+| `["token_count", "latency_ms"]` — named | complete, 5 signals | exactly | 0 |
+| `null` — no statement | complete, 5 signals | `None` | 0 |
+| key absent | complete, 5 signals | key stays absent | 0 |
+
+🔴 And the distinction that matters holds: `[]` reads back as `[]`, `null`
+reads back as `None`. "Nothing was absent" never collapses into "no
+statement" — a reader that conflated them would invent a measurement claim.
+
+### ⚠ What the live run could NOT exercise, and why
+
+`client.govern()` requires `token_count` and `latency_ms` in its Python
+signature, so three attempted cases — omitting one, the other, and both —
+raised `TypeError` **client-side** before any request. BL-V1-001 made those
+two optional server-side on 2026-11-11; the SDK has not followed.
+
+That is a **feature gap, not a parsing incompatibility**: the SDK cannot
+*produce* the absent-metric case, and the table above shows it *reads* every
+shape of it. Making them optional would be an evolution of this SDK's
+public surface, not a compatibility synchronisation, and is deliberately not
+done here.
+
+### SSE: attempted, blocked on a client credential
+
+`POST /v1/govern/stream` generates with the **caller's** provider key. Both
+provider keys available on the qualifying workstation are invalid, verified
+against the providers directly rather than inferred:
+
+```
+api.openai.com/v1/models   HTTP 401  "Incorrect API key provided"
+api.mistral.ai/v1/models   HTTP 401  "Invalid API Key"
+```
+
+The server's own SSE error event said the same thing first:
+`{"error": "Provider 'openai' rejected the API key.", "tokens_so_far": 0}`.
+Nothing was billed. Evidence:
+`docs/evidence/sse_attempt_350_20261126.json`.
+
+So the SSE path remains at offline verification, and
+`stream_verification` is unchanged. **The single action that would close it:
+one valid client provider key, for one bounded 16-token stream.**
+
+## Contract provenance, established 2026-11-26
+
+| | |
+|---|---|
+| Authority | `neomundi-io/Backend_plateforme_v2` · `govern-v3/app/contracts/schemas/` |
+| Revision served | **`ec9a57646`** — *merge(BL-V1): porter BL-V1-001 et BL-V1-002 sur le code REELLEMENT en service*, 2026-11-21 |
+| REST | 20189 bytes · sha256 `8e27a911…` · git blob `9bdf86f20` |
+| SSE | 7991 bytes · sha256 `d05caa8d…` · git blob `1d44eb7d5` |
+
+Both blobs exist in the backend repository under exactly those object ids
+and are byte-identical to what `/v1/contracts/*` served. The public copy in
+`neomundi-measurement-mcp` was synchronised from the backend — not from the
+HTTP response, because a reference taken from the response it checks proves
+nothing.
+
+How the contract reached this state:
+
+| commit | date | REST | SSE | |
+|---|---|---|---|---|
+| `e347641eb` | 26/10 | 19625 | 7720 | versioned contracts declared |
+| `26b3f34f7` | 11/11 | 19896 | **7991** | **BL-V1-001** — runtime metrics optional, *without substitution* |
+| `03e2b344b` | 15/11 | **19918** | 7720 | `log_persisted`/`log_write` — the state pinned until now |
+| `ec9a57646` | 21/11 | **20189** | **7991** | the merge of both — what production serves |
+
+`absent_runtime_metrics` therefore comes from **BL-V1-001**: rather than
+publishing a figure nobody measured, the contract names the runtime metrics
+that were absent.
+
+The difference from the previously pinned state is **strictly additive**,
+verified across every nested container a 2020-12 schema can hold a
+subschema in: three keyword leaves added per document, none removed, none
+newly required, no type narrowed, `required` untouched.
+
+---
+
+## Historical record — the assessment as it stood before 2026-11-26
+
 
 ## Evidence from the controlled live run of 2026-11-13
 

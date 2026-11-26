@@ -42,7 +42,36 @@ def test_350_synthetic_new_fields_are_preserved_exactly_and_not_reinterpreted():
 
 
 def test_350_must_not_be_declared_verified_from_synthetic_replay_alone():
-    assert "3.5.0" not in API_CONTRACT["verified_measurement_versions"]
+    """The fixtures in this file are SYNTHETIC and justify no declaration.
+
+    Until 2026-11-26 this asserted that `3.5.0` was absent from the verified
+    set, because the only 3.5.0 material in the repository was the synthetic
+    replay above. It is now present -- on a live authenticated REST call --
+    so the assertion states the rule it always meant: a version may appear
+    in that list only if this repository carries the live evidence for it.
+
+    The tests above are unchanged and remain what they always were: parser
+    coverage, not qualification. This one makes sure they can never be
+    mistaken for it.
+    """
+    if "3.5.0" not in API_CONTRACT["verified_measurement_versions"]:
+        return
+    evidence = (
+        Path(__file__).resolve().parents[1] / "docs" / "COMPATIBILITY_350.md"
+    ).read_text(encoding="utf-8")
+    assert "Live authenticated REST qualification" in evidence, (
+        "3.5.0 is declared verified but docs/COMPATIBILITY_350.md records no "
+        "live REST qualification. Synthetic replay cannot justify it."
+    )
+    assert "parse_warnings: 0" in evidence
+    assert "read back             HTTP 200, persisted" in evidence
+    proof = (
+        Path(__file__).resolve().parents[1]
+        / "docs"
+        / "evidence"
+        / "rest_qualification_350_20261126.json"
+    )
+    assert proof.is_file(), f"the cited evidence file is missing: {proof.name}"
 
 
 def test_new_fields_keep_null_and_zero_distinct():

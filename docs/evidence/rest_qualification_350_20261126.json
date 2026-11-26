@@ -1,0 +1,79 @@
+{
+  "proof": "neomundi SDK 2.1.0 against production measurement_version 3.5.0, REST",
+  "started_utc": "2026-11-26T15:10:19.622247+00:00",
+  "finished_utc": "2026-11-26T15:10:23.245630+00:00",
+  "api_base_url": "https://api.neomundi.io",
+  "sdk_version": "2.1.0",
+  "sdk_verified_versions_at_run": [
+    "3.3.0",
+    "3.3.1"
+  ],
+  "account": "service verification account; guard authorised before this run",
+  "note": "No key material, prompt or response text recorded. Observations carry role=devrel-verify and must be excluded from any analysis.",
+  "billed_observations": 1,
+  "estimated_cost_chf": 0.03,
+  "cases": [
+    {
+      "case": "complete",
+      "intent": "both runtime metrics declared: the fully-populated path",
+      "status": "submitted",
+      "request_id": "42df84e1-b90c-470e-ba59-041d1a7a59a5",
+      "measurement_version": "3.5.0",
+      "version_in_verified_set": false,
+      "measurement_status": "complete",
+      "measured_signals": 5,
+      "unmeasured_signals": 0,
+      "parse_warnings": [],
+      "unknown_fields": [
+        "log_persisted",
+        "log_write"
+      ],
+      "absent_runtime_metrics_in_payload": true,
+      "absent_runtime_metrics_value": [],
+      "absent_runtime_metrics_is_null": false,
+      "measurement_keys_served": [
+        "absent_runtime_metrics",
+        "aggregates_publishable",
+        "checks_attempted",
+        "checks_succeeded",
+        "confidence_basis",
+        "coverage",
+        "degraded_g_inputs",
+        "failed_checks",
+        "missing_required_signals",
+        "status"
+      ],
+      "measurement_fields_missing_from_payload": [],
+      "log_persisted_readable": true,
+      "log_write_readable": "inserted"
+    },
+    {
+      "case": "no_token_count",
+      "intent": "token_count omitted -- BL-V1-001 made it optional, so the server should NAME the absent metric instead of substituting a figure",
+      "status": "raised",
+      "error_type": "TypeError"
+    },
+    {
+      "case": "no_latency",
+      "intent": "latency_ms omitted, token_count present",
+      "status": "raised",
+      "error_type": "TypeError"
+    },
+    {
+      "case": "neither_runtime_metric",
+      "intent": "both omitted: the maximal absent_runtime_metrics case",
+      "status": "raised",
+      "error_type": "TypeError"
+    }
+  ],
+  "readback": [
+    {
+      "case": "complete",
+      "request_id": "42df84e1-b90c-470e-ba59-041d1a7a59a5",
+      "http_status": 200,
+      "persisted": true,
+      "measurement_version": "3.5.0",
+      "absent_runtime_metrics_on_readback": []
+    }
+  ]
+}
