@@ -18,6 +18,7 @@ from typing import Any, Dict, Iterable, Iterator, Mapping, Optional, Tuple
 import httpx
 
 from .errors import ConfigurationError, NeoMundiError, NetworkError, TimeoutError
+from .models import warn_on_measurement_version
 
 GOVERN_STREAM_PATH = "/v1/govern/stream"
 DEFAULT_MAX_EVENT_BYTES = 1024 * 1024
@@ -527,6 +528,13 @@ class GovernStream(Iterator[StreamEvent]):
             raise
 
     def _finish(self, payload: Dict[str, Any]) -> None:
+        # Le fil publie sa version de mesure dans le bloc `audit` de son
+        # enveloppe `done`. Même comparaison que sur la route REST, au seul
+        # endroit où un flux se termine normalement.
+        audit = payload.get("audit")
+        if isinstance(audit, Mapping):
+            version = audit.get("measurement_version")
+            warn_on_measurement_version(version if isinstance(version, str) else None)
         if "stream_interrupted" in payload and not isinstance(payload["stream_interrupted"], bool):
             raise StreamProtocolError("stream_interrupted must be a boolean.")
         if payload.get("stream_interrupted") is True:

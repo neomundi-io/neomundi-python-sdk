@@ -22,7 +22,7 @@ from .errors import (
     TimeoutError,
     api_error_for_status,
 )
-from .models import GovernResult
+from .models import GovernResult, warn_on_measurement_version
 from .streaming import GovernStream, build_stream_request_body
 from .trace import Trace
 from .verification import (
@@ -620,6 +620,10 @@ def _parse_govern_response(response: httpx.Response) -> GovernResult:
         ) from exc
 
     result = GovernResult.from_dict(payload)
+    # Le seul entonnoir des réponses REST 2xx, donc le seul endroit où la
+    # comparaison doit vivre : `govern()` et `trace()` passent tous deux
+    # ici. Avertit, ne bloque pas, et n'altère pas le résultat.
+    warn_on_measurement_version(result.audit.measurement_version if result.audit else None)
     if result.request_id is None and request_id:
         # Le contrat déclare `request_id` requis dans le corps. S'il
         # manque, l'en-tête que le middleware pose sur toute réponse est
