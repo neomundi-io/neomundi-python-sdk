@@ -1274,7 +1274,7 @@ def _resolve(payload: Mapping[str, Any], path: str) -> Tuple[bool, Any]:
 #: vérifiée identique à celle dont il est dérivé. **Déclaration unique** :
 #: `API_CONTRACT` la réexporte, `warn_on_measurement_version` l'applique.
 #: Elle vivait auparavant seulement dans `API_CONTRACT`, que rien ne lisait.
-VERIFIED_MEASUREMENT_VERSIONS: tuple[str, ...] = ("3.3.0", "3.3.1")
+VERIFIED_MEASUREMENT_VERSIONS: tuple[str, ...] = ("3.3.0", "3.3.1", "3.5.0")
 
 #: Une version déjà signalée dans ce processus. Un avertissement par version
 #: distincte : une boucle de mille mesures ne doit pas noyer le programme

@@ -179,8 +179,8 @@ class NeoMundiClient:
     def govern(
         self,
         *,
-        token_count: int,
-        latency_ms: float,
+        token_count: int | None = None,
+        latency_ms: float | None = None,
         cost: Optional[float] = None,
         semantic_risk: Optional[float] = None,
         prompt_length: Optional[int] = None,
@@ -206,8 +206,19 @@ class NeoMundiClient:
         glossaire, serait la pire option.
 
         Args:
-            token_count: nombre de tokens de la réponse. **Requis.**
-            latency_ms: latence observée, en millisecondes. **Requis.**
+            token_count: nombre de tokens de la réponse. **Facultatif
+                depuis BL-V1-001** : à omettre, et non à mettre à zéro,
+                quand aucun compte n'a été mesuré.
+            latency_ms: latence observée, en millisecondes. **Facultative
+                depuis BL-V1-001**, même règle.
+
+                🔴 **Ne jamais substituer `0` à une métrique non mesurée.**
+                Le contrat serveur l'énonce : zéro est la valeur **la plus
+                favorable** que leur terme puisse prendre — `latency_ms=0`
+                produit un `latency_score` parfait. Omettre est la seule
+                option honnête, et le serveur y répond en **nommant** les
+                métriques absentes dans `measurement.absent_runtime_metrics`.
+                Ce SDK n'en substitue aucune.
             cost: coût de l'opération, **dans l'unité de l'appelant**. Le
                 serveur n'y attache aucune devise : la valeur est divisée
                 par un plafond par type de source pour produire un ratio
@@ -494,8 +505,8 @@ class NeoMundiClient:
 
 def _build_request_body(
     *,
-    token_count: int,
-    latency_ms: float,
+    token_count: int | None = None,
+    latency_ms: float | None = None,
     cost: Optional[float] = None,
     semantic_risk: Optional[float] = None,
     prompt_length: Optional[int] = None,
@@ -516,19 +527,27 @@ def _build_request_body(
     applique ses propres valeurs par défaut documentées. Le SDK n'en
     invente aucune.
     """
-    if isinstance(token_count, bool) or not isinstance(token_count, int):
-        raise ConfigurationError("token_count doit être un entier.")
-    if token_count < 0:
-        raise ConfigurationError("token_count doit être >= 0.")
-    if isinstance(latency_ms, bool) or not isinstance(latency_ms, (int, float)):
-        raise ConfigurationError("latency_ms doit être un nombre.")
-    if not math.isfinite(latency_ms) or latency_ms < 0:
-        raise ConfigurationError("latency_ms doit être >= 0.")
+    # Les deux métriques d'exécution sont facultatives depuis BL-V1-001.
+    # Quand elles sont fournies, la validation est **inchangée** : un
+    # appelant existant obtient exactement la même requête et exactement les
+    # mêmes refus. Quand elles sont absentes, elles sont **omises** du corps
+    # — jamais remplacées par zéro, qui serait la valeur la plus favorable
+    # que leur terme puisse prendre.
+    raw_metrics: Dict[str, Any] = {}
 
-    raw_metrics: Dict[str, Any] = {
-        "token_count": token_count,
-        "latency_ms": float(latency_ms),
-    }
+    if token_count is not None:
+        if isinstance(token_count, bool) or not isinstance(token_count, int):
+            raise ConfigurationError("token_count doit être un entier.")
+        if token_count < 0:
+            raise ConfigurationError("token_count doit être >= 0.")
+        raw_metrics["token_count"] = token_count
+
+    if latency_ms is not None:
+        if isinstance(latency_ms, bool) or not isinstance(latency_ms, (int, float)):
+            raise ConfigurationError("latency_ms doit être un nombre.")
+        if not math.isfinite(latency_ms) or latency_ms < 0:
+            raise ConfigurationError("latency_ms doit être >= 0.")
+        raw_metrics["latency_ms"] = float(latency_ms)
 
     if cost is not None:
         if isinstance(cost, bool) or not isinstance(cost, (int, float)) or not math.isfinite(cost) or cost < 0:

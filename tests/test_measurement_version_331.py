@@ -142,8 +142,11 @@ def test_l_ecart_de_version_reste_detectable_par_le_consommateur(path):
 
 def test_le_contrat_declare_les_deux_versions_verifiees():
     """`3.3.0` est la version de dérivation ; `3.3.1` a été vérifiée par
-    rejeu d'une réponse de production. Les deux, et rien d'autre."""
-    assert API_CONTRACT["verified_measurement_versions"] == ("3.3.0", "3.3.1")
+    rejeu d'une réponse de production ; `3.5.0` l'a été par un appel REST
+    authentifié réel le 2026-11-26 — cinq signaux mesurés, zéro
+    avertissement de parsing, observation relue comme persistée. Ces trois,
+    et rien d'autre : voir `docs/COMPATIBILITY_350.md`."""
+    assert API_CONTRACT["verified_measurement_versions"] == ("3.3.0", "3.3.1", "3.5.0")
     assert API_CONTRACT["measurement_version"] == "3.3.0"
 
 

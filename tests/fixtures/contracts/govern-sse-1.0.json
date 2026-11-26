@@ -21,6 +21,19 @@
     },
     "MeasurementBlock": {
       "properties": {
+        "absent_runtime_metrics": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "aggregates_publishable": {
           "anyOf": [
             {

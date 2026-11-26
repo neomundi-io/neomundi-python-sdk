@@ -1,11 +1,21 @@
 name: Deployed wire contract parity (read-only)
 
 on:
+  # Quotidien. La restriction `paths` precedente ne declenchait ce controle
+  # que si SES PROPRES fichiers changeaient : la production a derive sur les
+  # DEUX contrats et rien n'est passe au rouge. Un contrat deploye peut
+  # changer sans qu'aucun fichier de ce depot ne bouge, donc le declencheur
+  # ne peut pas dependre d'un chemin de ce depot.
+  schedule:
+    - cron: '17 6 * * *'
   pull_request:
     branches: [main]
     paths:
       - '.github/workflows/live-schema-parity.yml'
       - 'scripts/check_live_wire_schemas.py'
+      # Les empreintes epinglees vivent la : les toucher doit rejouer la
+      # comparaison.
+      - 'src/neomundi/__init__.py'
   workflow_dispatch:
 
 permissions:
@@ -22,4 +32,28 @@ jobs:
         with:
           python-version: '3.12'
       - name: Read-only public contract comparison (no auth, no credits)
-        run: python scripts/check_live_wire_schemas.py
+        id: parity
+        run: |
+          set -o pipefail
+          status=0
+          python scripts/check_live_wire_schemas.py | tee parity.out || status=$?
+          {
+            echo "## Deployed wire contract parity"
+            echo
+            echo '```'
+            cat parity.out
+            echo '```'
+            echo
+            if [ "${status:-0}" -eq 0 ]; then
+              echo "Both deployed documents byte-match the pinned public source."
+            else
+              echo "**The deployed contracts no longer match the pinned source.**"
+              echo
+              echo "This workflow gates no merge and no deployment: it reports."
+              echo "The fix is never to re-pin against production's own bytes --"
+              echo "that would compare production to itself. Take the contracts"
+              echo "from the backend repository, republish them through"
+              echo "\`neomundi-measurement-mcp\`, then re-pin here."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "${status:-0}"

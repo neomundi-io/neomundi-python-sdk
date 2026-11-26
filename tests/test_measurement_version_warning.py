@@ -47,7 +47,7 @@ def test_une_version_verifiee_ne_dit_rien(version):
 
 
 def test_une_version_non_verifiee_avertit_une_fois():
-    emitted, caught = _warnings_for("3.5.0")
+    emitted, caught = _warnings_for("3.9.0")
     assert emitted is True
     assert len(caught) == 1
     assert caught[0].category is RuntimeWarning
@@ -55,23 +55,29 @@ def test_une_version_non_verifiee_avertit_une_fois():
     # Le message doit nommer la version servie ET les versions vérifiées :
     # un avertissement qui ne dit pas de quoi l'écart s'écarte n'est pas
     # actionnable.
-    assert "3.5.0" in message
+    assert "3.9.0" in message
     for verified in models.VERIFIED_MEASUREMENT_VERSIONS:
         assert verified in message
     assert "not comparable" in message
 
 
 def test_la_meme_version_n_avertit_pas_deux_fois():
-    """Une boucle de mille mesures ne doit pas rendre mille avertissements."""
-    first, caught_first = _warnings_for("3.5.0")
-    second, caught_second = _warnings_for("3.5.0")
+    """Une boucle de mille mesures ne doit pas rendre mille avertissements.
+
+    L'exemple est `3.9.0` et non `3.5.0` : cette derniere a ete qualifiee le
+    2026-11-26 et figure desormais dans la liste verifiee, donc elle ne
+    declenche plus rien. Un test doit porter sur une version reellement non
+    verifiee, sinon il ne teste plus la regle.
+    """
+    first, caught_first = _warnings_for("3.9.0")
+    second, caught_second = _warnings_for("3.9.0")
     assert first is True and len(caught_first) == 1
     assert second is False and caught_second == []
 
 
 def test_une_seconde_version_differente_avertit_quand_meme():
     """Se taire après le premier écart masquerait le suivant."""
-    _warnings_for("3.5.0")
+    _warnings_for("3.9.0")
     emitted, caught = _warnings_for("4.0.0")
     assert emitted is True
     assert len(caught) == 1

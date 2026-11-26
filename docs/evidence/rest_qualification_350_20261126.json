@@ -1,0 +1,202 @@
+{
+  "proof": "neomundi SDK 2.1.0 against production measurement_version 3.5.0, REST",
+  "started_utc": "2026-11-26T15:48:15.091047+00:00",
+  "finished_utc": "2026-11-26T15:48:25.315613+00:00",
+  "api_base_url": "https://api.neomundi.io",
+  "sdk_version": "2.2.0",
+  "sdk_verified_versions_at_run": [
+    "3.3.0",
+    "3.3.1",
+    "3.5.0"
+  ],
+  "account": "service verification account; guard authorised before this run",
+  "note": "No key material, prompt or response text recorded. Observations carry role=devrel-verify and must be excluded from any analysis.",
+  "billed_observations": 4,
+  "estimated_cost_chf": 0.12,
+  "cases": [
+    {
+      "case": "complete",
+      "intent": "both runtime metrics declared: the fully-populated path",
+      "status": "submitted",
+      "request_id": "e106cadb-7a74-4ae7-ae32-554f5095d2bb",
+      "measurement_version": "3.5.0",
+      "version_in_verified_set": true,
+      "measurement_status": "complete",
+      "measured_signals": 5,
+      "unmeasured_signals": 0,
+      "parse_warnings": [],
+      "unknown_fields": [
+        "log_persisted",
+        "log_write"
+      ],
+      "absent_runtime_metrics_in_payload": true,
+      "absent_runtime_metrics_value": [],
+      "absent_runtime_metrics_is_null": false,
+      "measurement_keys_served": [
+        "absent_runtime_metrics",
+        "aggregates_publishable",
+        "checks_attempted",
+        "checks_succeeded",
+        "confidence_basis",
+        "coverage",
+        "degraded_g_inputs",
+        "failed_checks",
+        "missing_required_signals",
+        "status"
+      ],
+      "measurement_fields_missing_from_payload": [],
+      "log_persisted_readable": true,
+      "log_write_readable": "inserted"
+    },
+    {
+      "case": "no_token_count",
+      "intent": "token_count omitted -- BL-V1-001 made it optional, so the server should NAME the absent metric instead of substituting a figure",
+      "status": "submitted",
+      "request_id": "4c1ceaaa-fc3a-4595-a9a1-7dcea92e9965",
+      "measurement_version": "3.5.0",
+      "version_in_verified_set": true,
+      "measurement_status": "complete",
+      "measured_signals": 5,
+      "unmeasured_signals": 0,
+      "parse_warnings": [],
+      "unknown_fields": [
+        "log_persisted",
+        "log_write"
+      ],
+      "absent_runtime_metrics_in_payload": true,
+      "absent_runtime_metrics_value": [
+        "token_count"
+      ],
+      "absent_runtime_metrics_is_null": false,
+      "measurement_keys_served": [
+        "absent_runtime_metrics",
+        "aggregates_publishable",
+        "checks_attempted",
+        "checks_succeeded",
+        "confidence_basis",
+        "coverage",
+        "degraded_g_inputs",
+        "failed_checks",
+        "missing_required_signals",
+        "status"
+      ],
+      "measurement_fields_missing_from_payload": [],
+      "log_persisted_readable": true,
+      "log_write_readable": "inserted"
+    },
+    {
+      "case": "no_latency",
+      "intent": "latency_ms omitted, token_count present",
+      "status": "submitted",
+      "request_id": "8c8717aa-dc27-49be-ade5-8fc9d6bd7602",
+      "measurement_version": "3.5.0",
+      "version_in_verified_set": true,
+      "measurement_status": "complete",
+      "measured_signals": 5,
+      "unmeasured_signals": 0,
+      "parse_warnings": [],
+      "unknown_fields": [
+        "log_persisted",
+        "log_write"
+      ],
+      "absent_runtime_metrics_in_payload": true,
+      "absent_runtime_metrics_value": [
+        "latency_ms"
+      ],
+      "absent_runtime_metrics_is_null": false,
+      "measurement_keys_served": [
+        "absent_runtime_metrics",
+        "aggregates_publishable",
+        "checks_attempted",
+        "checks_succeeded",
+        "confidence_basis",
+        "coverage",
+        "degraded_g_inputs",
+        "failed_checks",
+        "missing_required_signals",
+        "status"
+      ],
+      "measurement_fields_missing_from_payload": [],
+      "log_persisted_readable": true,
+      "log_write_readable": "inserted"
+    },
+    {
+      "case": "neither_runtime_metric",
+      "intent": "both omitted: the maximal absent_runtime_metrics case",
+      "status": "submitted",
+      "request_id": "ffa598f7-768f-4caa-96cb-97344d63944d",
+      "measurement_version": "3.5.0",
+      "version_in_verified_set": true,
+      "measurement_status": "complete",
+      "measured_signals": 5,
+      "unmeasured_signals": 0,
+      "parse_warnings": [],
+      "unknown_fields": [
+        "log_persisted",
+        "log_write"
+      ],
+      "absent_runtime_metrics_in_payload": true,
+      "absent_runtime_metrics_value": [
+        "token_count",
+        "latency_ms"
+      ],
+      "absent_runtime_metrics_is_null": false,
+      "measurement_keys_served": [
+        "absent_runtime_metrics",
+        "aggregates_publishable",
+        "checks_attempted",
+        "checks_succeeded",
+        "confidence_basis",
+        "coverage",
+        "degraded_g_inputs",
+        "failed_checks",
+        "missing_required_signals",
+        "status"
+      ],
+      "measurement_fields_missing_from_payload": [],
+      "log_persisted_readable": true,
+      "log_write_readable": "inserted"
+    }
+  ],
+  "readback": [
+    {
+      "case": "complete",
+      "request_id": "e106cadb-7a74-4ae7-ae32-554f5095d2bb",
+      "http_status": 200,
+      "persisted": true,
+      "measurement_version": "3.5.0",
+      "absent_runtime_metrics_on_readback": []
+    },
+    {
+      "case": "no_token_count",
+      "request_id": "4c1ceaaa-fc3a-4595-a9a1-7dcea92e9965",
+      "http_status": 200,
+      "persisted": true,
+      "measurement_version": "3.5.0",
+      "absent_runtime_metrics_on_readback": [
+        "token_count"
+      ]
+    },
+    {
+      "case": "no_latency",
+      "request_id": "8c8717aa-dc27-49be-ade5-8fc9d6bd7602",
+      "http_status": 200,
+      "persisted": true,
+      "measurement_version": "3.5.0",
+      "absent_runtime_metrics_on_readback": [
+        "latency_ms"
+      ]
+    },
+    {
+      "case": "neither_runtime_metric",
+      "request_id": "ffa598f7-768f-4caa-96cb-97344d63944d",
+      "http_status": 200,
+      "persisted": true,
+      "measurement_version": "3.5.0",
+      "absent_runtime_metrics_on_readback": [
+        "token_count",
+        "latency_ms"
+      ]
+    }
+  ]
+}

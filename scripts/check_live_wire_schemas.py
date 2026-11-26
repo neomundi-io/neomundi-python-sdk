@@ -12,10 +12,15 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 # Mis a jour le 2026-11-15 : le miroir suit la production depuis la PR #24
-# de `neomundi-measurement-mcp`, qui republie le contrat REST servi apres
-# le deploiement de `govern` sur `03e2b344`. 🔴 A re-pointer sur le commit
-# de FUSION de cette PR #24 avant que sa branche ne soit supprimee.
-SOURCE_COMMIT = "3e200b33b1b3e6d6ecc1cc475fc719afd3b3ed45"
+# de `neomundi-measurement-mcp`, qui republie les contrats servis apres le
+# deploiement du backend `ec9a57646` (« merge(BL-V1) : porter BL-V1-001 et
+# BL-V1-002 sur le code REELLEMENT en service », 2026-11-21).
+#
+# 🟢 Commit de FUSION sur `main` (deux parents, atteignable depuis `main`),
+# et non plus un commit de branche de PR : la valeur precedente
+# `3e200b33` portait sa propre alerte demandant d'etre re-pointee avant que
+# sa branche ne disparaisse. Une reference publique, stable et fusionnee.
+SOURCE_COMMIT = "f1a304d81c036c97386f64103f2012816ddb6c62"
 LIVE_BASE = "https://api.neomundi.io/v1/contracts/"
 PINNED_BASE = (
     "https://raw.githubusercontent.com/neomundi-io/neomundi-measurement-mcp/"

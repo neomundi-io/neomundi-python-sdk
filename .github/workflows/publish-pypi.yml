@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Exact reviewed release tag (e.g. sdk-v2.1.0)'
+        description: 'Exact reviewed release tag (e.g. sdk-v2.2.0)'
         required: true
         type: string
       confirmation:
@@ -25,7 +25,7 @@ jobs:
     if: >-
       github.ref == 'refs/heads/main' &&
       inputs.confirmation == 'PUBLISH_NEOMUNDI_TO_PYPI' &&
-      inputs.tag == 'sdk-v2.1.0'
+      inputs.tag == 'sdk-v2.2.0'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -47,7 +47,7 @@ jobs:
           import os, subprocess, tomllib
           from pathlib import Path
           tag = os.environ["RELEASE_TAG"]
-          assert tag == "sdk-v2.1.0", "Unexpected release tag"
+          assert tag == "sdk-v2.2.0", "Unexpected release tag"
           config = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
           assert config["project"]["name"] == "neomundi"
           assert config["project"]["version"] == tag.removeprefix("sdk-v")
@@ -78,7 +78,7 @@ jobs:
         run: |
           python -m venv /tmp/neomundi-release-check
           /tmp/neomundi-release-check/bin/python -m pip install dist/*.whl
-          (cd /tmp && /tmp/neomundi-release-check/bin/python -c "import neomundi; from importlib.metadata import version; assert version('neomundi') == '2.1.0'; assert neomundi.__version__ == '2.1.0'; assert hasattr(neomundi.NeoMundiClient, 'trace'); assert hasattr(neomundi.NeoMundiClient, 'verify'); assert callable(neomundi.verify_evidence_archive)")
+          (cd /tmp && /tmp/neomundi-release-check/bin/python -c "import neomundi; from importlib.metadata import version; assert version('neomundi') == '2.2.0'; assert neomundi.__version__ == '2.2.0'; assert hasattr(neomundi.NeoMundiClient, 'trace'); assert hasattr(neomundi.NeoMundiClient, 'verify'); assert callable(neomundi.verify_evidence_archive)")
 
       - uses: actions/upload-artifact@v4
         with:
