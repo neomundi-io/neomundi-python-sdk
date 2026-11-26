@@ -26,6 +26,7 @@ douteuse, il est exposé sous son chemin complet avec un avertissement.
 from __future__ import annotations
 
 import dataclasses
+import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -1267,6 +1268,50 @@ def _resolve(payload: Mapping[str, Any], path: str) -> Tuple[bool, Any]:
             return False, None
         current = current[part]
     return True, current
+
+
+#: Les versions de mesure sous lesquelles la surface REST de ce SDK a été
+#: vérifiée identique à celle dont il est dérivé. **Déclaration unique** :
+#: `API_CONTRACT` la réexporte, `warn_on_measurement_version` l'applique.
+#: Elle vivait auparavant seulement dans `API_CONTRACT`, que rien ne lisait.
+VERIFIED_MEASUREMENT_VERSIONS: tuple[str, ...] = ("3.3.0", "3.3.1")
+
+#: Une version déjà signalée dans ce processus. Un avertissement par version
+#: distincte : une boucle de mille mesures ne doit pas noyer le programme
+#: sous mille avertissements identiques, et se taire après le premier
+#: masquerait un second écart.
+_warned_versions: set = set()
+
+
+def warn_on_measurement_version(
+    measurement_version: str | None,
+    *,
+    verified: tuple[str, ...] = VERIFIED_MEASUREMENT_VERSIONS,
+) -> bool:
+    """Avertir quand la version de mesure servie n'a pas été vérifiée.
+
+    Deux résultats produits sous deux versions de mesure différentes ne sont
+    pas comparables pour une même entrée. Cette fonction **avertit** ; elle
+    ne bloque rien, ne lève rien et ne modifie aucun résultat — un écart de
+    version est une information pour l'appelant, pas une erreur du SDK.
+
+    Rend `True` si un avertissement a été émis, pour qu'un test puisse
+    l'observer sans dépendre de la configuration des avertissements.
+    """
+    if not measurement_version or measurement_version in verified:
+        return False
+    if measurement_version in _warned_versions:
+        return False
+    _warned_versions.add(measurement_version)
+    warnings.warn(
+        f"NeoMundi served measurement_version {measurement_version!r}, which "
+        f"is not among the versions this SDK verified ({verified!r}). "
+        "Measurements taken under different measurement versions are not "
+        "comparable for the same input.",
+        RuntimeWarning,
+        stacklevel=3,
+    )
+    return True
 
 
 # Garde-fou : `dataclasses` est importé pour que les outils de typage

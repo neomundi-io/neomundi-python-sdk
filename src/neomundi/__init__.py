@@ -39,6 +39,12 @@ from __future__ import annotations
 #: GitHub `pypi` : le numéro a été re-pointé, aucun verrou n'a été retiré.
 __version__ = "2.1.0"
 
+# Importe tot, et volontairement avant `API_CONTRACT` qui s'en sert :
+# `models` ne depend que de `.errors`, donc aucune circularite.
+from .models import (
+    VERIFIED_MEASUREMENT_VERSIONS as _VERIFIED_MEASUREMENT_VERSIONS,
+)
+
 #: Le contrat backend auquel ce SDK se réfère.
 #:
 #: `backend_commit` est le commit où les modèles de requête et de réponse
@@ -68,7 +74,10 @@ __version__ = "2.1.0"
 API_CONTRACT = {
     "backend_commit": "68d6057cf620e430e6488da3cfcec9c471c75ed6",
     "measurement_version": "3.3.0",
-    "verified_measurement_versions": ("3.3.0", "3.3.1"),
+    # Reexporte la declaration unique de `models`, que
+    # `warn_on_measurement_version` applique desormais. Ce champ etait
+    # auparavant la seule copie, et aucun chemin de code ne la lisait.
+    "verified_measurement_versions": _VERIFIED_MEASUREMENT_VERSIONS,
     "normalizer_version": "1.0.0",
     "route": "POST /v1/govern",
     "stream_route": "POST /v1/govern/stream",

@@ -138,3 +138,90 @@ accuracy. A passing suite must not authorize publishing a blanket
 The private report also notes a mismatch between the health endpoint's configured factuality judge and the per-observation served-by indication, as well as an unexpected backend restart. Neither can be resolved by editing SDK metadata. These require a separate backend operational investigation.
 
 **No release/publish workflow is introduced, and `Private :: Do Not Upload` stays in place.**
+
+---
+
+## Measured again on 2026-11-26 — the reference itself is now stale
+
+Re-ran the repository's own gate, `scripts/check_live_wire_schemas.py`. It
+exits 1 and prints its verdict:
+
+```
+govern-rest-1.0.json BYTE_MISMATCH
+  live   SHA256: 8e27a9110298a9b9ff31d6379daefddb1f068fa0b17452ed7b65e341e16d84c3
+  pinned SHA256: 46b0579f1d413ca75616d01eed1bef0dc317ff5e507dbcabc1dd146b7faab59c
+govern-sse-1.0.json BYTE_MISMATCH
+  live   SHA256: d05caa8d48c6f64f0124a53f8977914e9e5fe0558ff6172031d3131d36c4c165
+  pinned SHA256: 358fc2ec1869471896d08c8e2cc0855b15def6433340a0506dae180733c7fefe
+STOP: schema parity not established; do not claim 3.5.0 verified
+```
+
+### What drifted, field by field
+
+Both documents gained **exactly one property**, in `$defs/MeasurementBlock`:
+
+```json
+"absent_runtime_metrics": {
+  "anyOf": [ { "items": { "type": "string" }, "type": "array" },
+             { "type": "null" } ]
+}
+```
+
+`+271 bytes` in each file. `required` is **untouched** in both
+(`status`, `checks_attempted`, `checks_succeeded`, `coverage`,
+`confidence_basis`). No property removed, none made required, no type
+narrowed. **The drift is strictly additive**, so the SDK's unknown-field
+machinery absorbs it and no parser is broken.
+
+⚠ A first pass of this comparison reported "0 fields added" because the
+flattener did not traverse `$defs`. A textual diff caught it. Recorded
+because a fabricated "nothing changed" is worse than no comparison.
+
+### 🔴 Why the digests are NOT re-pinned here
+
+`neomundi-measurement-mcp` at `main` (`cfd5fb8e`) serves **the same
+digests this SDK pins** — `46b0579f` and `358fc2ec`. So production is
+**ahead of the public schema source**, not merely ahead of this SDK.
+
+There is therefore no public, independently-versioned reference that
+matches what production serves. Re-pinning to production's own bytes would
+make the gate compare production to itself, which proves nothing and would
+quietly destroy the only parity evidence the SDK has.
+
+**The action is upstream:** `neomundi-measurement-mcp` must republish the
+contracts that production now serves. Only then can `SOURCE_COMMIT` move
+and the digests be re-pinned with real evidence.
+
+### 🔴 The gate is dormant, and that is why nobody noticed
+
+`.github/workflows/live-schema-parity.yml` triggers on
+`pull_request` **restricted by `paths`** to its own two files, plus
+`workflow_dispatch`. There is no `schedule`. Production can drift
+arbitrarily and nothing turns red — which is exactly what happened.
+
+A `schedule:` trigger is **deliberately not added in this pull request**:
+today it would be red immediately for a cause only the backend and the MCP
+repository can fix, and a permanently red workflow teaches people to ignore
+it. Wake it in the same change that republishes the schemas.
+
+Note also that `SOURCE_COMMIT` is a **pull-request branch commit**
+(`3e200b33`), carrying its own comment asking for it to be re-pointed at
+the merge commit before that branch is deleted. It still resolves today;
+it is a dangling reference and should move when the schemas are
+republished.
+
+### Verdict on requirement 1 of the six below
+
+**Not met, and for a new reason.** It is no longer "partially qualified
+pending independent verification": the authoritative public reference is
+itself behind production, so there is nothing to compare the deployed
+contract against. `verified_measurement_versions` is therefore left
+unchanged at `("3.3.0", "3.3.1")`.
+
+### What this pull request does change
+
+The SDK now **performs** the comparison it has only ever declared. See
+`models.warn_on_measurement_version`. That is the duplication worth
+removing: of the five published integrations, only `langchain-neomundi`
+implemented the check, and a direct user of this SDK got nothing at all.
+
