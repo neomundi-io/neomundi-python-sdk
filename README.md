@@ -52,7 +52,7 @@ The SDK instruments and transports measurements; it does not define policies or 
 |---|---|---|
 | **INSTALL** | `pip install neomundi` — `2.2.0` published 2026-11-26 | **Real** — `trace()` and `verify()` ship in the published wheel |
 | **TRACE** | `client.trace()` — local stopwatch, correlation id, explicit submission | **Available** — closing a trace submits one metered measurement through the API; there is no trace-only route |
-| **MEASURE** | `client.govern()` (post-call REST) and `client.stream()` (SSE generation proxy) | **Real** — live-qualified against the hosted API on 2026-11-13, REST and SSE both passed |
+| **MEASURE** | `client.govern()` (post-call REST) and `client.stream()` (SSE generation proxy) | **Real** — live-qualified against the hosted API on 2026-11-26, REST and SSE both passed |
 | **VERIFY** | `client.verify()` / `client.verify_audit_certificate()` (public, unmetered API routes) and `verify_evidence_archive()` (independent Evidence verifier) | **Real for emission authenticity. Archive integrity needs a second package.** |
 
 What **no** step does: establish that an AI answer is **true**. See
@@ -290,7 +290,7 @@ See [the 3.5.0 compatibility scope](docs/COMPATIBILITY_350.md) and
 
 ## Built on this SDK
 
-You do not have to write a measurement call per call site. Six integrations
+You do not have to write a measurement call per call site. Seven integrations
 attach the SDK where your framework already has a hook, and each carries an
 evidence level that CI **computes** from a committed proof rather than
 reading from a README.
@@ -300,6 +300,7 @@ reading from a README.
 | LangChain | [`langchain-neomundi`](https://pypi.org/project/langchain-neomundi/) | **E2** |
 | LiteLLM | [`litellm-neomundi`](https://pypi.org/project/litellm-neomundi/) | **E2** |
 | MLflow | [`mlflow-neomundi`](https://pypi.org/project/mlflow-neomundi/) | **E2** |
+| Microsoft Agent Framework | [`agent-framework-neomundi`](https://pypi.org/project/agent-framework-neomundi/) | **E2** |
 | OpenAI Agents SDK | [`openai-agents-neomundi`](https://pypi.org/project/openai-agents-neomundi/) | **E2** |
 | OpenTelemetry | [`otel-neomundi`](https://pypi.org/project/otel-neomundi/) | **E2** |
 | Langfuse | [`langfuse-neomundi`](https://pypi.org/project/langfuse-neomundi/) | **E2** |
