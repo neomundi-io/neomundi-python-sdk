@@ -1,0 +1,28 @@
+{
+  "title": "NeoMundi Python SDK",
+  "description": "Python client for the NeoMundi runtime measurement API. It instruments an AI interaction from the application, transports the resulting behavioural measurements over REST or an SSE generation proxy, and exposes them without interpreting them: it embeds no threshold and derives no verdict. A metric the host never published is reported as absent rather than substituted with a zero.",
+  "upload_type": "software",
+  "license": "Apache-2.0",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Favre-Lecca, Sébastien",
+      "affiliation": "NeoMundi"
+    }
+  ],
+  "keywords": [
+    "artificial intelligence",
+    "runtime measurement",
+    "observability",
+    "python",
+    "sdk",
+    "ai governance"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/neomundi-io/neomundi-python-sdk",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
