@@ -301,7 +301,7 @@ et [les vérifications effectuées](docs/VERIFICATION_V2.md).
 
 ## Construit sur ce SDK
 
-Vous n'avez pas à écrire un appel de mesure par point d'appel. Six
+Vous n'avez pas à écrire un appel de mesure par point d'appel. Sept
 intégrations attachent le SDK là où votre framework possède déjà un point
 d'accroche, et chacune porte un niveau de preuve que la CI **calcule** depuis
 une preuve versionnée, au lieu de le lire dans un README.
@@ -311,6 +311,7 @@ une preuve versionnée, au lieu de le lire dans un README.
 | LangChain | [`langchain-neomundi`](https://pypi.org/project/langchain-neomundi/) | **E2** |
 | LiteLLM | [`litellm-neomundi`](https://pypi.org/project/litellm-neomundi/) | **E2** |
 | MLflow | [`mlflow-neomundi`](https://pypi.org/project/mlflow-neomundi/) | **E2** |
+| Microsoft Agent Framework | [`agent-framework-neomundi`](https://pypi.org/project/agent-framework-neomundi/) | **E2** |
 | SDK OpenAI Agents | [`openai-agents-neomundi`](https://pypi.org/project/openai-agents-neomundi/) | **E2** |
 | OpenTelemetry | [`otel-neomundi`](https://pypi.org/project/otel-neomundi/) | **E2** |
 | Langfuse | [`langfuse-neomundi`](https://pypi.org/project/langfuse-neomundi/) | **E2** |
