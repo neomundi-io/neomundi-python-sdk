@@ -1,0 +1,26 @@
+# Citation metadata for this repository.
+# https://citation-file-format.github.io/
+#
+# Read by GitHub, which renders a "Cite this repository" button, and by Zenodo
+# when a release is archived. 🔴 It does not archive anything by itself.
+
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+type: software
+title: NeoMundi Python SDK
+abstract: >-
+  Python client for the NeoMundi runtime measurement API. It instruments an AI interaction from the application, transports the resulting behavioural measurements over REST or an SSE generation proxy, and exposes them without interpreting them: it embeds no threshold and derives no verdict. A metric the host never published is reported as absent rather than substituted with a zero.
+authors:
+  - family-names: Favre-Lecca
+    given-names: Sébastien
+    affiliation: NeoMundi
+repository-code: https://github.com/neomundi-io/neomundi-python-sdk
+url: https://neomundi.io
+license: Apache-2.0
+keywords:
+  - artificial intelligence
+  - runtime measurement
+  - observability
+  - python
+  - sdk
+  - ai governance
