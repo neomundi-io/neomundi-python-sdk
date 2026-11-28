@@ -1,0 +1,68 @@
+# Read the Docs build for the NeoMundi Python SDK.
+#
+# This file publishes the reference documents that already live in docs/.
+# It writes no documentation of its own: the only page added for the site is
+# docs/index.md, which is a front door and links out rather than duplicating
+# the README, the integration guide or the changelog.
+#
+# 🔴 docs_dir stays `docs`. Pointing it at the repository root is refused by
+# MkDocs, and pulling the root guides in would break their relative links,
+# which are written for GitHub's view of the tree, not for a site rooted here.
+
+site_name: NeoMundi Python SDK
+site_description: Install. Measure. Verify. Independent runtime measurement for AI systems.
+site_url: https://neomundi-python-sdk.readthedocs.io/
+copyright: NeoMundi — measurements are not a verdict on content.
+
+repo_url: https://github.com/neomundi-io/neomundi-python-sdk
+repo_name: neomundi-io/neomundi-python-sdk
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle: {icon: material/weather-night, name: Dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle: {icon: material/weather-sunny, name: Light mode}
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.action.edit
+    - content.code.copy
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc: {permalink: true}
+  - pymdownx.details
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Reference:
+      - API contract: CONTRAT_API.md
+      - Streaming (SSE): STREAMING.md
+      - 3.5.0 compatibility scope: COMPATIBILITY_350.md
+      - Migration to v2: MIGRATION_V2.md
+      - Limits: LIMITES.md
+  - Verification:
+      - Verification results: VERIFICATION_V2.md
+      - Live qualification of the installed SDK: QUALIFICATION_LIVE_SDK_V2.md
+  - Audits:
+      - Install, trace, measure, verify: AUDIT_INSTALL_TRACE_MEASURE_VERIFY.md
+      - SDK v2 audit: AUDIT_SDK_V2.md
+      - PyPI release readiness: PYPI_RELEASE_READINESS.md
+  - Français:
+      - Streaming (SSE): STREAMING_FR.md
+
+# A link that no longer resolves is a defect, not a cosmetic detail: fail the
+# build rather than publish it.
+strict: true
