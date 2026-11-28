@@ -1,6 +1,6 @@
 # REST et SSE dans le SDK 2
 
-[Français](STREAMING_FR.md) · [English](STREAMING.md) · [Accueil](../README_FR.md)
+[Français](STREAMING_FR.md) · [English](STREAMING.md) · [Accueil](https://github.com/neomundi-io/neomundi-python-sdk/blob/main/README_FR.md)
 
 Le SDK est synchrone. SSE permet de recevoir un flux progressif ; cela ne
 signifie pas que le client Python utilise `async/await`. Un client
